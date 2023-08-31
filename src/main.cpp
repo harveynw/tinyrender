@@ -5,7 +5,7 @@
 
 #include "engine.hpp"
 #include "shape_helpers.hpp"
-#include "primitives/buffers/TexturedAttributeBuffer.hpp"
+#include "primitives/buffers/attributes/TexturedAttribute.hpp"
 #include "pipelines/IndexedTrianglePipeline.hpp"
 #include "pipelines/TrianglePipeline.hpp"
 #include "pipelines/TexturedTrianglePipeline.hpp"
@@ -33,12 +33,12 @@ int main (int, char**) {
     auto *engine = new Engine(640, 480);
     engine->launch();
 
-    auto modelMatrix = std::make_shared<engine::UniformModelBuffer>(engine);
+    auto modelMatrix = std::make_shared<engine::UniformModel>(engine);
 
 
     auto depthTexture = std::make_shared<engine::DepthTexture2D>(engine, 640, 480);
-    auto uniforms = std::make_shared<engine::UniformViewProjectionBuffer>(engine, vec3(5.0, -5.0, 5.0),
-                                                                          vec3(0, 0, 0));
+    auto uniforms = std::make_shared<engine::UniformViewProjection>(engine, vec3(5.0, -5.0, 5.0),
+                                                                    vec3(0, 0, 0));
 
     //auto controller = std::make_shared<FreeviewController>(uniforms);
     auto controller = std::make_shared<TurntableController>(uniforms);
@@ -50,11 +50,11 @@ int main (int, char**) {
      * Shape pipeline
      */
 
-    auto pyramidModelMatrix = std::make_shared<engine::UniformModelBuffer>(engine);
+    auto pyramidModelMatrix = std::make_shared<engine::UniformModel>(engine);
     auto triangles = shape_helpers::makePyramid(vec3(0.0, 0.0, 1.0), 1.0, 1.0);
     auto data = shape_helpers::asIndexedTriangles(triangles);
     auto indexDataBuffer = std::make_shared<engine::IndexBuffer>(engine, data.indexData);
-    auto attributeDataBuffer = std::make_shared<engine::IndexedAttributeBuffer>(engine, data);
+    auto attributeDataBuffer = std::make_shared<engine::IndexedAttribute>(engine, data);
     std::vector<IndexedTriangleObject> objects_indexed;
     objects_indexed.push_back({
             pyramidModelMatrix,
@@ -69,8 +69,8 @@ int main (int, char**) {
      * OBJs pipeline
      */
 
-    auto mammothModelMatrix = std::make_shared<engine::UniformModelBuffer>(engine);
-    auto teapotModelMatrix = std::make_shared<engine::UniformModelBuffer>(engine);
+    auto mammothModelMatrix = std::make_shared<engine::UniformModel>(engine);
+    auto teapotModelMatrix = std::make_shared<engine::UniformModel>(engine);
     std::vector<TriangleObject> tri_objects;
     {
         std::vector<TriangleVertexAttributes> vertexData;
@@ -82,7 +82,7 @@ int main (int, char**) {
             return 1;
         }
 
-        auto attr = std::make_shared<engine::NonTexturedAttributeBuffer>(engine, vertexData);
+        auto attr = std::make_shared<engine::NonTexturedAttribute>(engine, vertexData);
 
         tri_objects.push_back({mammothModelMatrix, attr});
     }
@@ -94,7 +94,7 @@ int main (int, char**) {
             return 1;
         }
 
-        auto attr = std::make_shared<engine::NonTexturedAttributeBuffer>(engine, vertexData);
+        auto attr = std::make_shared<engine::NonTexturedAttribute>(engine, vertexData);
 
         tri_objects.push_back({teapotModelMatrix, attr});
     }
@@ -104,7 +104,7 @@ int main (int, char**) {
      * Textured OBJ pipeline
      */
     // Texture test
-    auto cubeModelMatrix = std::make_shared<engine::UniformModelBuffer>(engine);
+    auto cubeModelMatrix = std::make_shared<engine::UniformModel>(engine);
     //auto texture = std::make_shared<engine::DebugTexture2D>(engine, 256, 256);
     auto texture = std::make_shared<engine::ImageTexture2D>(engine, "resources/img/grass.png");
     std::vector<UVTriangleVertexAttributes> vertexData3;
@@ -114,7 +114,7 @@ int main (int, char**) {
         return 1;
     }
 
-    auto attrs = std::make_shared<engine::TexturedAttributeBuffer>(engine, vertexData3);
+    auto attrs = std::make_shared<engine::TexturedAttribute>(engine, vertexData3);
     std::vector<TexturedTriangleObject> objects(1);
     objects[0] = { cubeModelMatrix, attrs };
 
@@ -129,7 +129,7 @@ int main (int, char**) {
                                          vec3(lg, lg, z_pos), vec3(-lg, lg, z_pos));
     auto planeTexture = std::make_shared<engine::ImageTexture2D>(engine, "resources/img/grass.png");
     auto planeData = shape_helpers::asTexturedTriangles(plane);
-    auto planeBuffer = std::make_shared<engine::TexturedAttributeBuffer>(engine, planeData);
+    auto planeBuffer = std::make_shared<engine::TexturedAttribute>(engine, planeData);
     std::vector<TexturedTriangleObject> objects_2(1);
     objects_2[0] = { modelMatrix, planeBuffer };
     engine->addPipeline(std::make_shared<TexturedTrianglePipeline>(engine, uniforms, planeTexture,

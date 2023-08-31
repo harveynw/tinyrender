@@ -2,9 +2,9 @@
 // Created by Harvey Williams on 09/08/2023.
 //
 
-#include "UniformViewProjectionBuffer.hpp"
+#include "UniformViewProjection.hpp"
 
-engine::UniformViewProjectionBuffer::UniformViewProjectionBuffer(Engine *engine, vec3 lookFrom, vec3 lookAt): Buffer() {
+engine::UniformViewProjection::UniformViewProjection(Engine *engine, vec3 lookFrom, vec3 lookAt): Buffer() {
     // Params
     float focalLength = 2.0;
     uniforms.viewMatrix = glm::lookAt(lookFrom, lookAt, vec3(0, 0, 1));
@@ -24,7 +24,7 @@ engine::UniformViewProjectionBuffer::UniformViewProjectionBuffer(Engine *engine,
 }
 
 void
-engine::UniformViewProjectionBuffer::updateRotationAboutZAxis() {
+engine::UniformViewProjection::updateRotationAboutZAxis() {
     uniforms.time = static_cast<float>(glfwGetTime()); // glfwGetTime returns a double
     // Only update the 1-st float of the buffer
     engine->wgpuGetQueue().writeBuffer(underlying, offsetof(engine::ViewProjectionUniforms, time),
@@ -38,7 +38,7 @@ engine::UniformViewProjectionBuffer::updateRotationAboutZAxis() {
 }
 
 void
-engine::UniformViewProjectionBuffer::updateViewMatrix(glm::mat4x4 viewMatrix) {
+engine::UniformViewProjection::updateViewMatrix(glm::mat4x4 viewMatrix) {
     uniforms.viewMatrix = viewMatrix;
     engine->wgpuGetQueue().writeBuffer(underlying, offsetof(engine::ViewProjectionUniforms, viewMatrix),
                               &uniforms.viewMatrix,sizeof(engine::ViewProjectionUniforms::viewMatrix));

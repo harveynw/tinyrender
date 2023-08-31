@@ -3,7 +3,7 @@
 //
 #pragma once
 
-#include <glm/glm.hpp>
+#include "glm/glm.hpp"
 
 #include "AttributeBuffer.hpp"
 
@@ -17,9 +17,9 @@ struct TriangleVertexAttributes {
 
 namespace engine {
 
-    class NonTexturedAttributeBuffer : public engine::AttributeBuffer {
+    class NonTexturedAttribute : public engine::AttributeBuffer {
     public:
-        explicit NonTexturedAttributeBuffer(Engine *engine, std::vector<TriangleVertexAttributes> attrs);
+        explicit NonTexturedAttribute(Engine *engine, std::vector<TriangleVertexAttributes> attrs);
     };
 
 }

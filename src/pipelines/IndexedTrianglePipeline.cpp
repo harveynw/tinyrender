@@ -7,7 +7,7 @@
 
 
 IndexedTrianglePipeline::IndexedTrianglePipeline(Engine *engine,
-                                                 std::shared_ptr<engine::UniformViewProjectionBuffer> uniforms,
+                                                 std::shared_ptr<engine::UniformViewProjection> uniforms,
                                                  std::shared_ptr<engine::DepthTexture2D> depthTexture,
                                                  std::vector<IndexedTriangleObject> &objects):
 engine(engine) {

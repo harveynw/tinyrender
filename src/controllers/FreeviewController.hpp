@@ -7,7 +7,7 @@
 #include "glm/ext.hpp"
 
 #include "Controller.hpp"
-#include "../primitives/buffers/UniformViewProjectionBuffer.hpp"
+#include "../primitives/buffers/uniforms/UniformViewProjection.hpp"
 
 
 using glm::vec3;
@@ -32,11 +32,11 @@ protected:
     float moveSpeed = 0.1f;
     float mouseSensitivity = 0.01f;
 
-    std::shared_ptr<engine::UniformViewProjectionBuffer> uniforms;
+    std::shared_ptr<engine::UniformViewProjection> uniforms;
 
     void updateInternalBuffer() override;
 public:
-    explicit FreeviewController(std::shared_ptr<engine::UniformViewProjectionBuffer> uniforms);
+    explicit FreeviewController(std::shared_ptr<engine::UniformViewProjection> uniforms);
 
     void tick() override;
     void enableListen(GLFWwindow *window) override;

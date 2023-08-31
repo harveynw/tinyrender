@@ -9,10 +9,10 @@
 
 #include "Pipeline.hpp"
 #include "../engine.hpp"
-#include "../primitives/buffers/UniformViewProjectionBuffer.hpp"
+#include "../primitives/buffers/uniforms/UniformViewProjection.hpp"
 #include "../primitives/textures/DepthTexture2D.hpp"
-#include "../primitives/buffers/UniformModelBuffer.hpp"
-#include "../primitives/buffers/NonTexturedAttributeBuffer.hpp"
+#include "../primitives/buffers/uniforms/UniformModel.hpp"
+#include "../primitives/buffers/attributes/NonTexturedAttribute.hpp"
 
 using glm::mat4x4;
 using glm::vec4;
@@ -21,14 +21,14 @@ using glm::vec3;
 
 // Pair a model matrix with data to be fed into the vertex shader
 struct TriangleObject {
-    std::shared_ptr<engine::UniformModelBuffer> modelMatrix;
-    std::shared_ptr<engine::NonTexturedAttributeBuffer> vertexData;
+    std::shared_ptr<engine::UniformModel> modelMatrix;
+    std::shared_ptr<engine::NonTexturedAttribute> vertexData;
 };
 
 class TrianglePipeline : public Pipeline {
 protected:
     Engine *engine = nullptr;
-    std::shared_ptr<engine::UniformViewProjectionBuffer> uniforms;
+    std::shared_ptr<engine::UniformViewProjection> uniforms;
     std::shared_ptr<engine::DepthTexture2D> depthTexture;
 
     wgpu::RenderPipeline pipeline = nullptr;
@@ -60,7 +60,7 @@ protected:
     void initialiseUniformBindGroup(RenderPipelineDescriptor &desc);
 
 public:
-    TrianglePipeline(Engine *engine, std::shared_ptr<engine::UniformViewProjectionBuffer> uniforms,
+    TrianglePipeline(Engine *engine, std::shared_ptr<engine::UniformViewProjection> uniforms,
                      std::shared_ptr<engine::DepthTexture2D> depthTexture,
                      std::vector<TriangleObject> &objects);
     ~TrianglePipeline() override;

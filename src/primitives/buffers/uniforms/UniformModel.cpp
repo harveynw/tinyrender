@@ -1,9 +1,9 @@
 //
 // Created by Harvey Williams on 17/08/2023.
 //
-#include "UniformModelBuffer.hpp"
+#include "UniformModel.hpp"
 
-engine::UniformModelBuffer::UniformModelBuffer(Engine *engine) {
+engine::UniformModel::UniformModel(Engine *engine) {
     uniforms.modelMatrix = computeModelMatrix();
 
     // Buffer base class is initialised
@@ -14,7 +14,7 @@ engine::UniformModelBuffer::UniformModelBuffer(Engine *engine) {
     this->initialise(&uniforms);
 }
 
-mat4x4 engine::UniformModelBuffer::computeModelMatrix() {
+mat4x4 engine::UniformModel::computeModelMatrix() {
     mat4x4 S, T, R;
     S = glm::scale(mat4x4(1.0), vec3(scale));
     T = glm::translate(mat4x4(1.0), translate);
@@ -23,7 +23,7 @@ mat4x4 engine::UniformModelBuffer::computeModelMatrix() {
     return T * R * S;
 }
 
-void engine::UniformModelBuffer::updateBuffer() {
+void engine::UniformModel::updateBuffer() {
     uniforms.modelMatrix = computeModelMatrix();
     engine->wgpuGetQueue().writeBuffer(underlying, offsetof(engine::ModelUniform, modelMatrix),
                                        &uniforms.modelMatrix,sizeof(engine::ModelUniform::modelMatrix));

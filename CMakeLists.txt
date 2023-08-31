@@ -15,6 +15,10 @@ file(GLOB SOURCES
         src/pipelines/*.cpp
         src/primitives/buffers/*.hpp
         src/primitives/buffers/*.cpp
+        src/primitives/buffers/attributes/*.hpp
+        src/primitives/buffers/attributes/*.cpp
+        src/primitives/buffers/uniforms/*.hpp
+        src/primitives/buffers/uniforms/*.cpp
         src/primitives/textures/*.hpp
         src/primitives/textures/*.cpp
         src/controllers/*.hpp

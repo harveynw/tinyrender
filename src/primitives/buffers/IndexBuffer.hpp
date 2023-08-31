@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "AttributeBuffer.hpp"
+#include "attributes/AttributeBuffer.hpp"
 #include "../../engine.hpp"
 
 

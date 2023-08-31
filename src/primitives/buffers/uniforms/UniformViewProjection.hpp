@@ -8,7 +8,7 @@
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
 
-#include "Buffer.hpp"
+#include "../Buffer.hpp"
 
 using glm::mat4x4;
 using glm::vec4;
@@ -25,11 +25,11 @@ namespace engine {
     };
     static_assert(sizeof(ViewProjectionUniforms) % 16 == 0);
 
-    class UniformViewProjectionBuffer : public Buffer {
+    class UniformViewProjection : public Buffer {
     protected:
         ViewProjectionUniforms uniforms{};
     public:
-        UniformViewProjectionBuffer(Engine *engine, vec3 lookFrom, vec3 lookAt);
+        UniformViewProjection(Engine *engine, vec3 lookFrom, vec3 lookAt);
         void updateRotationAboutZAxis();
         void updateViewMatrix(glm::mat4x4 viewMatrix);
     };

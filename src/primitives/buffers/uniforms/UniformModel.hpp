@@ -7,7 +7,7 @@
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
 
-#include "Buffer.hpp"
+#include "../Buffer.hpp"
 
 using glm::mat4x4;
 using glm::vec4;
@@ -21,7 +21,7 @@ namespace engine {
     static_assert(sizeof(ModelUniform) % 16 == 0);
 
 
-    class UniformModelBuffer : public Buffer {
+    class UniformModel : public Buffer {
     protected:
         ModelUniform uniforms{};
 
@@ -32,7 +32,7 @@ namespace engine {
         mat4x4 computeModelMatrix();
         void updateBuffer();
     public:
-        explicit UniformModelBuffer(Engine *engine);
+        explicit UniformModel(Engine *engine);
 
         void setScale(float s) { scale = s; updateBuffer(); };
         void setTranslation(vec3 t) { translate = t; updateBuffer(); };

@@ -8,7 +8,7 @@
 #include "glm/ext.hpp"
 
 #include "Controller.hpp"
-#include "../primitives/buffers/UniformViewProjectionBuffer.hpp"
+#include "../primitives/buffers/uniforms/UniformViewProjection.hpp"
 
 
 using glm::vec2;
@@ -28,11 +28,11 @@ protected:
     float mouseSensitivity = 0.01f;
     float scrollSensitivity = 0.1f;
 
-    std::shared_ptr<engine::UniformViewProjectionBuffer> uniforms;
+    std::shared_ptr<engine::UniformViewProjection> uniforms;
 
     void updateInternalBuffer() override;
 public:
-    explicit TurntableController(std::shared_ptr<engine::UniformViewProjectionBuffer> uniforms);
+    explicit TurntableController(std::shared_ptr<engine::UniformViewProjection> uniforms);
 
     void tick() override {};
     void enableListen(GLFWwindow *window) override { (void) window; };

@@ -3,10 +3,10 @@
 // Created by Harvey Williams on 18/08/2023.
 //
 
-#include "NonTexturedAttributeBuffer.hpp"
+#include "NonTexturedAttribute.hpp"
 
 
-engine::NonTexturedAttributeBuffer::NonTexturedAttributeBuffer(Engine *engine, std::vector<TriangleVertexAttributes> attrs) {
+engine::NonTexturedAttribute::NonTexturedAttribute(Engine *engine, std::vector<TriangleVertexAttributes> attrs) {
     this->nDrawCalls = (int) attrs.size();
 
     // Buffer base class is initialised

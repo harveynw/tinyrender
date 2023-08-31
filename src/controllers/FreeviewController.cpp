@@ -4,7 +4,7 @@
 
 #include "FreeviewController.hpp"
 
-FreeviewController::FreeviewController(std::shared_ptr<engine::UniformViewProjectionBuffer> uniforms) {
+FreeviewController::FreeviewController(std::shared_ptr<engine::UniformViewProjection> uniforms) {
     this->uniforms = uniforms;
 }
 

@@ -11,7 +11,7 @@
  * https://eliemichel.github.io/LearnWebGPU/basic-3d-rendering/3d-meshes/loading-from-file.html
  */
 
-TrianglePipeline::TrianglePipeline(Engine *engine, std::shared_ptr<engine::UniformViewProjectionBuffer> uniforms,
+TrianglePipeline::TrianglePipeline(Engine *engine, std::shared_ptr<engine::UniformViewProjection> uniforms,
                  std::shared_ptr<engine::DepthTexture2D> depthTexture,
                  std::vector<TriangleObject> &objects): engine(engine) {
     this->uniforms = uniforms;

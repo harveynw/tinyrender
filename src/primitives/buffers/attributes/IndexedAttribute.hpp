@@ -3,7 +3,7 @@
 //
 #pragma once
 
-#include <glm/glm.hpp>
+#include "glm/glm.hpp"
 
 #include "AttributeBuffer.hpp"
 
@@ -15,9 +15,9 @@ struct IndexedTrianglePipelineData {
 
 namespace engine {
 
-    class IndexedAttributeBuffer : public engine::AttributeBuffer {
+    class IndexedAttribute : public engine::AttributeBuffer {
     public:
-        explicit IndexedAttributeBuffer(Engine *engine, IndexedTrianglePipelineData attrs);
+        explicit IndexedAttribute(Engine *engine, IndexedTrianglePipelineData attrs);
     };
 
 }

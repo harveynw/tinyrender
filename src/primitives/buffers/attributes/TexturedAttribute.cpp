@@ -2,10 +2,10 @@
 // Created by Harvey Williams on 17/08/2023.
 //
 
-#include "TexturedAttributeBuffer.hpp"
+#include "TexturedAttribute.hpp"
 
 
-engine::TexturedAttributeBuffer::TexturedAttributeBuffer(Engine *engine, std::vector<UVTriangleVertexAttributes> attrs) {
+engine::TexturedAttribute::TexturedAttribute(Engine *engine, std::vector<UVTriangleVertexAttributes> attrs) {
     this->nDrawCalls = (int) attrs.size();
 
     // Buffer base class is initialised

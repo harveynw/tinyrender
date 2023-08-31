@@ -10,7 +10,7 @@
  * Extended TrianglePipeline to take a texture and uv coords
  */
 
-TexturedTrianglePipeline::TexturedTrianglePipeline(Engine *engine, std::shared_ptr<engine::UniformViewProjectionBuffer> uniforms,
+TexturedTrianglePipeline::TexturedTrianglePipeline(Engine *engine, std::shared_ptr<engine::UniformViewProjection> uniforms,
                                                    std::shared_ptr<engine::Texture2D> texture,
                                                    std::shared_ptr<engine::DepthTexture2D> depthTexture,
                                                    std::vector<TexturedTriangleObject> &objects):

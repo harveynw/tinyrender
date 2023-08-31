@@ -1,7 +1,7 @@
-#include "IndexedAttributeBuffer.hpp"
+#include "IndexedAttribute.hpp"
 
 
-engine::IndexedAttributeBuffer::IndexedAttributeBuffer(Engine *engine, IndexedTrianglePipelineData attrs) {
+engine::IndexedAttribute::IndexedAttribute(Engine *engine, IndexedTrianglePipelineData attrs) {
     // We only need vertexData from attrs
     std::vector<float> &v = attrs.vertexData;
 

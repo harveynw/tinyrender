@@ -6,11 +6,11 @@
 
 #include "Pipeline.hpp"
 #include "../engine.hpp"
-#include "../primitives/buffers/UniformViewProjectionBuffer.hpp"
+#include "../primitives/buffers/uniforms/UniformViewProjection.hpp"
 #include "../primitives/textures/DepthTexture2D.hpp"
-#include "../primitives/buffers/UniformModelBuffer.hpp"
+#include "../primitives/buffers/uniforms/UniformModel.hpp"
 #include "../primitives/buffers/IndexBuffer.hpp"
-#include "../primitives/buffers/IndexedAttributeBuffer.hpp"
+#include "../primitives/buffers/attributes/IndexedAttribute.hpp"
 
 using glm::mat4x4;
 using glm::vec4;
@@ -19,9 +19,9 @@ using glm::vec3;
 
 // Pair a model matrix with data to be fed into the vertex shader
 struct IndexedTriangleObject {
-    std::shared_ptr<engine::UniformModelBuffer> modelMatrix;
+    std::shared_ptr<engine::UniformModel> modelMatrix;
     std::shared_ptr<engine::IndexBuffer> indexData;
-    std::shared_ptr<engine::IndexedAttributeBuffer> vertexData;
+    std::shared_ptr<engine::IndexedAttribute> vertexData;
 };
 
 /**
@@ -38,7 +38,7 @@ class IndexedTrianglePipeline : public Pipeline {
 protected:
     Engine *engine = nullptr;
     std::shared_ptr<engine::DepthTexture2D> depthTexture;
-    std::shared_ptr<engine::UniformViewProjectionBuffer> uniforms;
+    std::shared_ptr<engine::UniformViewProjection> uniforms;
 
     wgpu::RenderPipeline pipeline = nullptr;
 
@@ -68,7 +68,7 @@ protected:
     void initialiseUniformBindGroup(RenderPipelineDescriptor &desc);
 
 public:
-    IndexedTrianglePipeline(Engine *engine, std::shared_ptr<engine::UniformViewProjectionBuffer> uniforms, std::shared_ptr<engine::DepthTexture2D> depthTexture, std::vector<IndexedTriangleObject> &objects);
+    IndexedTrianglePipeline(Engine *engine, std::shared_ptr<engine::UniformViewProjection> uniforms, std::shared_ptr<engine::DepthTexture2D> depthTexture, std::vector<IndexedTriangleObject> &objects);
     ~IndexedTrianglePipeline() override;
     void onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder) override;
 };
