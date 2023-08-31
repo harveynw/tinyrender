@@ -47,7 +47,7 @@ int main (int, char**) {
     bool success;
 
     /*
-     * Shape pipeline, TODO: why has this started erorring yp here?
+     * Shape pipeline
      */
 
     auto pyramidModelMatrix = std::make_shared<engine::UniformModelBuffer>(engine);
