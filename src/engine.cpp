@@ -3,6 +3,7 @@
 //
 
 #include "engine.hpp"
+#include "primitives/textures/DepthTexture2D.hpp"
 
 
 void

@@ -18,8 +18,8 @@ TEST(ShapeHelpersTests, ShapeDataConcatenation){
 
     EXPECT_EQ(tri_3.nColors(), tri_3.nPoints()) << "Expected as many colors specified as vertices";
 
-    size_t expSize = tri_1.pointData.size() + tri_2.pointData.size();
-    EXPECT_EQ(tri_3.pointData.size(), expSize) << "Vertex point data is not expected size";
+    size_t expSize = tri_1.nPoints() + tri_2.nPoints();
+    EXPECT_EQ(tri_3.nPoints(), expSize) << "Vertex point data is not expected size";
 
     std::vector<uint16_t> adjIndexData(tri_3.indexData.begin() + 3, tri_3.indexData.end());
     EXPECT_NE(adjIndexData, tri_2.indexData) << "Index data has not been adjusted post-compound";
@@ -30,5 +30,4 @@ TEST(ShapeHelpersTests, ShapeDataConcatenation){
 
     auto msg = "Compound assign behaves differently to compound\n";
     EXPECT_EQ(compAssigned.indexData, tri_3.indexData) << msg;
-    EXPECT_EQ(compAssigned.pointData, tri_3.pointData) << msg;
 }

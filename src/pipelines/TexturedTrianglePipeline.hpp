@@ -73,7 +73,7 @@ public:
     void onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder) override;
 };
 
-namespace fs = std::filesystem;
+namespace fs = std::__fs::filesystem;
 bool loadTexturedObjIntoTriangleData(const fs::path& path, std::vector<UVTriangleVertexAttributes> &vertexData);
 
 

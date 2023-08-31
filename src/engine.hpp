@@ -12,8 +12,12 @@
 #include "wgpu_helpers.hpp"
 #include "pipelines/Pipeline.hpp"
 #include "controllers/Controller.hpp"
-#include "primitives/textures/DepthTexture2D.hpp"
 
+
+// Forward declarations
+namespace engine {
+    class DepthTexture2D;
+}
 
 class Engine {
 public:
@@ -26,7 +30,6 @@ public:
     int onFrame(); // internal call from main event loop
 
     void onResize();
-
 
     void setController(std::shared_ptr<Controller> controller);
     void addPipeline(const std::shared_ptr<Pipeline>& pipeline);

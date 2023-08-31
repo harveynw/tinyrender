@@ -42,9 +42,10 @@ FetchContent_Declare(
         URL https://github.com/glfw/glfw/releases/download/3.3.8/glfw-3.3.8.zip
 )
 FetchContent_MakeAvailable(glfw3)
-#target_link_libraries(App PRIVATE glfw)
-message("Dir: ${glfw3_SOURCE_DIR}")
-target_include_directories(App PRIVATE ${glfw3_SOURCE_DIR})
+#add_subdirectory(${glfw3_SOURCE_DIR})
+target_link_libraries(App PRIVATE glfw)
+#message("Dir: ${glfw3_SOURCE_DIR}")
+#target_include_directories(App PRIVATE ${glfw3_SOURCE_DIR})
 
 # WebGPU implementation and headers
 FetchContent_Declare(
@@ -109,6 +110,6 @@ enable_testing()
 include(GoogleTest)
 
 add_executable(shape_helpers_test src/shape_helpers_test.cpp src/shape_helpers.hpp src/shape_helpers.cpp)
-target_link_libraries(shape_helpers_test GTest::gtest_main glm::glm webgpu)
+target_link_libraries(shape_helpers_test GTest::gtest_main glm::glm webgpu glfw glfw3webgpu)
 target_copy_webgpu_binaries(shape_helpers_test)
 gtest_discover_tests(shape_helpers_test)
