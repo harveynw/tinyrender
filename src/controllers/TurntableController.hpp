@@ -8,7 +8,7 @@
 #include "glm/ext.hpp"
 
 #include "Controller.hpp"
-#include "../primitives/buffers/uniforms/UniformViewProjection.hpp"
+#include "../webgpu/primitives/buffers/uniforms/UniformViewProjection.hpp"
 
 
 using glm::vec2;

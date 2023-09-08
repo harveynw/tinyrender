@@ -23,7 +23,7 @@ namespace engine {
         float time;
         float _pad[3];
     };
-    static_assert(sizeof(ViewProjectionUniforms) % 16 == 0);
+    static_assert(sizeof(ViewProjectionUniforms) % 16 == 0, "Must be multiple of 16 bytes");
 
     class UniformViewProjection : public Buffer {
     protected:

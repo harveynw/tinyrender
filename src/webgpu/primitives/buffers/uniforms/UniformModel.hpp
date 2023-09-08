@@ -18,7 +18,7 @@ namespace engine {
     struct ModelUniform {
         mat4x4 modelMatrix;
     };
-    static_assert(sizeof(ModelUniform) % 16 == 0);
+    static_assert(sizeof(ModelUniform) % 16 == 0, "Must be multiple of 16 bytes");
 
 
     class UniformModel : public Buffer {

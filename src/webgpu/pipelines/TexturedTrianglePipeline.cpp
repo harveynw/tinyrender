@@ -11,8 +11,8 @@
  */
 
 TexturedTrianglePipeline::TexturedTrianglePipeline(Engine *engine, std::shared_ptr<engine::UniformViewProjection> uniforms,
-                                                   std::shared_ptr<engine::Texture2D> texture,
-                                                   std::shared_ptr<engine::DepthTexture2D> depthTexture,
+                                                   std::shared_ptr<engine::Texture2D::Texture> texture,
+                                                   std::shared_ptr<engine::Texture2D::Texture> depthTexture,
                                                    std::vector<TexturedTriangleObject> &objects):
 engine(engine)  {
     this->uniforms = uniforms;
@@ -110,7 +110,6 @@ TexturedTrianglePipeline::~TexturedTrianglePipeline() {
     // Intermediate resources
     for(auto bg : bindGroups)
         bg.release();
-    sampler.release();
     shaderModule.release();
     layout.release();
     bindGroupLayout.release();
@@ -235,22 +234,6 @@ TexturedTrianglePipeline::initialiseAttributes(RenderPipelineDescriptor &desc) {
 void
 TexturedTrianglePipeline::initialiseUniformBindGroup(RenderPipelineDescriptor &desc) {
     /*
-     * Create sampler
-     */
-    SamplerDescriptor samplerDesc;
-    samplerDesc.addressModeU = AddressMode::MirrorRepeat; //AddressMode::ClampToEdge;
-    samplerDesc.addressModeV = AddressMode::MirrorRepeat;
-    samplerDesc.addressModeW = AddressMode::ClampToEdge;
-    samplerDesc.magFilter = FilterMode::Linear;
-    samplerDesc.minFilter = FilterMode::Linear;
-    samplerDesc.mipmapFilter = MipmapFilterMode::Linear;
-    samplerDesc.lodMinClamp = 0.0f;
-    samplerDesc.lodMaxClamp = 1.0f;
-    samplerDesc.compare = CompareFunction::Undefined;
-    samplerDesc.maxAnisotropy = 1;
-    sampler = engine->wgpuGetDevice().createSampler(samplerDesc);
-
-    /*
      * For uniforms: 1) Setup Bind Group Layout, 2) Set up the actual Bind Groups
      */
     bindingLayoutEntries = std::vector<BindGroupLayoutEntry>(4, Default);
@@ -304,7 +287,7 @@ TexturedTrianglePipeline::initialiseUniformBindGroup(RenderPipelineDescriptor &d
         bindings[2].binding = 2;
         bindings[2].textureView = texture->getView();
         bindings[3].binding = 3;
-        bindings[3].sampler = sampler;
+        bindings[3].sampler = texture->getSampler();
 
         BindGroupDescriptor bindGroupDesc;
         bindGroupDesc.layout = bindGroupLayout;

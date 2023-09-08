@@ -2,26 +2,24 @@
 // Created by Harvey Williams on 08/08/2023.
 //
 
-#include "TrianglePipeline.hpp"
+#include "IndexedTrianglePipeline.hpp"
 #include "../load_shader.hpp"
-#include "tiny_obj_loader.h"
 
-/*
- * This is just a subtle change from IndexedTrianglePipeline
- * https://eliemichel.github.io/LearnWebGPU/basic-3d-rendering/3d-meshes/loading-from-file.html
- */
 
-TrianglePipeline::TrianglePipeline(Engine *engine, std::shared_ptr<engine::UniformViewProjection> uniforms,
-                 std::shared_ptr<engine::DepthTexture2D> depthTexture,
-                 std::vector<TriangleObject> &objects): engine(engine) {
-    this->uniforms = uniforms;
+IndexedTrianglePipeline::IndexedTrianglePipeline(Engine *engine,
+                                                 std::shared_ptr<engine::UniformViewProjection> uniforms,
+                                                 std::shared_ptr<engine::Texture2D::Texture> depthTexture,
+                                                 std::vector<IndexedTriangleObject> &objects):
+engine(engine) {
     this->depthTexture = depthTexture;
+    this->uniforms = uniforms;
     this->objects = objects;
+
+    initialiseBuffers();
 
     std::cout << "Creating render pipeline..." << std::endl;
     RenderPipelineDescriptor desc;
 
-    initialiseBuffers();
     initialiseShader(desc);
     initialisePipelineOptions(desc);
     initialiseDepthBufferAndStencil(desc);
@@ -33,7 +31,7 @@ TrianglePipeline::TrianglePipeline(Engine *engine, std::shared_ptr<engine::Unifo
 }
 
 void
-TrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder) {
+IndexedTrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder) {
     /*
      * Step 1: Update uniforms
      */
@@ -48,7 +46,6 @@ TrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &
     RenderPassColorAttachment renderPassColorAttachment;
     renderPassColorAttachment.view = textureView;
     renderPassColorAttachment.resolveTarget = nullptr;
-    // Op to decided what to do with existing value, can be Clear
     renderPassColorAttachment.loadOp = shouldClear ? LoadOp::Clear : LoadOp::Load;
     renderPassColorAttachment.storeOp = StoreOp::Store;
     renderPassColorAttachment.clearValue = shouldClear ? clearValue : Color{0, 0, 0, 0};
@@ -68,6 +65,7 @@ TrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &
     depthStencilAttachment.depthStoreOp = StoreOp::Store;
     depthStencilAttachment.depthReadOnly = false; // we could turn off writing to the depth buffer globally here
     // Stencil setup, mandatory but unused
+
     depthStencilAttachment.stencilClearValue = 0;
     #ifdef WEBGPU_BACKEND_WGPU
     depthStencilAttachment.stencilLoadOp = LoadOp::Clear;
@@ -76,6 +74,7 @@ TrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &
     depthStencilAttachment.stencilLoadOp = LoadOp::Undefined;
     depthStencilAttachment.stencilStoreOp = StoreOp::Undefined;
     #endif
+
     depthStencilAttachment.stencilReadOnly = true;
     renderPassDesc.depthStencilAttachment = &depthStencilAttachment; // Depth Stencil Attachment
 
@@ -90,33 +89,50 @@ TrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &
     auto obj_it = objects.begin();
     auto bindgroup_it = bindGroups.begin();
     while(obj_it != objects.end()) {
-        // Set vertex buffers
+        // Set vertex buffer
         renderPass.setVertexBuffer(0, obj_it->vertexData->getUnderlyingBuffer(), 0, obj_it->vertexData->getSize());
+        // Set index buffer
+        renderPass.setIndexBuffer(obj_it->indexData->getUnderlyingBuffer(), IndexFormat::Uint16, 0, obj_it->indexData->getSize());
         // Set to the bind group that points to the corresponding model matrix
         renderPass.setBindGroup(0, *bindgroup_it, 0, nullptr);
         // draw call
-        renderPass.draw(obj_it->vertexData->getNDrawCalls(), 1, 0, 0);
+        renderPass.drawIndexed(obj_it->indexData->getNDrawCalls(), 1, 0, 0, 0);
 
         obj_it++;
         bindgroup_it++;
     }
 
+    /*
+    // Set vertex buffers while encoding the render pass
+    renderPass.setVertexBuffer(0, vertexBuffer, 0, data.vertexData.size() * sizeof(float));
+    renderPass.setIndexBuffer(indexBuffer, IndexFormat::Uint16, 0,
+                              data.indexData.size() * sizeof(uint16_t));
+
+    // bind uniform
+    renderPass.setBindGroup(0, bindGroup, 0, nullptr);
+
+    // indexed draw call
+    renderPass.drawIndexed(data.indexData.size(), 1, 0, 0, 0);
+    */
+
     renderPass.end();
 }
 
-TrianglePipeline::~TrianglePipeline() {
-    // Intermediate resources
+IndexedTrianglePipeline::~IndexedTrianglePipeline() {
     for(auto bg : bindGroups)
         bg.release();
+
+    // Intermediate resources
     shaderModule.release();
     layout.release();
     bindGroupLayout.release();
 }
 
-void TrianglePipeline::initialiseBuffers() {}
+void
+IndexedTrianglePipeline::initialiseBuffers() {}
 
 void
-TrianglePipeline::initialiseShader(RenderPipelineDescriptor &desc) {
+IndexedTrianglePipeline::initialiseShader(RenderPipelineDescriptor &desc) {
     shaderModule = loadShaderModule("resources/shaders/basic_mvp.wgsl", engine->wgpuGetDevice());
     std::cout << "Shader module: " << shaderModule << std::endl;
 
@@ -154,7 +170,7 @@ TrianglePipeline::initialiseShader(RenderPipelineDescriptor &desc) {
 }
 
 void
-TrianglePipeline::initialisePipelineOptions(RenderPipelineDescriptor &desc) {
+IndexedTrianglePipeline::initialisePipelineOptions(RenderPipelineDescriptor &desc) {
     // Primitive assembly and rasterization
     // Each sequence of 3 vertices is considered as a triangle
     desc.primitive.topology = PrimitiveTopology::TriangleList;
@@ -180,7 +196,7 @@ TrianglePipeline::initialisePipelineOptions(RenderPipelineDescriptor &desc) {
 }
 
 void
-TrianglePipeline::initialiseDepthBufferAndStencil(RenderPipelineDescriptor &desc) {
+IndexedTrianglePipeline::initialiseDepthBufferAndStencil(RenderPipelineDescriptor &desc) {
     // We setup a depth buffer state for the render pipeline
     // Keep a fragment only if its depth is lower than the previously blended one
     depthStencilState.depthCompare = CompareFunction::Less;
@@ -197,28 +213,28 @@ TrianglePipeline::initialiseDepthBufferAndStencil(RenderPipelineDescriptor &desc
 }
 
 void
-TrianglePipeline::initialiseAttributes(RenderPipelineDescriptor &desc) {
+IndexedTrianglePipeline::initialiseAttributes(RenderPipelineDescriptor &desc) {
     vertexAttribs = std::vector<VertexAttribute>(3);
 
     // Position attribute
     vertexAttribs[0].shaderLocation = 0;
     vertexAttribs[0].format = VertexFormat::Float32x3;
-    vertexAttribs[0].offset = offsetof(TriangleVertexAttributes, position);
+    vertexAttribs[0].offset = offsetof(IndexedTriangleVertexAttributes, position);
 
     // Normal attribute
     vertexAttribs[1].shaderLocation = 1;
     vertexAttribs[1].format = VertexFormat::Float32x3;
-    vertexAttribs[1].offset = offsetof(TriangleVertexAttributes, normal);
+    vertexAttribs[1].offset = offsetof(IndexedTriangleVertexAttributes, normal);
 
     // Color attribute
     vertexAttribs[2].shaderLocation = 2;
     vertexAttribs[2].format = VertexFormat::Float32x3;
-    vertexAttribs[2].offset = offsetof(TriangleVertexAttributes, color);
+    vertexAttribs[2].offset = offsetof(IndexedTriangleVertexAttributes, color);
 
-    // Single vertex buffer layout (specified by TriangleVertexAttributes)
+    // Single vertex buffer layout (specified by IndexedTriangleVertexAttributes)
     vertexBufferLayout.attributeCount = (uint32_t)vertexAttribs.size();
     vertexBufferLayout.attributes = vertexAttribs.data();
-    vertexBufferLayout.arrayStride = sizeof(TriangleVertexAttributes);
+    vertexBufferLayout.arrayStride = sizeof(IndexedTriangleVertexAttributes);
     vertexBufferLayout.stepMode = VertexStepMode::Vertex;
 
     // Specify that we have one buffer and this is the layout
@@ -227,10 +243,10 @@ TrianglePipeline::initialiseAttributes(RenderPipelineDescriptor &desc) {
 }
 
 void
-TrianglePipeline::initialiseUniformBindGroup(RenderPipelineDescriptor &desc) {
+IndexedTrianglePipeline::initialiseUniformBindGroup(RenderPipelineDescriptor &desc) {
     /*
- * For uniforms: 1) Setup Bind Group Layout, 2) Set up the actual Bind Groups
- */
+     * Uniforms require setting up a Bind Group accessed through the shader
+     */
     bindingLayoutEntries = std::vector<BindGroupLayoutEntry>(2, Default);
 
     // Setup uniforms binding
@@ -259,6 +275,7 @@ TrianglePipeline::initialiseUniformBindGroup(RenderPipelineDescriptor &desc) {
     layout = engine->wgpuGetDevice().createPipelineLayout(layoutDesc);
     desc.layout = layout;
 
+
     /*
      * Bind Group Creation
      */
@@ -275,62 +292,4 @@ TrianglePipeline::initialiseUniformBindGroup(RenderPipelineDescriptor &desc) {
         bindGroupDesc.entries = bindings.data();
         bindGroups.push_back(engine->wgpuGetDevice().createBindGroup(bindGroupDesc));
     }
-}
-
-bool
-loadObjIntoTriangleData(const fs::path& path, std::vector<TriangleVertexAttributes> &vertexData) {
-    tinyobj::attrib_t attrib;
-    std::vector<tinyobj::shape_t> shapes;
-    std::vector<tinyobj::material_t> materials;
-
-    std::string warn;
-    std::string err;
-
-    // Call the core loading procedure of TinyOBJLoader
-    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.string().c_str());
-
-    // Check errors
-    if (!warn.empty()) {
-        std::cout << warn << std::endl;
-    }
-
-    if (!err.empty()) {
-        std::cerr << err << std::endl;
-    }
-
-    if (!ret) {
-        return false;
-    }
-
-    // Filling in vertexData:
-    vertexData.clear();
-    for (const auto& shape : shapes) {
-        size_t offset = vertexData.size();
-        vertexData.resize(offset + shape.mesh.indices.size());
-
-        for (size_t i = 0; i < shape.mesh.indices.size(); ++i) {
-            const tinyobj::index_t& idx = shape.mesh.indices[i];
-
-            vertexData[offset + i].position = {
-                    attrib.vertices[3 * idx.vertex_index + 0],
-                    -attrib.vertices[3 * idx.vertex_index + 2], // Add a minus to avoid mirroring
-                    attrib.vertices[3 * idx.vertex_index + 1]
-            };
-
-            // Also apply the transform to normals!!
-            vertexData[offset + i].normal = {
-                    attrib.normals[3 * idx.normal_index + 0],
-                    -attrib.normals[3 * idx.normal_index + 2],
-                    attrib.normals[3 * idx.normal_index + 1]
-            };
-
-            vertexData[offset + i].color = {
-                    attrib.colors[3 * idx.vertex_index + 0],
-                    attrib.colors[3 * idx.vertex_index + 1],
-                    attrib.colors[3 * idx.vertex_index + 2]
-            };
-        }
-    }
-
-    return true;
 }

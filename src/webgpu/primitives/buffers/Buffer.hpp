@@ -6,7 +6,7 @@
 #define TINYGAME_BUFFER_H
 
 #include "webgpu/webgpu.hpp"
-#include "../../engine.hpp"
+#include "../../../engine.hpp"
 
 /*
  * Buffer

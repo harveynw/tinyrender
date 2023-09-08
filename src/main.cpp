@@ -5,13 +5,10 @@
 
 #include "engine.hpp"
 #include "shape_helpers.hpp"
-#include "primitives/buffers/attributes/TexturedAttribute.hpp"
-#include "pipelines/IndexedTrianglePipeline.hpp"
-#include "pipelines/TrianglePipeline.hpp"
-#include "pipelines/TexturedTrianglePipeline.hpp"
-#include "primitives/textures/DepthTexture2D.hpp"
-#include "primitives/textures/DebugTexture2D.hpp"
-#include "primitives/textures/ImageTexture2D.hpp"
+#include "webgpu/primitives/buffers/attributes/TexturedAttribute.hpp"
+#include "webgpu/pipelines/IndexedTrianglePipeline.hpp"
+#include "webgpu/pipelines/TrianglePipeline.hpp"
+#include "webgpu/pipelines/TexturedTrianglePipeline.hpp"
 #include "controllers/TurntableController.hpp"
 #include "controllers/FreeviewController.hpp"
 
@@ -25,7 +22,6 @@ namespace fs = std::filesystem;
 
 int main (int, char**) {
     // TODO: Implement dt into controllers
-    // TODO: Implement vsynced event loop
     // TODO: Shift model matrix into own bind group tied to 'objects' not pipelines
     // TODO: MipMaps for Texture2D (+ ImageTextured2D)
     // TODO: More primitives
@@ -35,8 +31,7 @@ int main (int, char**) {
 
     auto modelMatrix = std::make_shared<engine::UniformModel>(engine);
 
-
-    auto depthTexture = std::make_shared<engine::DepthTexture2D>(engine, 640, 480);
+    auto depthTexture = std::make_shared<engine::Texture2D::common::DefaultDepthTexture>(engine);
     auto uniforms = std::make_shared<engine::UniformViewProjection>(engine, vec3(5.0, -5.0, 5.0),
                                                                     vec3(0, 0, 0));
 
@@ -106,7 +101,7 @@ int main (int, char**) {
     // Texture test
     auto cubeModelMatrix = std::make_shared<engine::UniformModel>(engine);
     //auto texture = std::make_shared<engine::DebugTexture2D>(engine, 256, 256);
-    auto texture = std::make_shared<engine::ImageTexture2D>(engine, "resources/img/grass.png");
+    auto texture = std::make_shared<engine::Texture2D::common::BasicImgTexture>(engine, "resources/img/grass.png");
     std::vector<UVTriangleVertexAttributes> vertexData3;
     success = loadTexturedObjIntoTriangleData("resources/cube.obj", vertexData3);
     if (!success) {
@@ -127,7 +122,8 @@ int main (int, char**) {
     float lg = 10;
     auto plane = shape_helpers::makeQuad(vec3(-lg, -lg, z_pos), vec3(lg, -lg, z_pos),
                                          vec3(lg, lg, z_pos), vec3(-lg, lg, z_pos));
-    auto planeTexture = std::make_shared<engine::ImageTexture2D>(engine, "resources/img/grass.png");
+    //auto planeTexture = std::make_shared<engine::ImageTexture2D>(engine, "resources/img/grass.png");
+    auto planeTexture = std::make_shared<engine::Texture2D::common::DebugTexture>(engine, 640, 640);
     auto planeData = shape_helpers::asTexturedTriangles(plane);
     auto planeBuffer = std::make_shared<engine::TexturedAttribute>(engine, planeData);
     std::vector<TexturedTriangleObject> objects_2(1);

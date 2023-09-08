@@ -8,9 +8,9 @@
 #include <iostream>
 
 #include "Pipeline.hpp"
-#include "../engine.hpp"
+#include "../../engine.hpp"
+#include "../primitives/textures/Texture2D.hpp"
 #include "../primitives/buffers/uniforms/UniformViewProjection.hpp"
-#include "../primitives/textures/DepthTexture2D.hpp"
 #include "../primitives/buffers/uniforms/UniformModel.hpp"
 #include "../primitives/buffers/attributes/NonTexturedAttribute.hpp"
 
@@ -29,7 +29,7 @@ class TrianglePipeline : public Pipeline {
 protected:
     Engine *engine = nullptr;
     std::shared_ptr<engine::UniformViewProjection> uniforms;
-    std::shared_ptr<engine::DepthTexture2D> depthTexture;
+    std::shared_ptr<engine::Texture2D::Texture> depthTexture;
 
     wgpu::RenderPipeline pipeline = nullptr;
 
@@ -61,7 +61,7 @@ protected:
 
 public:
     TrianglePipeline(Engine *engine, std::shared_ptr<engine::UniformViewProjection> uniforms,
-                     std::shared_ptr<engine::DepthTexture2D> depthTexture,
+                     std::shared_ptr<engine::Texture2D::Texture> depthTexture,
                      std::vector<TriangleObject> &objects);
     ~TrianglePipeline() override;
     void onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder) override;

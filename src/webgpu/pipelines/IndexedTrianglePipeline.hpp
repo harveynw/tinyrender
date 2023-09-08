@@ -2,18 +2,15 @@
 // Created by Harvey Williams on 08/08/2023.
 //
 
-#ifndef TINYGAME_TEXTUREDTRIANGLEPIPELINE_H
-#define TINYGAME_TEXTUREDTRIANGLEPIPELINE_H
-
-#include <filesystem>
-#include <iostream>
+#pragma once
 
 #include "Pipeline.hpp"
-#include "../engine.hpp"
+#include "../../engine.hpp"
+#include "../primitives/textures/Texture2D.hpp"
 #include "../primitives/buffers/uniforms/UniformViewProjection.hpp"
-#include "../primitives/textures/DepthTexture2D.hpp"
 #include "../primitives/buffers/uniforms/UniformModel.hpp"
-#include "../primitives/buffers/attributes/TexturedAttribute.hpp"
+#include "../primitives/buffers/IndexBuffer.hpp"
+#include "../primitives/buffers/attributes/IndexedAttribute.hpp"
 
 using glm::mat4x4;
 using glm::vec4;
@@ -21,28 +18,35 @@ using glm::vec3;
 
 
 // Pair a model matrix with data to be fed into the vertex shader
-struct TexturedTriangleObject {
+struct IndexedTriangleObject {
     std::shared_ptr<engine::UniformModel> modelMatrix;
-    std::shared_ptr<engine::TexturedAttribute> vertexData;
+    std::shared_ptr<engine::IndexBuffer> indexData;
+    std::shared_ptr<engine::IndexedAttribute> vertexData;
 };
 
+/**
+    * A structure that describes the data layout in the vertex buffer
+    * We do not instantiate it but use it in `sizeof` and `offsetof`
+    */
+struct IndexedTriangleVertexAttributes {
+    glm::vec3 position;
+    glm::vec3 normal;
+    glm::vec3 color;
+};
 
-class TexturedTrianglePipeline : public Pipeline {
+class IndexedTrianglePipeline : public Pipeline {
 protected:
     Engine *engine = nullptr;
+    std::shared_ptr<engine::Texture2D::Texture> depthTexture;
     std::shared_ptr<engine::UniformViewProjection> uniforms;
-    std::shared_ptr<engine::DepthTexture2D> depthTexture;
-    std::shared_ptr<engine::Texture2D> texture;
 
     wgpu::RenderPipeline pipeline = nullptr;
 
-    std::vector<TexturedTriangleObject> objects;
+    std::vector<IndexedTriangleObject> objects;
     std::vector<std::vector<BindGroupEntry>> bindGroupEntries;
     std::vector<BindGroup> bindGroups;
 
-
     // Intermediate objects for setting up the pipeline, persisted here.
-    wgpu::Sampler sampler = nullptr;
     wgpu::ShaderModule shaderModule = nullptr;
     wgpu::FragmentState fragmentState;
     wgpu::BlendState blendState;
@@ -56,7 +60,7 @@ protected:
     PipelineLayout layout = nullptr;
 
     // All necessary to be called pre onFrame(), can be done in any order.
-    void initialiseBuffers() {};
+    void initialiseBuffers();
     void initialiseShader(RenderPipelineDescriptor &desc);
     static void initialisePipelineOptions(RenderPipelineDescriptor &desc);
     void initialiseDepthBufferAndStencil(RenderPipelineDescriptor &desc);
@@ -64,19 +68,7 @@ protected:
     void initialiseUniformBindGroup(RenderPipelineDescriptor &desc);
 
 public:
-    TexturedTrianglePipeline(Engine *engine, std::shared_ptr<engine::UniformViewProjection> uniforms, std::shared_ptr<engine::Texture2D> texture, std::shared_ptr<engine::DepthTexture2D> depthTexture,
-                             std::vector<TexturedTriangleObject> &objects);
-    ~TexturedTrianglePipeline() override;
+    IndexedTrianglePipeline(Engine *engine, std::shared_ptr<engine::UniformViewProjection> uniforms, std::shared_ptr<engine::Texture2D::Texture> depthTexture, std::vector<IndexedTriangleObject> &objects);
+    ~IndexedTrianglePipeline() override;
     void onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder) override;
 };
-
-#ifdef __APPLE__
-namespace fs = std::__fs::filesystem;
-#else
-namespace fs = std::filesystem;
-#endif
-
-bool loadTexturedObjIntoTriangleData(const fs::path& path, std::vector<UVTriangleVertexAttributes> &vertexData);
-
-
-#endif

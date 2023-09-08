@@ -9,8 +9,8 @@
 #include <glfw3webgpu.h>
 #include <webgpu/webgpu.hpp>
 
-#include "wgpu_helpers.hpp"
-#include "pipelines/Pipeline.hpp"
+#include "webgpu/wgpu_helpers.hpp"
+#include "webgpu/pipelines/Pipeline.hpp"
 #include "controllers/Controller.hpp"
 
 

@@ -1,13 +1,12 @@
-#ifndef TINYGAME_SHAPEHELPERS_H
-#define TINYGAME_SHAPEHELPERS_H
+#pragma once
 
 #include <vector>
 #include <glm/glm.hpp>
 #include <webgpu/webgpu.hpp>
 
-#include "pipelines/IndexedTrianglePipeline.hpp"
-#include "pipelines/TexturedTrianglePipeline.hpp"
-#include "pipelines/TrianglePipeline.hpp"
+#include "webgpu/pipelines/IndexedTrianglePipeline.hpp"
+#include "webgpu/pipelines/TexturedTrianglePipeline.hpp"
+#include "webgpu/pipelines/TrianglePipeline.hpp"
 
 // For generating random numbers
 #define r() ((float) rand() / RAND_MAX)
@@ -125,5 +124,3 @@ namespace shape_helpers {
        return { vertexData, shapeData.indexData };
    }
 }
-
-#endif

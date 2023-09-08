@@ -11,16 +11,18 @@ project(
 file(GLOB SOURCES
         src/*.hpp
         src/*.cpp
-        src/pipelines/*.hpp
-        src/pipelines/*.cpp
-        src/primitives/buffers/*.hpp
-        src/primitives/buffers/*.cpp
-        src/primitives/buffers/attributes/*.hpp
-        src/primitives/buffers/attributes/*.cpp
-        src/primitives/buffers/uniforms/*.hpp
-        src/primitives/buffers/uniforms/*.cpp
-        src/primitives/textures/*.hpp
-        src/primitives/textures/*.cpp
+        src/webgpu/*.hpp
+        src/webgpu/*.cpp
+        src/webgpu/pipelines/*.hpp
+        src/webgpu/pipelines/*.cpp
+        src/webgpu/primitives/buffers/*.hpp
+        src/webgpu/primitives/buffers/*.cpp
+        src/webgpu/primitives/buffers/attributes/*.hpp
+        src/webgpu/primitives/buffers/attributes/*.cpp
+        src/webgpu/primitives/buffers/uniforms/*.hpp
+        src/webgpu/primitives/buffers/uniforms/*.cpp
+        src/webgpu/primitives/textures/*.hpp
+        src/webgpu/primitives/textures/*.cpp
         src/controllers/*.hpp
         src/controllers/*.cpp
         )
@@ -110,7 +112,17 @@ FetchContent_MakeAvailable(googletest)
 enable_testing()
 include(GoogleTest)
 
-add_executable(shape_helpers_test src/shape_helpers_test.cpp src/shape_helpers.hpp src/shape_helpers.cpp)
-target_link_libraries(shape_helpers_test GTest::gtest_main glm::glm webgpu glfw glfw3webgpu)
-target_copy_webgpu_binaries(shape_helpers_test)
-gtest_discover_tests(shape_helpers_test)
+function(add_test name sources)
+    add_executable(${name} ${sources})
+    message(STATUS "adding test" ${sources})
+    target_link_libraries(${name} GTest::gtest_main glm::glm webgpu glfw glfw3webgpu stb_image_lib)
+    target_copy_webgpu_binaries(${name})
+    gtest_discover_tests(${name})
+endfunction()
+
+#add_test(shape_helpers_test "src/shape_helpers_test.cpp;src/shape_helpers.hpp;src/shape_helpers.cpp")
+
+#add_executable(shape_helpers_test src/shape_helpers_test.cpp src/shape_helpers.hpp src/shape_helpers.cpp)
+#target_link_libraries(shape_helpers_test GTest::gtest_main glm::glm webgpu glfw glfw3webgpu)
+#target_copy_webgpu_binaries(shape_helpers_test)
+#gtest_discover_tests(shape_helpers_test)

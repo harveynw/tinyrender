@@ -3,32 +3,6 @@
 //
 
 #include "engine.hpp"
-#include "primitives/textures/DepthTexture2D.hpp"
-
-
-void
-onWindowMouseMove(GLFWwindow* window, double xpos, double ypos) {
-    auto engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
-    if (engine != nullptr && engine->controller != nullptr) engine->controller->onMouseMove(xpos, ypos);
-}
-
-void
-onWindowMouseButton(GLFWwindow* window, int button, int action, int mods) {
-    auto engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
-    if (engine != nullptr && engine->controller != nullptr) engine->controller->onMouseButton(window, button, action, mods);
-}
-
-void
-onWindowScroll(GLFWwindow* window, double xoffset, double yoffset) {
-    auto engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
-    if (engine != nullptr && engine->controller != nullptr) engine->controller->onScroll(xoffset, yoffset);
-}
-
-void
-onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    auto engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
-    if (engine != nullptr && engine->controller != nullptr) engine->controller->onKeyEvent(key, scancode, action, mods);
-}
 
 Engine::Engine(int width, int height): DISPLAY_WIDTH(width), DISPLAY_HEIGHT(height) {
     instance = wgpu::createInstance(wgpu::InstanceDescriptor{});
@@ -143,3 +117,26 @@ Engine::addPipeline(const std::shared_ptr<Pipeline>& pipeline) {
     pipelines.push_back(pipeline);
 }
 
+void
+onWindowMouseMove(GLFWwindow* window, double xpos, double ypos) {
+    auto engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
+    if (engine != nullptr && engine->controller != nullptr) engine->controller->onMouseMove(xpos, ypos);
+}
+
+void
+onWindowMouseButton(GLFWwindow* window, int button, int action, int mods) {
+    auto engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
+    if (engine != nullptr && engine->controller != nullptr) engine->controller->onMouseButton(window, button, action, mods);
+}
+
+void
+onWindowScroll(GLFWwindow* window, double xoffset, double yoffset) {
+    auto engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
+    if (engine != nullptr && engine->controller != nullptr) engine->controller->onScroll(xoffset, yoffset);
+}
+
+void
+onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    auto engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
+    if (engine != nullptr && engine->controller != nullptr) engine->controller->onKeyEvent(key, scancode, action, mods);
+}

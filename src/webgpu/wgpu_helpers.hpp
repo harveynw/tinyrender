@@ -6,8 +6,8 @@
 #define TINYGAME_WGPU_HELPERS_CPP_H
 
 #include <webgpu/webgpu.hpp>
-#include <glfw3webgpu.h>
-#include <GLFW/glfw3.h>
+#include "glfw3webgpu.h"
+#include "GLFW/glfw3.h"
 
 using namespace wgpu;
 
