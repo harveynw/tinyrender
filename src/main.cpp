@@ -18,7 +18,7 @@ using namespace wgpu;
 using glm::mat4x4;
 using glm::vec4;
 using glm::vec3;
-namespace fs = std::filesystem;
+
 
 int main (int, char**) {
     // TODO: Implement dt into controllers

@@ -26,12 +26,6 @@
 
 class Engine;
 
-#ifdef __APPLE__
-namespace fs = std::__fs::filesystem;
-#else
-namespace fs = std::filesystem;
-#endif
-
 
 namespace engine::Texture2D {
 

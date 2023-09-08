@@ -298,7 +298,7 @@ TexturedTrianglePipeline::initialiseUniformBindGroup(RenderPipelineDescriptor &d
 }
 
 bool
-loadTexturedObjIntoTriangleData(const fs::path& path, std::vector<UVTriangleVertexAttributes> &vertexData) {
+loadTexturedObjIntoTriangleData(std::string path, std::vector<UVTriangleVertexAttributes> &vertexData) {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
@@ -307,7 +307,7 @@ loadTexturedObjIntoTriangleData(const fs::path& path, std::vector<UVTriangleVert
     std::string err;
 
     // Call the core loading procedure of TinyOBJLoader
-    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.string().c_str());
+    bool ret = tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, path.c_str());
 
     // Check errors
     if (!warn.empty()) {

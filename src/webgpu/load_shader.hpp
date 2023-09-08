@@ -8,14 +8,12 @@
 #include <webgpu/webgpu.hpp>
 #include <iostream>
 #include <cassert>
-#include <filesystem>
 #include <fstream>
 
 using namespace wgpu;
-namespace fs = std::filesystem;
 
 
-static ShaderModule loadShaderModule(const fs::path& path, Device device) {
+static ShaderModule loadShaderModule(std::string path, Device device) {
     std::ifstream file(path);
     if (!file.is_open()) {
         return nullptr;

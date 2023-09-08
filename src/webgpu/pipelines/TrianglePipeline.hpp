@@ -67,10 +67,4 @@ public:
     void onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder) override;
 };
 
-#ifdef __APPLE__
-namespace fs = std::__fs::filesystem;
-#else
-namespace fs = std::filesystem;
-#endif
-
-bool loadObjIntoTriangleData(const fs::path& path, std::vector<TriangleVertexAttributes> &vertexData);
+bool loadObjIntoTriangleData(std::string path, std::vector<TriangleVertexAttributes> &vertexData);
