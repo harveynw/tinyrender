@@ -7,7 +7,8 @@ namespace engine::Texture2D {
 
     class CreationDelegate {
     public:
-        virtual wgpu::Texture createTexture(Engine *engine, unsigned int width, unsigned int height) = 0;
+        virtual wgpu::Texture createTexture(Engine *engine, unsigned int width, unsigned int height,
+                                            unsigned int mips) = 0;
         virtual ~CreationDelegate() = default;
     };
 
@@ -16,12 +17,12 @@ namespace engine::Texture2D {
         RGBA() = default;
         ~RGBA() override = default;
 
-        wgpu::Texture createTexture(Engine *engine, unsigned int width, unsigned int height) override {
+        wgpu::Texture createTexture(Engine *engine, unsigned int width, unsigned int height, unsigned int mips) override {
             wgpu::TextureDescriptor textureDesc;
 
             textureDesc.dimension = TextureDimension::_2D;
             textureDesc.size = { width, height, 1 };
-            textureDesc.mipLevelCount = 1;
+            textureDesc.mipLevelCount = mips;
             textureDesc.sampleCount = 1;
             textureDesc.format = TextureFormat::RGBA8Unorm;
             textureDesc.usage = TextureUsage::TextureBinding | TextureUsage::CopyDst;
@@ -41,9 +42,11 @@ namespace engine::Texture2D {
         Depth2D() = default;
         ~Depth2D() override = default;
 
-        wgpu::Texture createTexture(Engine *engine, unsigned int width, unsigned int height) override {
+        wgpu::Texture createTexture(Engine *engine, unsigned int width, unsigned int height, unsigned int mips) override {
             (void) width;
             (void) height;
+            (void) mips;
+
             wgpu::TextureDescriptor textureDesc;
 
             textureDesc.dimension = TextureDimension::_2D;

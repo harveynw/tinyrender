@@ -5,7 +5,8 @@
 namespace engine::Texture2D {
     class SamplerDelegate {
     public:
-        virtual wgpu::Sampler createSampler(Engine *engine) = 0;
+        virtual wgpu::Sampler createSampler(Engine *engine, unsigned int mips) = 0;
+
         virtual ~SamplerDelegate() = default;
     };
 
@@ -13,8 +14,9 @@ namespace engine::Texture2D {
     public:
         ~NoSampler() override = default;
 
-        wgpu::Sampler createSampler(Engine *engine) override {
+        wgpu::Sampler createSampler(Engine *engine, unsigned int mips) override {
             (void) engine;
+            (void) mips;
             return nullptr;
         }
     };
@@ -23,7 +25,7 @@ namespace engine::Texture2D {
     public:
         ~DefaultSampler() override = default;
 
-        wgpu::Sampler createSampler(Engine *engine) override {
+        wgpu::Sampler createSampler(Engine *engine, unsigned int mips) override {
             SamplerDescriptor samplerDesc;
             samplerDesc.addressModeU = AddressMode::MirrorRepeat; //AddressMode::ClampToEdge;
             samplerDesc.addressModeV = AddressMode::MirrorRepeat;
@@ -32,7 +34,7 @@ namespace engine::Texture2D {
             samplerDesc.minFilter = FilterMode::Linear;
             samplerDesc.mipmapFilter = MipmapFilterMode::Linear;
             samplerDesc.lodMinClamp = 0.0f;
-            samplerDesc.lodMaxClamp = 1.0f;
+            samplerDesc.lodMaxClamp = (float) mips; // {1.0, 8.0}
             samplerDesc.compare = CompareFunction::Undefined;
             samplerDesc.maxAnisotropy = 1;
 

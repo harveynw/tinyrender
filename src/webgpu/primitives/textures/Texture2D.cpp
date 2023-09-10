@@ -13,17 +13,17 @@ _view(view),
 _samp(samp)
 {
     // Data delegate gives us information on how big the texture is
-    _data->initialise(this->width, this->height);
+    _data->initialise(this->width, this->height, this->mips);
 
     // Create the texture and write to the queue to populate it
-    underlying = _create->createTexture(engine, this->width, this->height);
+    underlying = _create->createTexture(engine, this->width, this->height, this->mips);
     _data->write(engine, underlying);
 
     // Create the view needed
-    textureView = _view->createView(underlying);
+    textureView = _view->createView(underlying, mips);
 
     // Create the sampler needed
-    sampler = _samp->createSampler(engine);
+    sampler = _samp->createSampler(engine, mips);
 };
 
 engine::Texture2D::Texture::~Texture() {

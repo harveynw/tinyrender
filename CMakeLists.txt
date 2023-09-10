@@ -11,6 +11,8 @@ project(
 file(GLOB SOURCES
         src/*.hpp
         src/*.cpp
+        src/objects/*.hpp
+        src/objects/*.cpp
         src/webgpu/*.hpp
         src/webgpu/*.cpp
         src/webgpu/pipelines/*.hpp

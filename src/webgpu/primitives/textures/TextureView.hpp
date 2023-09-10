@@ -5,7 +5,7 @@
 namespace engine::Texture2D {
     class ViewDelegate {
     public:
-        virtual wgpu::TextureView createView(wgpu::Texture texture) = 0;
+        virtual wgpu::TextureView createView(wgpu::Texture texture, unsigned int mips) = 0;
         virtual ~ViewDelegate() = default;
     };
 
@@ -13,23 +13,24 @@ namespace engine::Texture2D {
     public:
         ~NoView() override = default;
 
-        wgpu::TextureView createView(wgpu::Texture texture) override {
+        wgpu::TextureView createView(wgpu::Texture texture, unsigned int mips) override {
             (void) texture;
+            (void) mips;
             return nullptr;
         }
     };
 
-    class RGBANoMips : public ViewDelegate {
+    class RGBAView : public ViewDelegate {
     public:
-        ~RGBANoMips() override = default;
+        ~RGBAView() override = default;
 
-        wgpu::TextureView createView(wgpu::Texture texture) override {
+        wgpu::TextureView createView(wgpu::Texture texture, unsigned int mips) override {
             TextureViewDescriptor textureViewDesc;
             textureViewDesc.aspect = TextureAspect::All;
             textureViewDesc.baseArrayLayer = 0;
             textureViewDesc.arrayLayerCount = 1;
             textureViewDesc.baseMipLevel = 0;
-            textureViewDesc.mipLevelCount = 1;
+            textureViewDesc.mipLevelCount = mips;
             textureViewDesc.dimension = TextureViewDimension::_2D;
             textureViewDesc.format = TextureFormat::RGBA8Unorm;
 
@@ -44,7 +45,9 @@ namespace engine::Texture2D {
     public:
         ~DepthView() override = default;
 
-        wgpu::TextureView createView(wgpu::Texture texture) override {
+        wgpu::TextureView createView(wgpu::Texture texture, unsigned int mips) override {
+            (void) mips;
+
             TextureViewDescriptor textureViewDesc;
             textureViewDesc.aspect = TextureAspect::DepthOnly;
             textureViewDesc.baseArrayLayer = 0;

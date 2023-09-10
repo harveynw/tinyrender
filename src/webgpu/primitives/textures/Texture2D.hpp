@@ -35,6 +35,7 @@ namespace engine::Texture2D {
 
         unsigned int width = 0;
         unsigned int height = 0;
+        unsigned int mips = 1;
 
         // Delegates for texture
         engine::Texture2D::DataDelegate *_data;
@@ -72,7 +73,7 @@ namespace engine::Texture2D {
             BasicImgTexture(Engine *engine, std::string path) : Texture(engine,
                                                                       new ImgData(std::move(path)),
                                                                       new RGBA(),
-                                                                      new RGBANoMips(),
+                                                                      new RGBAView(),
                                                                       new DefaultSampler()) {}
         };
 
@@ -81,7 +82,7 @@ namespace engine::Texture2D {
             DebugTexture(Engine *engine, unsigned int width, unsigned int height) : Texture(engine,
                                                                       new DebugData(width, height),
                                                                       new RGBA(),
-                                                                      new RGBANoMips(),
+                                                                      new RGBAView(),
                                                                       new DefaultSampler()) {}
         };
 
