@@ -16,6 +16,9 @@ FreeviewController::updateInternalBuffer() {
 
 void
 FreeviewController::onMouseMove(double xpos, double ypos) {
+    if(!captureMouse)
+        return;
+
     vec2 current = vec2((float) -xpos, (float) ypos);
     vec2 delta = mousePosition - current;
 
@@ -45,9 +48,17 @@ FreeviewController::onKeyEvent(int key, int scancode, int action, int mods) {
         vertical = action == GLFW_PRESS ? 1 : (action == GLFW_RELEASE ? 0 : vertical);
     if(key == GLFW_KEY_Z)
         vertical = action == GLFW_PRESS ? -1 : (action == GLFW_RELEASE ? 0 : vertical);
+    if(key == GLFW_KEY_E)
+        fast = action == GLFW_PRESS;
+    if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        captureMouse = !captureMouse;
+        updateMouseState();
+    }
 }
 
 void FreeviewController::tick() {
+    float speed = fast ? fastSpeed : moveSpeed;
+
     if(longitudinal == 0 && lateral == 0 && vertical == 0)
         return; // Not moving
 
@@ -57,15 +68,15 @@ void FreeviewController::tick() {
         glm::mat2x2 rot = glm::mat2x2(cos(angle), -sin(angle), sin(angle),
                                       cos(angle));
         glm::vec2 rotDir = rot * glm::vec2(direction.x, direction.y);
-        position.x += moveSpeed * rotDir.x;
-        position.y += moveSpeed * rotDir.y;
+        position.x += speed * rotDir.x;
+        position.y += speed * rotDir.y;
     }
 
     if(longitudinal != 0)
-        position += (float) longitudinal * moveSpeed * direction;
+        position += (float) longitudinal * speed * direction;
 
     if(vertical != 0)
-        position += (float) vertical * moveSpeed * vec3(0, 0, 1);
+        position += (float) vertical * speed * vec3(0, 0, 1);
 
     updateInternalBuffer();
 }
@@ -73,9 +84,17 @@ void FreeviewController::tick() {
 void
 FreeviewController::onMouseButton(GLFWwindow *window, int button, int action, int mods) {
     (void) window;
-    (void) button;
-    (void) action;
     (void) mods;
+
+    // Capture if not captured and left mouse press
+    if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        captureMouse = true;
+        updateMouseState();
+
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        mousePosition = vec2(-xpos, ypos);
+    }
 }
 
 void
@@ -85,5 +104,10 @@ FreeviewController::onScroll(double xoffset, double yoffset) {
 }
 
 void FreeviewController::enableListen(GLFWwindow *window) {
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfw_window = window;
+    updateMouseState();
+}
+
+void FreeviewController::updateMouseState() {
+    glfwSetInputMode(glfw_window, GLFW_CURSOR, captureMouse ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 }

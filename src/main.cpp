@@ -1,6 +1,3 @@
-// [0, 1] instead of OpenGL [-1, 1] and l-h coord system
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#define GLM_FORCE_LEFT_HANDED
 #include <glm/glm.hpp>
 
 #include "engine.hpp"
@@ -11,8 +8,6 @@
 #include "webgpu/pipelines/TexturedTrianglePipeline.hpp"
 #include "controllers/TurntableController.hpp"
 #include "controllers/FreeviewController.hpp"
-
-#include <iostream>
 
 using namespace wgpu;
 using glm::mat4x4;
@@ -35,8 +30,8 @@ int main (int, char**) {
     auto uniforms = std::make_shared<engine::UniformViewProjection>(c, vec3(5.0, -5.0, 5.0),
                                                                     vec3(0, 0, 0));
 
-    //auto controller = std::make_shared<FreeviewController>(uniforms);
-    auto controller = std::make_shared<TurntableController>(uniforms);
+    auto controller = std::make_shared<FreeviewController>(uniforms);
+    //auto controller = std::make_shared<TurntableController>(uniforms);
     engine->setController(controller);
 
     bool success;

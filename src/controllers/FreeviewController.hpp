@@ -16,6 +16,8 @@ using glm::vec2;
 
 class FreeviewController : public Controller {
 protected:
+    GLFWwindow *glfw_window;
+
     // Current view
     float phi = 0.0f;
     float theta = glm::pi<float>()/2.0;
@@ -27,12 +29,16 @@ protected:
     int longitudinal = 0;
     int vertical = 0;
     vec2 mousePosition;
+    bool captureMouse = true;
+    bool fast = false;
 
     // Config
     float moveSpeed = 0.1f;
+    float fastSpeed = 0.5f;
     float mouseSensitivity = 0.01f;
 
     void updateInternalBuffer() override;
+    void updateMouseState();
 public:
     explicit FreeviewController(std::shared_ptr<engine::UniformViewProjection> uniforms);
 
