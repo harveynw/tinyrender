@@ -8,7 +8,7 @@
 
 IndexedTrianglePipeline::IndexedTrianglePipeline(Context *context,
                                                  Scene *scene,
-                                                 std::shared_ptr<engine::UniformViewProjection> uniforms,
+                                                 std::shared_ptr<engine::ViewProjMatrixUniform> uniforms,
                                                  std::vector<IndexedTriangleObject> &objects):
 context(context), scene(scene) {
     this->uniforms = uniforms;

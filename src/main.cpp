@@ -25,9 +25,9 @@ int main (int, char**) {
     Context *c = engine->getContext().get();
     Scene *s = engine->getScene().get();
 
-    auto modelMatrix = std::make_shared<engine::UniformModel>(c);
+    auto modelMatrix = std::make_shared<engine::ModelMatrixUniform>(c);
 
-    auto uniforms = std::make_shared<engine::UniformViewProjection>(c, vec3(5.0, -5.0, 5.0),
+    auto uniforms = std::make_shared<engine::ViewProjMatrixUniform>(c, vec3(5.0, -5.0, 5.0),
                                                                     vec3(0, 0, 0));
 
     auto controller = std::make_shared<FreeviewController>(uniforms);
@@ -40,7 +40,7 @@ int main (int, char**) {
      * Shape pipeline
      */
 
-    auto pyramidModelMatrix = std::make_shared<engine::UniformModel>(c);
+    auto pyramidModelMatrix = std::make_shared<engine::ModelMatrixUniform>(c);
     auto triangles = shape_helpers::makePyramid(vec3(0.0, 0.0, 1.0), 1.0, 1.0);
     auto data = shape_helpers::asIndexedTriangles(triangles);
     auto indexDataBuffer = std::make_shared<engine::IndexBuffer>(c, data.indexData);
@@ -59,8 +59,8 @@ int main (int, char**) {
      * OBJs pipeline
      */
 
-    auto mammothModelMatrix = std::make_shared<engine::UniformModel>(c);
-    auto teapotModelMatrix = std::make_shared<engine::UniformModel>(c);
+    auto mammothModelMatrix = std::make_shared<engine::ModelMatrixUniform>(c);
+    auto teapotModelMatrix = std::make_shared<engine::ModelMatrixUniform>(c);
     std::vector<TriangleObject> tri_objects;
     {
         std::vector<TriangleVertexAttributes> vertexData;
@@ -94,7 +94,7 @@ int main (int, char**) {
      * Textured OBJ pipeline
      */
     // Texture test
-    auto cubeModelMatrix = std::make_shared<engine::UniformModel>(c);
+    auto cubeModelMatrix = std::make_shared<engine::ModelMatrixUniform>(c);
     //auto texture = std::make_shared<engine::DebugTexture2D>(engine, 256, 256);
     auto texture = std::make_shared<engine::Texture2D::common::BasicImgTexture>(
             engine->getContext().get(), "resources/img/grass.png");

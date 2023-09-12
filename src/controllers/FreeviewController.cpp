@@ -4,7 +4,7 @@
 
 #include "FreeviewController.hpp"
 
-FreeviewController::FreeviewController(std::shared_ptr<engine::UniformViewProjection> uniforms) {
+FreeviewController::FreeviewController(std::shared_ptr<engine::ViewProjMatrixUniform> uniforms) {
     this->uniforms = uniforms;
 }
 
@@ -104,6 +104,7 @@ FreeviewController::onScroll(double xoffset, double yoffset) {
 }
 
 void FreeviewController::enableListen(GLFWwindow *window) {
+    printf("FreeviewController enabled - WASD, Space - Up, Z - Down, E - Speed, Esc - Uncapture\n");
     glfw_window = window;
     updateMouseState();
 }

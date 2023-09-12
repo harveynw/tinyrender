@@ -4,7 +4,7 @@
 
 #include "TurntableController.hpp"
 
-TurntableController::TurntableController(std::shared_ptr<engine::UniformViewProjection> uniforms) {
+TurntableController::TurntableController(std::shared_ptr<engine::ViewProjMatrixUniform> uniforms) {
     this->uniforms = uniforms;
 }
 

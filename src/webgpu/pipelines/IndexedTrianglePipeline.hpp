@@ -7,8 +7,8 @@
 #include "Pipeline.hpp"
 #include "../../engine.hpp"
 #include "../primitives/textures/Texture2D.hpp"
-#include "../primitives/buffers/uniforms/UniformViewProjection.hpp"
-#include "../primitives/buffers/uniforms/UniformModel.hpp"
+#include "../primitives/buffers/uniforms/ViewProjMatrixUniform.hpp"
+#include "../primitives/buffers/uniforms/ModelMatrixUniform.hpp"
 #include "../primitives/buffers/IndexBuffer.hpp"
 #include "../primitives/buffers/attributes/IndexedAttribute.hpp"
 
@@ -19,7 +19,7 @@ using glm::vec3;
 
 // Pair a model matrix with data to be fed into the vertex shader
 struct IndexedTriangleObject {
-    std::shared_ptr<engine::UniformModel> modelMatrix;
+    std::shared_ptr<engine::ModelMatrixUniform> modelMatrix;
     std::shared_ptr<engine::IndexBuffer> indexData;
     std::shared_ptr<engine::IndexedAttribute> vertexData;
 };
@@ -39,7 +39,7 @@ protected:
     Context *context = nullptr;
     Scene *scene = nullptr;
 
-    std::shared_ptr<engine::UniformViewProjection> uniforms;
+    std::shared_ptr<engine::ViewProjMatrixUniform> uniforms;
 
     wgpu::RenderPipeline pipeline = nullptr;
 
@@ -69,7 +69,7 @@ protected:
     void initialiseUniformBindGroup(RenderPipelineDescriptor &desc);
 
 public:
-    IndexedTrianglePipeline(Context *context, Scene *scene, std::shared_ptr<engine::UniformViewProjection> uniforms, std::vector<IndexedTriangleObject> &objects);
+    IndexedTrianglePipeline(Context *context, Scene *scene, std::shared_ptr<engine::ViewProjMatrixUniform> uniforms, std::vector<IndexedTriangleObject> &objects);
     ~IndexedTrianglePipeline() override;
     void onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder) override;
 };

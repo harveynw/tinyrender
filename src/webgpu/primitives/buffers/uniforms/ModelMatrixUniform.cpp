@@ -1,9 +1,9 @@
 //
 // Created by Harvey Williams on 17/08/2023.
 //
-#include "UniformModel.hpp"
+#include "ModelMatrixUniform.hpp"
 
-engine::UniformModel::UniformModel(Context *context) {
+engine::ModelMatrixUniform::ModelMatrixUniform(Context *context) {
     uniforms.modelMatrix = computeModelMatrix();
 
     // Buffer base class is initialised
@@ -14,7 +14,7 @@ engine::UniformModel::UniformModel(Context *context) {
     this->initialise(&uniforms);
 }
 
-mat4x4 engine::UniformModel::computeModelMatrix() {
+mat4x4 engine::ModelMatrixUniform::computeModelMatrix() {
     mat4x4 S, T, R;
     S = glm::scale(mat4x4(1.0), vec3(scale));
     T = glm::translate(mat4x4(1.0), translate);
@@ -23,7 +23,7 @@ mat4x4 engine::UniformModel::computeModelMatrix() {
     return T * R * S;
 }
 
-void engine::UniformModel::updateBuffer() {
+void engine::ModelMatrixUniform::updateBuffer() {
     uniforms.modelMatrix = computeModelMatrix();
     context->queue.writeBuffer(underlying, offsetof(engine::ModelUniform, modelMatrix),
                                        &uniforms.modelMatrix,sizeof(engine::ModelUniform::modelMatrix));

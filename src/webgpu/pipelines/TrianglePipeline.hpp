@@ -10,8 +10,8 @@
 #include "Pipeline.hpp"
 #include "../../engine.hpp"
 #include "../primitives/textures/Texture2D.hpp"
-#include "../primitives/buffers/uniforms/UniformViewProjection.hpp"
-#include "../primitives/buffers/uniforms/UniformModel.hpp"
+#include "../primitives/buffers/uniforms/ViewProjMatrixUniform.hpp"
+#include "../primitives/buffers/uniforms/ModelMatrixUniform.hpp"
 #include "../primitives/buffers/attributes/NonTexturedAttribute.hpp"
 
 using namespace wgpu;
@@ -22,7 +22,7 @@ using glm::vec3;
 
 // Pair a model matrix with data to be fed into the vertex shader
 struct TriangleObject {
-    std::shared_ptr<engine::UniformModel> modelMatrix;
+    std::shared_ptr<engine::ModelMatrixUniform> modelMatrix;
     std::shared_ptr<engine::NonTexturedAttribute> vertexData;
 };
 
@@ -31,7 +31,7 @@ protected:
     Context *context = nullptr;
     Scene *scene = nullptr;
 
-    std::shared_ptr<engine::UniformViewProjection> uniforms;
+    std::shared_ptr<engine::ViewProjMatrixUniform> uniforms;
 
     wgpu::RenderPipeline pipeline = nullptr;
 
@@ -64,7 +64,7 @@ protected:
 public:
     TrianglePipeline(Context *context,
                      Scene *scene,
-                     std::shared_ptr<engine::UniformViewProjection> uniforms,
+                     std::shared_ptr<engine::ViewProjMatrixUniform> uniforms,
                      std::vector<TriangleObject> &objects);
     ~TrianglePipeline() override;
     void onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder) override;

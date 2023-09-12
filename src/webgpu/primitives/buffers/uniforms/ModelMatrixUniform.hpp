@@ -21,7 +21,7 @@ namespace engine {
     static_assert(sizeof(ModelUniform) % 16 == 0, "Must be multiple of 16 bytes");
 
 
-    class UniformModel : public Buffer {
+    class ModelMatrixUniform : public Buffer {
     protected:
         ModelUniform uniforms{};
 
@@ -32,7 +32,7 @@ namespace engine {
         mat4x4 computeModelMatrix();
         void updateBuffer();
     public:
-        explicit UniformModel(Context *context);
+        explicit ModelMatrixUniform(Context *context);
 
         void setScale(float s) { scale = s; updateBuffer(); };
         void setTranslation(vec3 t) { translate = t; updateBuffer(); };

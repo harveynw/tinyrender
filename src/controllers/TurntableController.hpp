@@ -8,7 +8,7 @@
 #include "glm/ext.hpp"
 
 #include "Controller.hpp"
-#include "../webgpu/primitives/buffers/uniforms/UniformViewProjection.hpp"
+#include "../webgpu/primitives/buffers/uniforms/ViewProjMatrixUniform.hpp"
 
 
 using glm::vec2;
@@ -30,7 +30,7 @@ protected:
 
     void updateInternalBuffer() override;
 public:
-    explicit TurntableController(std::shared_ptr<engine::UniformViewProjection> uniforms);
+    explicit TurntableController(std::shared_ptr<engine::ViewProjMatrixUniform> uniforms);
 
     void tick() override {};
     void enableListen(GLFWwindow *window) override { (void) window; };

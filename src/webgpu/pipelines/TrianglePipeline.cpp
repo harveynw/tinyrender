@@ -13,7 +13,7 @@
 
 TrianglePipeline::TrianglePipeline(Context *context,
                                    Scene *scene,
-                                   std::shared_ptr<engine::UniformViewProjection> uniforms,
+                                   std::shared_ptr<engine::ViewProjMatrixUniform> uniforms,
                                    std::vector<TriangleObject> &objects): context(context), scene(scene) {
     this->uniforms = uniforms;
     this->objects = objects;

@@ -11,8 +11,8 @@
 #include "Pipeline.hpp"
 #include "../../engine.hpp"
 #include "../primitives/textures/Texture2D.hpp"
-#include "../primitives/buffers/uniforms/UniformViewProjection.hpp"
-#include "../primitives/buffers/uniforms/UniformModel.hpp"
+#include "../primitives/buffers/uniforms/ViewProjMatrixUniform.hpp"
+#include "../primitives/buffers/uniforms/ModelMatrixUniform.hpp"
 #include "../primitives/buffers/attributes/TexturedAttribute.hpp"
 
 using namespace wgpu;
@@ -23,7 +23,7 @@ using glm::vec3;
 
 // Pair a model matrix with data to be fed into the vertex shader
 struct TexturedTriangleObject {
-    std::shared_ptr<engine::UniformModel> modelMatrix;
+    std::shared_ptr<engine::ModelMatrixUniform> modelMatrix;
     std::shared_ptr<engine::TexturedAttribute> vertexData;
 };
 
@@ -33,7 +33,7 @@ protected:
     Context *context = nullptr;
     Scene *scene = nullptr;
 
-    std::shared_ptr<engine::UniformViewProjection> uniforms;
+    std::shared_ptr<engine::ViewProjMatrixUniform> uniforms;
     std::shared_ptr<engine::Texture2D::Texture> texture;
 
     wgpu::RenderPipeline pipeline = nullptr;
@@ -67,7 +67,7 @@ protected:
 public:
     TexturedTrianglePipeline(Context *context,
                              Scene *scene,
-                             std::shared_ptr<engine::UniformViewProjection> uniforms,
+                             std::shared_ptr<engine::ViewProjMatrixUniform> uniforms,
                              std::shared_ptr<engine::Texture2D::Texture> texture,
                              std::vector<TexturedTriangleObject> &objects);
     ~TexturedTrianglePipeline() override;

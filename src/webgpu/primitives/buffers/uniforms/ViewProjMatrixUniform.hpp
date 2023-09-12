@@ -25,7 +25,7 @@ namespace engine {
     };
     static_assert(sizeof(ViewProjectionUniforms) % 16 == 0, "Must be multiple of 16 bytes");
 
-    class UniformViewProjection : public Buffer {
+    class ViewProjMatrixUniform : public Buffer {
     protected:
         ViewProjectionUniforms uniforms{};
 
@@ -37,7 +37,7 @@ namespace engine {
         float far;
         float fov;
     public:
-        UniformViewProjection(Context *context, vec3 lookFrom, vec3 lookAt);
+        ViewProjMatrixUniform(Context *context, vec3 lookFrom, vec3 lookAt);
         void refreshProjectionMatrix(Context *context); // Useful if dimensions of window change
         void updateRotationAboutZAxis();
         void updateViewMatrix(glm::mat4x4 viewMatrix);

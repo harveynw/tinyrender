@@ -7,7 +7,7 @@
 #include "glm/ext.hpp"
 
 #include "Controller.hpp"
-#include "../webgpu/primitives/buffers/uniforms/UniformViewProjection.hpp"
+#include "../webgpu/primitives/buffers/uniforms/ViewProjMatrixUniform.hpp"
 
 
 using glm::vec3;
@@ -40,7 +40,7 @@ protected:
     void updateInternalBuffer() override;
     void updateMouseState();
 public:
-    explicit FreeviewController(std::shared_ptr<engine::UniformViewProjection> uniforms);
+    explicit FreeviewController(std::shared_ptr<engine::ViewProjMatrixUniform> uniforms);
 
     void tick() override;
     void enableListen(GLFWwindow *window) override;

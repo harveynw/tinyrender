@@ -12,7 +12,7 @@
 
 TexturedTrianglePipeline::TexturedTrianglePipeline(Context *context,
                                                    Scene *scene,
-                                                   std::shared_ptr<engine::UniformViewProjection> uniforms,
+                                                   std::shared_ptr<engine::ViewProjMatrixUniform> uniforms,
                                                    std::shared_ptr<engine::Texture2D::Texture> texture,
                                                    std::vector<TexturedTriangleObject> &objects):
 context(context), scene(scene)  {

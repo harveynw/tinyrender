@@ -2,9 +2,9 @@
 // Created by Harvey Williams on 09/08/2023.
 //
 
-#include "UniformViewProjection.hpp"
+#include "ViewProjMatrixUniform.hpp"
 
-engine::UniformViewProjection::UniformViewProjection(Context *context, vec3 lookFrom, vec3 lookAt): Buffer() {
+engine::ViewProjMatrixUniform::ViewProjMatrixUniform(Context *context, vec3 lookFrom, vec3 lookAt): Buffer() {
     this->lookFrom = lookFrom;
     this->lookAt = lookAt;
 
@@ -27,7 +27,7 @@ engine::UniformViewProjection::UniformViewProjection(Context *context, vec3 look
 }
 
 void
-engine::UniformViewProjection::updateRotationAboutZAxis() {
+engine::ViewProjMatrixUniform::updateRotationAboutZAxis() {
     uniforms.time = static_cast<float>(glfwGetTime()); // glfwGetTime returns a double
     // Only update the 1-st float of the buffer
     context->queue.writeBuffer(underlying, offsetof(engine::ViewProjectionUniforms, time),
@@ -41,13 +41,13 @@ engine::UniformViewProjection::updateRotationAboutZAxis() {
 }
 
 void
-engine::UniformViewProjection::updateViewMatrix(glm::mat4x4 viewMatrix) {
+engine::ViewProjMatrixUniform::updateViewMatrix(glm::mat4x4 viewMatrix) {
     uniforms.viewMatrix = viewMatrix;
     context->queue.writeBuffer(underlying, offsetof(engine::ViewProjectionUniforms, viewMatrix),
                               &uniforms.viewMatrix,sizeof(engine::ViewProjectionUniforms::viewMatrix));
 }
 
-void engine::UniformViewProjection::refreshProjectionMatrix(Context *context) {
+void engine::ViewProjMatrixUniform::refreshProjectionMatrix(Context *context) {
     float ratio = context->DISPLAY_WIDTH / context->DISPLAY_HEIGHT;
     uniforms.projectionMatrix = glm::perspective(fov, ratio, near, far);
     context->queue.writeBuffer(underlying, offsetof(engine::ViewProjectionUniforms, projectionMatrix),
