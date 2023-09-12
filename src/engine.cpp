@@ -4,10 +4,11 @@
 
 #include "engine.hpp"
 
+#include <memory>
+#include "webgpu/primitives/textures/Texture2D.hpp"
+
+
 Engine::Engine(int width, int height): DISPLAY_WIDTH(width), DISPLAY_HEIGHT(height) {
-    instance = wgpu::createInstance(wgpu::InstanceDescriptor{});
-    if (!instance)
-        throw std::runtime_error("Couldn't initialise WebGPU");
     if (!glfwInit())
         throw std::runtime_error("Couldn't initialise GLFW");
 }
@@ -15,26 +16,24 @@ Engine::Engine(int width, int height): DISPLAY_WIDTH(width), DISPLAY_HEIGHT(heig
 void
 Engine::launch() {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
     window = glfwCreateWindow(DISPLAY_WIDTH, DISPLAY_HEIGHT, "TinyRender - WebGPU", NULL, NULL);
     if (!window)
         throw std::runtime_error("Couldn't create GLFW window");
 
+    // Receive everything from GLFW
     glfwSetWindowUserPointer(window, this);
     glfwSetCursorPosCallback(window, onWindowMouseMove);
     glfwSetMouseButtonCallback(window, onWindowMouseButton);
     glfwSetScrollCallback(window, onWindowScroll);
     glfwSetKeyCallback(window, onKeyAction);
-    // TODO : glfwSetFramebufferSizeCallback(window, onWindowResize);
+    glfwSetFramebufferSizeCallback(window, onWindowResize);
 
-    surface = glfwGetWGPUSurface(instance, window);
-
-    helpers::initializeDevice(instance, surface, adapter, device);
-    helpers::initializeSwapChain(DISPLAY_WIDTH, DISPLAY_HEIGHT, surface, adapter, device, swapChainFormat, swapChain);
-
-    // Init queue
-    queue = device.getQueue();
+    // Create webgpu resources
+    this->context = buildNewContext(window, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+    this->scene = std::make_shared<Scene>();
+    this->scene->buildDepthBuffer(this->context);
 }
 
 int Engine::onFrame() {
@@ -46,15 +45,15 @@ int Engine::onFrame() {
     /*
      * Get texture view from swapchain
      */
-    TextureView nextTexture = this->swapChain.getCurrentTextureView();
+    wgpu::TextureView nextTexture = context->swapChain.getCurrentTextureView();
     if (!nextTexture) {
         std::cerr << "Cannot acquire next swap chain texture" << std::endl;
         return 1;
     }
 
-    CommandEncoderDescriptor commandEncoderDesc;
+    wgpu::CommandEncoderDescriptor commandEncoderDesc;
     commandEncoderDesc.label = "Command Encoder";
-    CommandEncoder encoder = this->device.createCommandEncoder(commandEncoderDesc);
+    wgpu::CommandEncoder encoder = context->device.createCommandEncoder(commandEncoderDesc);
 
     /*
      * Draw each pipeline
@@ -67,27 +66,21 @@ int Engine::onFrame() {
      */
     nextTexture.release();
 
-    CommandBufferDescriptor cmdBufferDescriptor;
+    wgpu::CommandBufferDescriptor cmdBufferDescriptor;
     cmdBufferDescriptor.label = "Command buffer";
-    CommandBuffer command = encoder.finish(cmdBufferDescriptor);
-    this->queue.submit(command);
+    wgpu::CommandBuffer command = encoder.finish(cmdBufferDescriptor);
+    context->queue.submit(command);
 
-    this->swapChain.present();
+    context->swapChain.present();
     #ifdef WEBGPU_BACKEND_DAWN
-    this->device.tick(); // Check for pending error callbacks
+    context->device.tick(); // Check for pending error callbacks
     #endif
 
     return 0;
 }
 
 Engine::~Engine() {
-    swapChain.release();
-    queue.release();
-    device.release();
-    adapter.release();
-    surface.release();
-    instance.release();
-
+    context.reset(); // Calls the context destructor which will free all the WebGPU resources.
     glfwDestroyWindow(window);
     glfwTerminate();
 }
@@ -99,7 +92,7 @@ Engine::setController(std::shared_ptr<Controller> c) {
     controller->tick();
 }
 
-int
+[[maybe_unused]] int
 Engine::enterMainLoop() {
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -115,6 +108,26 @@ Engine::enterMainLoop() {
 void
 Engine::addPipeline(const std::shared_ptr<Pipeline>& pipeline) {
     pipelines.push_back(pipeline);
+}
+
+void Engine::onResize(int width, int height) {
+    printf("Resize to (%i, %i)\n", width, height);
+    // Update fields
+    DISPLAY_WIDTH = width;
+    DISPLAY_HEIGHT = height;
+    context->DISPLAY_WIDTH = width;
+    context->DISPLAY_HEIGHT = height;
+
+    context->buildSwapChain();
+    scene->buildDepthBuffer(context);
+    if(controller != nullptr)
+        controller->uniforms->refreshProjectionMatrix(context.get());
+}
+
+void
+onWindowResize(GLFWwindow* window, int width, int height) {
+    auto that = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
+    if (that != nullptr) that->onResize(width, height);
 }
 
 void

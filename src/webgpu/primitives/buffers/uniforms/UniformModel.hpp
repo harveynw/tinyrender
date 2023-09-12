@@ -32,7 +32,7 @@ namespace engine {
         mat4x4 computeModelMatrix();
         void updateBuffer();
     public:
-        explicit UniformModel(Engine *engine);
+        explicit UniformModel(Context *context);
 
         void setScale(float s) { scale = s; updateBuffer(); };
         void setTranslation(vec3 t) { translate = t; updateBuffer(); };

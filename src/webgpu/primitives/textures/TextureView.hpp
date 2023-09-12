@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../../../engine.hpp"
 
 namespace engine::Texture2D {
     class ViewDelegate {
@@ -25,14 +24,14 @@ namespace engine::Texture2D {
         ~RGBAView() override = default;
 
         wgpu::TextureView createView(wgpu::Texture texture, unsigned int mips) override {
-            TextureViewDescriptor textureViewDesc;
-            textureViewDesc.aspect = TextureAspect::All;
+            wgpu::TextureViewDescriptor textureViewDesc;
+            textureViewDesc.aspect = wgpu::TextureAspect::All;
             textureViewDesc.baseArrayLayer = 0;
             textureViewDesc.arrayLayerCount = 1;
             textureViewDesc.baseMipLevel = 0;
             textureViewDesc.mipLevelCount = mips;
-            textureViewDesc.dimension = TextureViewDimension::_2D;
-            textureViewDesc.format = TextureFormat::RGBA8Unorm;
+            textureViewDesc.dimension = wgpu::TextureViewDimension::_2D;
+            textureViewDesc.format = wgpu::TextureFormat::RGBA8Unorm;
 
             auto view = texture.createView(textureViewDesc);
 
@@ -48,13 +47,13 @@ namespace engine::Texture2D {
         wgpu::TextureView createView(wgpu::Texture texture, unsigned int mips) override {
             (void) mips;
 
-            TextureViewDescriptor textureViewDesc;
-            textureViewDesc.aspect = TextureAspect::DepthOnly;
+            wgpu::TextureViewDescriptor textureViewDesc;
+            textureViewDesc.aspect = wgpu::TextureAspect::DepthOnly;
             textureViewDesc.baseArrayLayer = 0;
             textureViewDesc.arrayLayerCount = 1;
             textureViewDesc.baseMipLevel = 0;
             textureViewDesc.mipLevelCount = 1;
-            textureViewDesc.dimension = TextureViewDimension::_2D;
+            textureViewDesc.dimension = wgpu::TextureViewDimension::_2D;
             textureViewDesc.format = wgpu::TextureFormat::Depth24Plus;
 
             auto view = texture.createView(textureViewDesc);

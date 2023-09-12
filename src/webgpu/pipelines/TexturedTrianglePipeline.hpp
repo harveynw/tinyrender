@@ -15,6 +15,7 @@
 #include "../primitives/buffers/uniforms/UniformModel.hpp"
 #include "../primitives/buffers/attributes/TexturedAttribute.hpp"
 
+using namespace wgpu;
 using glm::mat4x4;
 using glm::vec4;
 using glm::vec3;
@@ -29,9 +30,10 @@ struct TexturedTriangleObject {
 
 class TexturedTrianglePipeline : public Pipeline {
 protected:
-    Engine *engine = nullptr;
+    Context *context = nullptr;
+    Scene *scene = nullptr;
+
     std::shared_ptr<engine::UniformViewProjection> uniforms;
-    std::shared_ptr<engine::Texture2D::Texture> depthTexture;
     std::shared_ptr<engine::Texture2D::Texture> texture;
 
     wgpu::RenderPipeline pipeline = nullptr;
@@ -63,9 +65,10 @@ protected:
     void initialiseUniformBindGroup(RenderPipelineDescriptor &desc);
 
 public:
-    TexturedTrianglePipeline(Engine *engine, std::shared_ptr<engine::UniformViewProjection> uniforms,
+    TexturedTrianglePipeline(Context *context,
+                             Scene *scene,
+                             std::shared_ptr<engine::UniformViewProjection> uniforms,
                              std::shared_ptr<engine::Texture2D::Texture> texture,
-                             std::shared_ptr<engine::Texture2D::Texture> depthTexture,
                              std::vector<TexturedTriangleObject> &objects);
     ~TexturedTrianglePipeline() override;
     void onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder) override;

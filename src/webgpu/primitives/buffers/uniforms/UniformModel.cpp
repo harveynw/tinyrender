@@ -3,11 +3,11 @@
 //
 #include "UniformModel.hpp"
 
-engine::UniformModel::UniformModel(Engine *engine) {
+engine::UniformModel::UniformModel(Context *context) {
     uniforms.modelMatrix = computeModelMatrix();
 
     // Buffer base class is initialised
-    this->engine = engine;
+    this->context = context;
     this->type = engine::UNIFORM;
     this->size = sizeof(engine::ModelUniform);
     this->mapped = false;
@@ -25,7 +25,7 @@ mat4x4 engine::UniformModel::computeModelMatrix() {
 
 void engine::UniformModel::updateBuffer() {
     uniforms.modelMatrix = computeModelMatrix();
-    engine->wgpuGetQueue().writeBuffer(underlying, offsetof(engine::ModelUniform, modelMatrix),
+    context->queue.writeBuffer(underlying, offsetof(engine::ModelUniform, modelMatrix),
                                        &uniforms.modelMatrix,sizeof(engine::ModelUniform::modelMatrix));
 }
 

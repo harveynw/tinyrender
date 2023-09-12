@@ -19,7 +19,7 @@ namespace engine {
 
     class NonTexturedAttribute : public engine::AttributeBuffer {
     public:
-        explicit NonTexturedAttribute(Engine *engine, std::vector<TriangleVertexAttributes> attrs);
+        explicit NonTexturedAttribute(Context *context, std::vector<TriangleVertexAttributes> attrs);
     };
 
 }

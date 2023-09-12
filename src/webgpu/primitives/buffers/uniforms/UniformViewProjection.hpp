@@ -28,8 +28,17 @@ namespace engine {
     class UniformViewProjection : public Buffer {
     protected:
         ViewProjectionUniforms uniforms{};
+
+        // Geometric properties
+        vec3 lookFrom;
+        vec3 lookAt;
+        float focalLength;
+        float near;
+        float far;
+        float fov;
     public:
-        UniformViewProjection(Engine *engine, vec3 lookFrom, vec3 lookAt);
+        UniformViewProjection(Context *context, vec3 lookFrom, vec3 lookAt);
+        void refreshProjectionMatrix(Context *context); // Useful if dimensions of window change
         void updateRotationAboutZAxis();
         void updateViewMatrix(glm::mat4x4 viewMatrix);
     };

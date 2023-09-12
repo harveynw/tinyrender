@@ -5,12 +5,10 @@
 #pragma once
 
 #include "attributes/AttributeBuffer.hpp"
-#include "../../../engine.hpp"
-
 
 namespace engine {
     class IndexBuffer : public AttributeBuffer {
     public:
-        IndexBuffer(Engine *engine, std::vector<uint16_t> indexData);
+        IndexBuffer(Context *context, std::vector<uint16_t> indexData);
     };
 }

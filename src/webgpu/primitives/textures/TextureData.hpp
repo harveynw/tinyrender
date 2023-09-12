@@ -5,7 +5,7 @@
 #include <filesystem>
 #include "stb_image.h"
 
-#include "../../../engine.hpp"
+#include "../../Context.hpp"
 
 
 namespace engine::Texture2D {
@@ -17,7 +17,7 @@ namespace engine::Texture2D {
         // Initialise populates width and height so the texture knows what size it is
         virtual void initialise(unsigned int &width, unsigned int &height, unsigned int &mips) = 0;
         // Write, to be called after initialise, is given the underlying texture to target and populate in GPU memory
-        virtual void write(Engine *engine, wgpu::Texture underlying) = 0;
+        virtual void write(Context *context, wgpu::Texture underlying) = 0;
     };
 
     class NoData : public DataDelegate {
@@ -30,8 +30,8 @@ namespace engine::Texture2D {
             (void) mips;
             // no-op
         }
-        void write(Engine *engine, wgpu::Texture underlying) override {
-            (void) engine;
+        void write(Context *context, wgpu::Texture underlying) override {
+            (void) context;
             (void) underlying;
             // no-op
         }
@@ -82,12 +82,12 @@ namespace engine::Texture2D {
             }
         }
 
-        void write(Engine *engine, wgpu::Texture underlying) override {
+        void write(Context *context, wgpu::Texture underlying) override {
             // Setup copy from data to texture
             wgpu::ImageCopyTexture destination;
             destination.texture = underlying;
             destination.origin = { 0, 0, 0 }; // equivalent of the offset argument of Queue::writeBuffer
-            destination.aspect = TextureAspect::All; // only relevant for depth/Stencil textures
+            destination.aspect = wgpu::TextureAspect::All; // only relevant for depth/Stencil textures
 
             // Setup how data is laid out in C++
             wgpu::TextureDataLayout source;
@@ -106,7 +106,7 @@ namespace engine::Texture2D {
                 source.bytesPerRow = 4 * currentWidth;
                 source.rowsPerImage = currentHeight;
 
-                engine->wgpuGetQueue().writeTexture(destination, pixels.data(), pixels.size(),
+                context->queue.writeTexture(destination, pixels.data(), pixels.size(),
                                                     source,
                                                     {currentWidth, currentHeight, 1});
 
@@ -139,13 +139,13 @@ namespace engine::Texture2D {
             mips = 1;
         }
 
-        void write(Engine *engine, wgpu::Texture underlying) override {
+        void write(Context *context, wgpu::Texture underlying) override {
             // Setup copy from data to texture
             wgpu::ImageCopyTexture destination;
             destination.texture = underlying;
             destination.mipLevel = 0;
             destination.origin = { 0, 0, 0 }; // equivalent of the offset argument of Queue::writeBuffer
-            destination.aspect = TextureAspect::All; // only relevant for depth/Stencil textures
+            destination.aspect = wgpu::TextureAspect::All; // only relevant for depth/Stencil textures
 
             // Setup how data is laid out in C++
             wgpu::TextureDataLayout source;
@@ -154,7 +154,7 @@ namespace engine::Texture2D {
             source.rowsPerImage = _height;
 
             // Generate data and initialise
-            engine->wgpuGetQueue().writeTexture(destination, pixelData,
+            context->queue.writeTexture(destination, pixelData,
                                                 4 * _width * _height,
                                                 source,
                                                 {(uint32_t) _width, (uint32_t) _height, 1});

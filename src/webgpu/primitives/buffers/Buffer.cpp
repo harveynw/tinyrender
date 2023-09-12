@@ -5,7 +5,7 @@
 #include "Buffer.hpp"
 
 
-engine::Buffer::Buffer(Engine *engine, engine::BufferType type, uint64_t size, bool mapped, void *data): engine(engine),
+engine::Buffer::Buffer(Context *context, engine::BufferType type, uint64_t size, bool mapped, void *data): context(context),
 type(type), size(size), mapped(mapped) {
     initialise(data);
 }
@@ -24,10 +24,10 @@ engine::Buffer::initialise(void *data) {
     bufferDesc.size = size;
     bufferDesc.usage = type;
     bufferDesc.mappedAtCreation = mapped;
-    underlying = engine->wgpuGetDevice().createBuffer(bufferDesc);
+    underlying = context->device.createBuffer(bufferDesc);
 
     // Write data via the queue
-    engine->wgpuGetQueue().writeBuffer(underlying, 0, data, bufferDesc.size);
+    context->queue.writeBuffer(underlying, 0, data, bufferDesc.size);
 }
 
 BindGroupEntry engine::Buffer::generateUniformBindGroupEntry(int bindGroup) {

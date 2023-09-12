@@ -12,10 +12,10 @@
 #include "../primitives/buffers/IndexBuffer.hpp"
 #include "../primitives/buffers/attributes/IndexedAttribute.hpp"
 
+using namespace wgpu;
 using glm::mat4x4;
 using glm::vec4;
 using glm::vec3;
-
 
 // Pair a model matrix with data to be fed into the vertex shader
 struct IndexedTriangleObject {
@@ -36,8 +36,9 @@ struct IndexedTriangleVertexAttributes {
 
 class IndexedTrianglePipeline : public Pipeline {
 protected:
-    Engine *engine = nullptr;
-    std::shared_ptr<engine::Texture2D::Texture> depthTexture;
+    Context *context = nullptr;
+    Scene *scene = nullptr;
+
     std::shared_ptr<engine::UniformViewProjection> uniforms;
 
     wgpu::RenderPipeline pipeline = nullptr;
@@ -68,7 +69,7 @@ protected:
     void initialiseUniformBindGroup(RenderPipelineDescriptor &desc);
 
 public:
-    IndexedTrianglePipeline(Engine *engine, std::shared_ptr<engine::UniformViewProjection> uniforms, std::shared_ptr<engine::Texture2D::Texture> depthTexture, std::vector<IndexedTriangleObject> &objects);
+    IndexedTrianglePipeline(Context *context, Scene *scene, std::shared_ptr<engine::UniformViewProjection> uniforms, std::vector<IndexedTriangleObject> &objects);
     ~IndexedTrianglePipeline() override;
     void onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder) override;
 };

@@ -18,7 +18,7 @@ namespace engine {
 
     class TexturedAttribute : public engine::AttributeBuffer {
     public:
-        explicit TexturedAttribute(Engine *engine, std::vector<UVTriangleVertexAttributes> attrs);
+        explicit TexturedAttribute(Context *context, std::vector<UVTriangleVertexAttributes> attrs);
     };
 
 }

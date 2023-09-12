@@ -5,11 +5,11 @@
 #include "TexturedAttribute.hpp"
 
 
-engine::TexturedAttribute::TexturedAttribute(Engine *engine, std::vector<UVTriangleVertexAttributes> attrs) {
+engine::TexturedAttribute::TexturedAttribute(Context *context, std::vector<UVTriangleVertexAttributes> attrs) {
     this->nDrawCalls = (int) attrs.size();
 
     // Buffer base class is initialised
-    this->engine = engine;
+    this->context = context;
     this->type = engine::VERTEX;
     this->size = attrs.size() * sizeof(UVTriangleVertexAttributes);
     this->mapped = false;

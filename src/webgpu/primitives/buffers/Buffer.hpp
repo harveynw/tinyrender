@@ -6,7 +6,7 @@
 #define TINYGAME_BUFFER_H
 
 #include "webgpu/webgpu.hpp"
-#include "../../../engine.hpp"
+#include "../../Context.hpp"
 
 /*
  * Buffer
@@ -15,6 +15,8 @@
  * Subclasses of this can be used for managing uniforms, vertex data
  * and more with specialised methods for updating them.
  */
+
+using namespace wgpu;
 
 namespace engine {
 
@@ -26,7 +28,7 @@ namespace engine {
 
     class Buffer {
     protected:
-        Engine *engine = nullptr; // Engine the buffer is associated with
+        Context *context = nullptr;
 
         wgpu::Buffer underlying = nullptr; // wgpu buffer
 
@@ -35,13 +37,13 @@ namespace engine {
         bool mapped;
     public:
         Buffer() {};
-        Buffer(Engine *engine, BufferType type, uint64_t size, bool mapped, void* data);
+        Buffer(Context *context, BufferType type, uint64_t size, bool mapped, void* data);
         ~Buffer();
 
         uint64_t getSize() { return size; };
         void initialise(void*);
 
-        BindGroupEntry generateUniformBindGroupEntry(int bindGroup);
+        wgpu::BindGroupEntry generateUniformBindGroupEntry(int bindGroup);
     };
 
 }

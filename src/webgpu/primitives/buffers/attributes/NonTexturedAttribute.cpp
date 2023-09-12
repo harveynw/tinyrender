@@ -6,11 +6,11 @@
 #include "NonTexturedAttribute.hpp"
 
 
-engine::NonTexturedAttribute::NonTexturedAttribute(Engine *engine, std::vector<TriangleVertexAttributes> attrs) {
+engine::NonTexturedAttribute::NonTexturedAttribute(Context *context, std::vector<TriangleVertexAttributes> attrs) {
     this->nDrawCalls = (int) attrs.size();
 
     // Buffer base class is initialised
-    this->engine = engine;
+    this->context = context;
     this->type = engine::VERTEX;
     this->size = attrs.size() * sizeof(TriangleVertexAttributes);
     this->mapped = false;

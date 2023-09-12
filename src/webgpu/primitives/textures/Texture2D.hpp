@@ -9,7 +9,7 @@
 #include "webgpu/webgpu.hpp"
 #include "glm/glm.hpp"
 
-#include "../../../engine.hpp"
+#include "../../Context.hpp"
 #include "TextureCreator.hpp"
 #include "TextureData.hpp"
 #include "TextureView.hpp"
@@ -24,14 +24,12 @@
  * resources such as depth textures.
  */
 
-class Engine;
-
 
 namespace engine::Texture2D {
 
     class Texture {
     protected:
-        Engine *engine = nullptr;
+        Context *context = nullptr;
 
         unsigned int width = 0;
         unsigned int height = 0;
@@ -49,7 +47,7 @@ namespace engine::Texture2D {
         wgpu::TextureView textureView = nullptr;
         wgpu::Sampler sampler = nullptr;
 
-        Texture(Engine *engine, engine::Texture2D::DataDelegate *data, engine::Texture2D::CreationDelegate *create,
+        Texture(Context *context, engine::Texture2D::DataDelegate *data, engine::Texture2D::CreationDelegate *create,
                   engine::Texture2D::ViewDelegate *view, engine::Texture2D::SamplerDelegate *samp);
         ~Texture();
 
@@ -70,7 +68,7 @@ namespace engine::Texture2D {
 
         class BasicImgTexture : public Texture {
         public:
-            BasicImgTexture(Engine *engine, std::string path) : Texture(engine,
+            BasicImgTexture(Context *context, std::string path) : Texture(context,
                                                                       new ImgData(std::move(path)),
                                                                       new RGBA(),
                                                                       new RGBAView(),
@@ -79,7 +77,7 @@ namespace engine::Texture2D {
 
         class DebugTexture : public Texture {
         public:
-            DebugTexture(Engine *engine, unsigned int width, unsigned int height) : Texture(engine,
+            DebugTexture(Context *context, unsigned int width, unsigned int height) : Texture(context,
                                                                       new DebugData(width, height),
                                                                       new RGBA(),
                                                                       new RGBAView(),
@@ -88,7 +86,7 @@ namespace engine::Texture2D {
 
         class DefaultDepthTexture : public Texture {
         public:
-            explicit DefaultDepthTexture(Engine *engine) : Texture(engine,
+            explicit DefaultDepthTexture(Context *context) : Texture(context,
                                                                    new NoData(),
                                                                    new Depth2D(),
                                                                    new DepthView(),

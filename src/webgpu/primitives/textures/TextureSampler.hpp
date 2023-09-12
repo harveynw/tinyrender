@@ -1,11 +1,9 @@
 #pragma once
 
-#include "../../../engine.hpp"
-
 namespace engine::Texture2D {
     class SamplerDelegate {
     public:
-        virtual wgpu::Sampler createSampler(Engine *engine, unsigned int mips) = 0;
+        virtual wgpu::Sampler createSampler(Context *context, unsigned int mips) = 0;
 
         virtual ~SamplerDelegate() = default;
     };
@@ -14,8 +12,8 @@ namespace engine::Texture2D {
     public:
         ~NoSampler() override = default;
 
-        wgpu::Sampler createSampler(Engine *engine, unsigned int mips) override {
-            (void) engine;
+        wgpu::Sampler createSampler(Context *context, unsigned int mips) override {
+            (void) context;
             (void) mips;
             return nullptr;
         }
@@ -25,20 +23,20 @@ namespace engine::Texture2D {
     public:
         ~DefaultSampler() override = default;
 
-        wgpu::Sampler createSampler(Engine *engine, unsigned int mips) override {
-            SamplerDescriptor samplerDesc;
-            samplerDesc.addressModeU = AddressMode::MirrorRepeat; //AddressMode::ClampToEdge;
-            samplerDesc.addressModeV = AddressMode::MirrorRepeat;
-            samplerDesc.addressModeW = AddressMode::ClampToEdge;
-            samplerDesc.magFilter = FilterMode::Linear;
-            samplerDesc.minFilter = FilterMode::Linear;
-            samplerDesc.mipmapFilter = MipmapFilterMode::Linear;
+        wgpu::Sampler createSampler(Context *context, unsigned int mips) override {
+            wgpu::SamplerDescriptor samplerDesc;
+            samplerDesc.addressModeU = wgpu::AddressMode::MirrorRepeat; //AddressMode::ClampToEdge;
+            samplerDesc.addressModeV = wgpu::AddressMode::MirrorRepeat;
+            samplerDesc.addressModeW = wgpu::AddressMode::ClampToEdge;
+            samplerDesc.magFilter = wgpu::FilterMode::Linear;
+            samplerDesc.minFilter = wgpu::FilterMode::Linear;
+            samplerDesc.mipmapFilter = wgpu::MipmapFilterMode::Linear;
             samplerDesc.lodMinClamp = 0.0f;
             samplerDesc.lodMaxClamp = (float) mips; // {1.0, 8.0}
-            samplerDesc.compare = CompareFunction::Undefined;
+            samplerDesc.compare = wgpu::CompareFunction::Undefined;
             samplerDesc.maxAnisotropy = 1;
 
-            return engine->wgpuGetDevice().createSampler(samplerDesc);
+            return context->device.createSampler(samplerDesc);
         }
     };
 }

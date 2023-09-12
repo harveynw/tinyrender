@@ -6,12 +6,11 @@
 #include "../load_shader.hpp"
 
 
-IndexedTrianglePipeline::IndexedTrianglePipeline(Engine *engine,
+IndexedTrianglePipeline::IndexedTrianglePipeline(Context *context,
+                                                 Scene *scene,
                                                  std::shared_ptr<engine::UniformViewProjection> uniforms,
-                                                 std::shared_ptr<engine::Texture2D::Texture> depthTexture,
                                                  std::vector<IndexedTriangleObject> &objects):
-engine(engine) {
-    this->depthTexture = depthTexture;
+context(context), scene(scene) {
     this->uniforms = uniforms;
     this->objects = objects;
 
@@ -26,7 +25,7 @@ engine(engine) {
     initialiseAttributes(desc);
     initialiseUniformBindGroup(desc);
 
-    pipeline = engine->wgpuGetDevice().createRenderPipeline(desc);
+    pipeline = context->device.createRenderPipeline(desc);
     std::cout << "Render pipeline: " << pipeline << std::endl;
 }
 
@@ -56,7 +55,7 @@ IndexedTrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEn
 
     RenderPassDepthStencilAttachment depthStencilAttachment;
     // The view of the depth texture
-    depthStencilAttachment.view = depthTexture->getView();
+    depthStencilAttachment.view = scene->depthTexture->getView();
 
     // The initial value of the depth buffer, meaning "far"
     depthStencilAttachment.depthClearValue = 1.0f;
@@ -133,7 +132,7 @@ IndexedTrianglePipeline::initialiseBuffers() {}
 
 void
 IndexedTrianglePipeline::initialiseShader(RenderPipelineDescriptor &desc) {
-    shaderModule = loadShaderModule("resources/shaders/basic_mvp.wgsl", engine->wgpuGetDevice());
+    shaderModule = loadShaderModule("resources/shaders/basic_mvp.wgsl", context->device);
     std::cout << "Shader module: " << shaderModule << std::endl;
 
     // Vertex shader
@@ -159,7 +158,7 @@ IndexedTrianglePipeline::initialiseShader(RenderPipelineDescriptor &desc) {
     blendState.alpha.dstFactor = BlendFactor::One;
     blendState.alpha.operation = BlendOperation::Add;
 
-    colorTarget.format = engine->wgpuGetSwapChainFormat();
+    colorTarget.format = context->swapChainFormat;
     colorTarget.blend = &blendState;
     colorTarget.writeMask = ColorWriteMask::All; // We could write to only some of the color channels.
 
@@ -266,13 +265,13 @@ IndexedTrianglePipeline::initialiseUniformBindGroup(RenderPipelineDescriptor &de
     BindGroupLayoutDescriptor bindGroupLayoutDesc{};
     bindGroupLayoutDesc.entryCount = (uint32_t) bindingLayoutEntries.size();
     bindGroupLayoutDesc.entries = bindingLayoutEntries.data();
-    bindGroupLayout = engine->wgpuGetDevice().createBindGroupLayout(bindGroupLayoutDesc);
+    bindGroupLayout = context->device.createBindGroupLayout(bindGroupLayoutDesc);
 
     // Create the pipeline layout and set it in render pipeline descriptor
     PipelineLayoutDescriptor layoutDesc{};
     layoutDesc.bindGroupLayoutCount = 1;
     layoutDesc.bindGroupLayouts = (WGPUBindGroupLayout*) &bindGroupLayout;
-    layout = engine->wgpuGetDevice().createPipelineLayout(layoutDesc);
+    layout = context->device.createPipelineLayout(layoutDesc);
     desc.layout = layout;
 
 
@@ -290,6 +289,6 @@ IndexedTrianglePipeline::initialiseUniformBindGroup(RenderPipelineDescriptor &de
         bindGroupDesc.layout = bindGroupLayout;
         bindGroupDesc.entryCount = (uint32_t)bindings.size();
         bindGroupDesc.entries = bindings.data();
-        bindGroups.push_back(engine->wgpuGetDevice().createBindGroup(bindGroupDesc));
+        bindGroups.push_back(context->device.createBindGroup(bindGroupDesc));
     }
 }

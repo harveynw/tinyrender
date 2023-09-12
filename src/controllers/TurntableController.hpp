@@ -28,8 +28,6 @@ protected:
     float mouseSensitivity = 0.01f;
     float scrollSensitivity = 0.1f;
 
-    std::shared_ptr<engine::UniformViewProjection> uniforms;
-
     void updateInternalBuffer() override;
 public:
     explicit TurntableController(std::shared_ptr<engine::UniformViewProjection> uniforms);

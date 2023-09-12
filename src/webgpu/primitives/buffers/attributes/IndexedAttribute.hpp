@@ -17,7 +17,7 @@ namespace engine {
 
     class IndexedAttribute : public engine::AttributeBuffer {
     public:
-        explicit IndexedAttribute(Engine *engine, IndexedTrianglePipelineData attrs);
+        explicit IndexedAttribute(Context *context, IndexedTrianglePipelineData attrs);
     };
 
 }

@@ -5,12 +5,15 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
+#include "../webgpu/primitives/buffers/uniforms/UniformViewProjection.hpp"
 
 
 class Controller {
 protected:
     virtual void updateInternalBuffer() = 0;
 public:
+    std::shared_ptr<engine::UniformViewProjection> uniforms;
+
     Controller() = default;
     virtual ~Controller() = default;
 
