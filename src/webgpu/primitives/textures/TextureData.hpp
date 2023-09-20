@@ -6,6 +6,7 @@
 #include "stb_image.h"
 
 #include "../../Context.hpp"
+#include "utilities/mips.hpp"
 
 
 namespace engine::Texture2D {
@@ -41,11 +42,13 @@ namespace engine::Texture2D {
     protected:
         unsigned int _width;
         unsigned int _height;
+        bool showMips;
 
         static constexpr unsigned int n_mips = 8;
         std::array<std::vector<uint8_t>, n_mips> data;
     public:
-        DebugData(unsigned int width, unsigned int height): _width(width), _height(height) {};
+        DebugData(unsigned int width, unsigned int height, bool showMips):
+        _width(width), _height(height), showMips(showMips) {};
         ~DebugData() override = default;
 
         void initialise(unsigned int &width, unsigned int &height, unsigned int &mips) override {
@@ -54,31 +57,38 @@ namespace engine::Texture2D {
             mips = n_mips;
 
             // Generate data and initialise
-            uint32_t currentWidth = _width;
-            uint32_t currentHeight = _height;
+            wgpu::Extent3D dim = {_width, _height, 1};
             for (uint32_t level = 0; level < n_mips; ++level) {
                 // Allocate for current level
-                data[level] = std::vector<uint8_t>(4 * currentWidth * currentHeight);
+                data[level] = std::vector<uint8_t>(4 * dim.width * dim.height);
 
-                // Set data
-                auto &pixels = data[level];
-                for (uint32_t i = 0; i < currentWidth; ++i) {
-                    for (uint32_t j = 0; j < currentHeight; ++j) {
-                        uint8_t* p = &pixels[4 * (j * currentWidth + i)];
-                        if (level == 0) {
-                            // Our initial texture formula
-                            p[0] = (i / 16) % 2 == (j / 16) % 2 ? 255 : 0; // r
-                            p[1] = ((i - j) / 16) % 2 == 0 ? 255 : 0; // g
-                            p[2] = ((i + j) / 16) % 2 == 0 ? 255 : 0; // b
-                        } else {
-                            // Some debug value for visualizing mip levels
-                            p[0] = level % 2 == 0 ? 255 : 0;
-                            p[1] = (level / 2) % 2 == 0 ? 255 : 0;
-                            p[2] = (level / 4) % 2 == 0 ? 255 : 0;
+                if(level > 0 && !showMips) {
+                    // Use filtering to generate this level from the last
+                    downsizeImage(data[level-1], (int) dim.width, (int) dim.height, data[level]);
+                } else {
+                    // A pattern
+                    auto &pixels = data[level];
+                    for (uint32_t i = 0; i < dim.width; ++i) {
+                        for (uint32_t j = 0; j < dim.height; ++j) {
+                            uint8_t *p = &pixels[4 * (j * dim.width + i)];
+                            if (level == 0) {
+                                // Our initial texture formula
+                                p[0] = (i / 16) % 2 == (j / 16) % 2 ? 255 : 0; // r
+                                p[1] = ((i - j) / 16) % 2 == 0 ? 255 : 0; // g
+                                p[2] = ((i + j) / 16) % 2 == 0 ? 255 : 0; // b
+                            } else {
+                                // Some debug value for visualizing mip levels
+                                p[0] = level % 2 == 0 ? 255 : 0;
+                                p[1] = (level / 2) % 2 == 0 ? 255 : 0;
+                                p[2] = (level / 4) % 2 == 0 ? 255 : 0;
+                            }
+                            p[3] = 255; // a
                         }
-                        p[3] = 255; // a
                     }
                 }
+
+                dim.width /= 2;
+                dim.height /= 2;
             }
         }
 
@@ -93,8 +103,7 @@ namespace engine::Texture2D {
             wgpu::TextureDataLayout source;
             source.offset = 0;
 
-            uint32_t currentWidth = _width;
-            uint32_t currentHeight = _height;
+            wgpu::Extent3D dim = {_width, _height, 1};
             for (uint32_t level = 0; level < n_mips; ++level) {
                 // Create image data for this mip level
                 auto &pixels = data[level];
@@ -103,17 +112,16 @@ namespace engine::Texture2D {
                 destination.mipLevel = level;
 
                 // Compute from the mip level size
-                source.bytesPerRow = 4 * currentWidth;
-                source.rowsPerImage = currentHeight;
+                source.bytesPerRow = 4 * dim.width;
+                source.rowsPerImage = dim.height;
 
                 context->queue.writeTexture(destination, pixels.data(), pixels.size(),
-                                                    source,
-                                                    {currentWidth, currentHeight, 1});
+                                                    source,dim);
 
                 // The size of the next mip level:
                 // (see https://www.w3.org/TR/webgpu/#logical-miplevel-specific-texture-extent)
-                currentWidth /= 2;
-                currentHeight /= 2;
+                dim.width /= 2;
+                dim.height /= 2;
             }
         }
     };

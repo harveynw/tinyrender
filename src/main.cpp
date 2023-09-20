@@ -1,3 +1,5 @@
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#define GLM_FORCE_LEFT_HANDED
 #include <glm/glm.hpp>
 
 #include "engine.hpp"
@@ -96,7 +98,7 @@ int main (int, char**) {
     // Texture test
     auto cubeModelMatrix = std::make_shared<engine::ModelMatrixUniform>(c);
     //auto texture = std::make_shared<engine::DebugTexture2D>(engine, 256, 256);
-    auto texture = std::make_shared<engine::Texture2D::common::BasicImgTexture>(
+    auto texture = std::make_shared<engine::Texture2D::common::BasicImgRepeatingTexture>(
             engine->getContext().get(), "resources/img/grass.png");
     std::vector<UVTriangleVertexAttributes> vertexData3;
     success = loadTexturedObjIntoTriangleData("resources/cube.obj", vertexData3);
@@ -112,14 +114,35 @@ int main (int, char**) {
     engine->addPipeline(std::make_shared<TexturedTrianglePipeline>(c, s, uniforms, texture, objects));
 
     /*
+     * Viking room
+     */
+    auto roomModelMatrix = std::make_shared<engine::ModelMatrixUniform>(c);
+    roomModelMatrix->setTranslation(vec3(0, 0, 3));
+    roomModelMatrix->setRotationX(-glm::pi<float>()/2.0);
+    auto roomTexture = std::make_shared<engine::Texture2D::common::BasicImgTexture>(
+            engine->getContext().get(), "resources/viking_room.png");
+    std::vector<UVTriangleVertexAttributes> vikingRoomData;
+    success = loadTexturedObjIntoTriangleData("resources/viking_room.obj", vertexData3);
+    if (!success) {
+        std::cerr << "Could not load geometry!" << std::endl;
+        return 1;
+    }
+
+    auto vikingAttrs = std::make_shared<engine::TexturedAttribute>(c, vertexData3);
+    std::vector<TexturedTriangleObject> viking_objects(1);
+    viking_objects[0] = { roomModelMatrix, vikingAttrs };
+
+    engine->addPipeline(std::make_shared<TexturedTrianglePipeline>(c, s, uniforms, roomTexture, viking_objects));
+
+    /*
      * Plane pipeline
      */
     float z_pos = -0.5;
-    float lg = 10;
+    float lg = 100;
     auto plane = shape_helpers::makeQuad(vec3(-lg, -lg, z_pos), vec3(lg, -lg, z_pos),
                                          vec3(lg, lg, z_pos), vec3(-lg, lg, z_pos));
     //auto planeTexture = std::make_shared<engine::ImageTexture2D>(engine, "resources/img/grass.png");
-    auto planeTexture = std::make_shared<engine::Texture2D::common::DebugTexture>(c, 640, 640);
+    auto planeTexture = std::make_shared<engine::Texture2D::common::DebugTexture>(c, 256, 256);
     auto planeData = shape_helpers::asTexturedTriangles(plane);
     auto planeBuffer = std::make_shared<engine::TexturedAttribute>(c, planeData);
     std::vector<TexturedTriangleObject> objects_2(1);
@@ -129,6 +152,8 @@ int main (int, char**) {
     mammothModelMatrix->setTranslation(vec3(5.0, 0.0, 1.0));
     mammothModelMatrix->setScale(2.0);
 
+    roomModelMatrix->setScale(5.0);
+
     pyramidModelMatrix->setTranslation(vec3(-3.0, -3.0, -1.0));
 
     //int exit_result = engine->enterMainLoop();
@@ -136,8 +161,8 @@ int main (int, char**) {
     while (!glfwWindowShouldClose(engine->getWindow())) {
         rot += 0.01;
 
-        mammothModelMatrix->setRotation(rot);
-        pyramidModelMatrix->setRotation(2*rot);
+        mammothModelMatrix->setRotationZ(rot);
+        pyramidModelMatrix->setRotationZ(2*rot);
 
         glfwPollEvents();
 

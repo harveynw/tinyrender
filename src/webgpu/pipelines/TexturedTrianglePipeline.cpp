@@ -36,15 +36,6 @@ context(context), scene(scene)  {
 
 void
 TexturedTrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder) {
-    /*
-     * Step 1: Update uniforms
-     */
-    //uniforms->updateRotationAboutZAxis();
-
-    /*
-     * Step 2: Create Render Pass
-     */
-
     RenderPassDescriptor renderPassDesc;
 
     RenderPassColorAttachment renderPassColorAttachment;
@@ -236,29 +227,35 @@ TexturedTrianglePipeline::initialiseUniformBindGroup(RenderPipelineDescriptor &d
     /*
      * For uniforms: 1) Setup Bind Group Layout, 2) Set up the actual Bind Groups
      */
-    bindingLayoutEntries = std::vector<BindGroupLayoutEntry>(4, Default);
+    bindingLayoutEntries = std::vector<BindGroupLayoutEntry>(5, Default);
 
     // Setup uniforms binding
     BindGroupLayoutEntry& viewProjectionBindingLayout = bindingLayoutEntries[0];
     viewProjectionBindingLayout.binding = 0;
     viewProjectionBindingLayout.visibility = ShaderStage::Vertex | ShaderStage::Fragment;
     viewProjectionBindingLayout.buffer.type = BufferBindingType::Uniform;
-    viewProjectionBindingLayout.buffer.minBindingSize = sizeof(engine::ViewProjectionUniforms);
+    viewProjectionBindingLayout.buffer.minBindingSize = engine::ViewProjMatrixUniform::minBindingSize();
 
     BindGroupLayoutEntry& modelBindingLayout = bindingLayoutEntries[1];
     modelBindingLayout.binding = 1;
     modelBindingLayout.visibility = ShaderStage::Vertex | ShaderStage::Fragment;
     modelBindingLayout.buffer.type = BufferBindingType::Uniform;
-    modelBindingLayout.buffer.minBindingSize = sizeof(engine::ModelUniform);
+    modelBindingLayout.buffer.minBindingSize = engine::ModelMatrixUniform::minBindingSize();
 
-    BindGroupLayoutEntry& textureBindingLayout = bindingLayoutEntries[2];
-    textureBindingLayout.binding = 2;
+    BindGroupLayoutEntry& lightingBindingLayout = bindingLayoutEntries[2];
+    lightingBindingLayout.binding = 2;
+    lightingBindingLayout.visibility = ShaderStage::Fragment;
+    lightingBindingLayout.buffer.type = BufferBindingType::Uniform;
+    lightingBindingLayout.buffer.minBindingSize = engine::LightingUniform::minBindingSize();
+
+    BindGroupLayoutEntry& textureBindingLayout = bindingLayoutEntries[3];
+    textureBindingLayout.binding = 3;
     textureBindingLayout.visibility = ShaderStage::Fragment;
     textureBindingLayout.texture.sampleType = TextureSampleType::Float; // Because using normalised format
     textureBindingLayout.texture.viewDimension = TextureViewDimension::_2D;
 
-    BindGroupLayoutEntry& samplerBindingLayout = bindingLayoutEntries[3];
-    samplerBindingLayout.binding = 3;
+    BindGroupLayoutEntry& samplerBindingLayout = bindingLayoutEntries[4];
+    samplerBindingLayout.binding = 4;
     samplerBindingLayout.visibility = ShaderStage::Fragment;
     samplerBindingLayout.sampler.type = SamplerBindingType::Filtering;
 
@@ -279,15 +276,18 @@ TexturedTrianglePipeline::initialiseUniformBindGroup(RenderPipelineDescriptor &d
      * Bind Group Creation
      */
     for(const auto &obj : objects) {
-        bindGroupEntries.emplace_back(4);
+        bindGroupEntries.emplace_back(5);
 
         std::vector<BindGroupEntry> &bindings = bindGroupEntries.back();
         bindings[0] = uniforms->generateUniformBindGroupEntry(0); // uniforms
         bindings[1] = obj.modelMatrix->generateUniformBindGroupEntry(1);
-        bindings[2].binding = 2;
-        bindings[2].textureView = texture->getView();
+        bindings[2] = scene->lightingUniform->generateUniformBindGroupEntry(2);
+
         bindings[3].binding = 3;
-        bindings[3].sampler = texture->getSampler();
+        bindings[3].textureView = texture->getView();
+
+        bindings[4].binding = 4;
+        bindings[4].sampler = texture->getSampler();
 
         BindGroupDescriptor bindGroupDesc;
         bindGroupDesc.layout = bindGroupLayout;

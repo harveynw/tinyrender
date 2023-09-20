@@ -25,12 +25,17 @@ file(GLOB SOURCES
         src/webgpu/primitives/buffers/uniforms/*.cpp
         src/webgpu/primitives/textures/*.hpp
         src/webgpu/primitives/textures/*.cpp
+        src/webgpu/primitives/textures/utilities/*.hpp
+        src/webgpu/primitives/textures/utilities/*.cpp
         src/controllers/*.hpp
         src/controllers/*.cpp
         )
 list(FILTER SOURCES EXCLUDE REGEX "_test.cpp$")
 
-add_executable(App src/main.cpp ${SOURCES})
+list(FILTER SOURCES EXCLUDE REGEX "src/main.cpp$")
+
+#add_executable(App src/main.cpp ${SOURCES})
+add_executable(App src/main_boat.cpp ${SOURCES})
 set_property(TARGET App PROPERTY CXX_STANDARD 17)
 
 # Make sure to show as many warnings as possible
@@ -45,12 +50,14 @@ else()
 endif()
 
 # GLFW for opening a window
+if (NOT EMSCRIPTEN)
 FetchContent_Declare(
         glfw3
         URL https://github.com/glfw/glfw/releases/download/3.3.8/glfw-3.3.8.zip
 )
 FetchContent_MakeAvailable(glfw3)
 target_link_libraries(App PRIVATE glfw)
+endif()
 
 # WebGPU implementation and headers
 FetchContent_Declare(
@@ -100,6 +107,16 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(tinyobjloader)
 target_link_libraries(App PRIVATE tinyobjloader)
+
+if (EMSCRIPTEN)
+    # Add Emscripten-specific link options
+    target_link_options(App PRIVATE
+            -sUSE_GLFW=3 # Use Emscripten-provided GLFW
+            -sUSE_WEBGPU # Handle WebGPU symbols
+            -sASYNCIFY # Required by WebGPU-C++
+            )
+    set_target_properties(App PROPERTIES SUFFIX ".html")
+endif()
 
 #
 # TESTING

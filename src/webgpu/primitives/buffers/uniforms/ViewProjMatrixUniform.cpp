@@ -21,7 +21,7 @@ engine::ViewProjMatrixUniform::ViewProjMatrixUniform(Context *context, vec3 look
     // Buffer base class is initialised
     this->context = context;
     this->type = engine::UNIFORM;
-    this->size = sizeof(engine::ViewProjectionUniforms);
+    this->size = sizeof(ViewProjectionUniforms);
     this->mapped = false;
     this->initialise(&uniforms);
 }
@@ -30,27 +30,27 @@ void
 engine::ViewProjMatrixUniform::updateRotationAboutZAxis() {
     uniforms.time = static_cast<float>(glfwGetTime()); // glfwGetTime returns a double
     // Only update the 1-st float of the buffer
-    context->queue.writeBuffer(underlying, offsetof(engine::ViewProjectionUniforms, time),
-                              &uniforms.time,sizeof(engine::ViewProjectionUniforms::time));
+    context->queue.writeBuffer(underlying, offsetof(ViewProjectionUniforms, time),
+                              &uniforms.time,sizeof(ViewProjectionUniforms::time));
 
     // Rotate camera around z-axis
     mat4x4 newViewMatrix= glm::rotate(uniforms.viewMatrix, 2*glm::sin(uniforms.time),
                                       vec3(0.0, 0.0, 1.0));
-    context->queue.writeBuffer(underlying, offsetof(engine::ViewProjectionUniforms, viewMatrix),
-                              &newViewMatrix, sizeof(engine::ViewProjectionUniforms::viewMatrix));
+    context->queue.writeBuffer(underlying, offsetof(ViewProjectionUniforms, viewMatrix),
+                              &newViewMatrix, sizeof(ViewProjectionUniforms::viewMatrix));
 }
 
 void
 engine::ViewProjMatrixUniform::updateViewMatrix(glm::mat4x4 viewMatrix) {
     uniforms.viewMatrix = viewMatrix;
-    context->queue.writeBuffer(underlying, offsetof(engine::ViewProjectionUniforms, viewMatrix),
-                              &uniforms.viewMatrix,sizeof(engine::ViewProjectionUniforms::viewMatrix));
+    context->queue.writeBuffer(underlying, offsetof(ViewProjectionUniforms, viewMatrix),
+                              &uniforms.viewMatrix, sizeof(ViewProjectionUniforms::viewMatrix));
 }
 
 void engine::ViewProjMatrixUniform::refreshProjectionMatrix(Context *context) {
     float ratio = context->DISPLAY_WIDTH / context->DISPLAY_HEIGHT;
     uniforms.projectionMatrix = glm::perspective(fov, ratio, near, far);
-    context->queue.writeBuffer(underlying, offsetof(engine::ViewProjectionUniforms, projectionMatrix),
+    context->queue.writeBuffer(underlying, offsetof(ViewProjectionUniforms, projectionMatrix),
                                &uniforms.projectionMatrix,
-                               sizeof(engine::ViewProjectionUniforms::projectionMatrix));
+                               sizeof(ViewProjectionUniforms::projectionMatrix));
 }

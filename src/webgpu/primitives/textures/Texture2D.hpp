@@ -72,16 +72,25 @@ namespace engine::Texture2D {
                                                                       new ImgData(std::move(path)),
                                                                       new RGBA(),
                                                                       new RGBAView(),
-                                                                      new DefaultSampler()) {}
+                                                                      new DefaultSampler(false, true, false)) {}
+        };
+
+        class BasicImgRepeatingTexture : public Texture {
+        public:
+            BasicImgRepeatingTexture(Context *context, std::string path) : Texture(context,
+                                                                          new ImgData(std::move(path)),
+                                                                          new RGBA(),
+                                                                          new RGBAView(),
+                                                                          new DefaultSampler()) {}
         };
 
         class DebugTexture : public Texture {
         public:
             DebugTexture(Context *context, unsigned int width, unsigned int height) : Texture(context,
-                                                                      new DebugData(width, height),
+                                                                      new DebugData(width, height, false),
                                                                       new RGBA(),
                                                                       new RGBAView(),
-                                                                      new DefaultSampler()) {}
+                                                                      new DefaultSampler(false, false, true)) {}
         };
 
         class DefaultDepthTexture : public Texture {

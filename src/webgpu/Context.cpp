@@ -40,7 +40,7 @@ buildNewContext(GLFWwindow *window, int width, int height) {
     requiredLimits.limits.minUniformBufferOffsetAlignment = supportedLimits.limits.minUniformBufferOffsetAlignment;
     requiredLimits.limits.maxInterStageShaderComponents = 8;
     requiredLimits.limits.maxBindGroups = 2;
-    requiredLimits.limits.maxUniformBuffersPerShaderStage = 2;
+    requiredLimits.limits.maxUniformBuffersPerShaderStage = 3;
     // Update max uniform buffer size:
     requiredLimits.limits.maxUniformBufferBindingSize = 16 * 4 * sizeof(float);
     // 8192px

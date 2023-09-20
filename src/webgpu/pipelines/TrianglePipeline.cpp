@@ -238,13 +238,13 @@ TrianglePipeline::initialiseUniformBindGroup(RenderPipelineDescriptor &desc) {
     viewProjectionBindingLayout.binding = 0;
     viewProjectionBindingLayout.visibility = ShaderStage::Vertex | ShaderStage::Fragment;
     viewProjectionBindingLayout.buffer.type = BufferBindingType::Uniform;
-    viewProjectionBindingLayout.buffer.minBindingSize = sizeof(engine::ViewProjectionUniforms);
+    viewProjectionBindingLayout.buffer.minBindingSize = engine::ViewProjMatrixUniform::minBindingSize();
 
     BindGroupLayoutEntry& modelBindingLayout = bindingLayoutEntries[1];
     modelBindingLayout.binding = 1;
     modelBindingLayout.visibility = ShaderStage::Vertex | ShaderStage::Fragment;
     modelBindingLayout.buffer.type = BufferBindingType::Uniform;
-    modelBindingLayout.buffer.minBindingSize = sizeof(engine::ModelUniform);
+    modelBindingLayout.buffer.minBindingSize = engine::ModelMatrixUniform::minBindingSize();
 
     // Create a bind group layout
     BindGroupLayoutDescriptor bindGroupLayoutDesc{};

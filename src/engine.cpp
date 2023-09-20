@@ -34,6 +34,7 @@ Engine::launch() {
     this->context = buildNewContext(window, DISPLAY_WIDTH, DISPLAY_HEIGHT);
     this->scene = std::make_shared<Scene>();
     this->scene->buildDepthBuffer(this->context);
+    this->scene->lightingUniform = std::make_shared<engine::LightingUniform>(this->context.get());
 }
 
 int Engine::onFrame() {

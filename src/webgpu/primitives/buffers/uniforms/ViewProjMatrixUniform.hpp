@@ -14,8 +14,7 @@ using glm::mat4x4;
 using glm::vec4;
 using glm::vec3;
 
-namespace engine {
-
+namespace {
     struct ViewProjectionUniforms {
         mat4x4 projectionMatrix;
         mat4x4 viewMatrix;
@@ -24,6 +23,9 @@ namespace engine {
         float _pad[3];
     };
     static_assert(sizeof(ViewProjectionUniforms) % 16 == 0, "Must be multiple of 16 bytes");
+}
+
+namespace engine {
 
     class ViewProjMatrixUniform : public Buffer {
     protected:
@@ -38,6 +40,9 @@ namespace engine {
         float fov;
     public:
         ViewProjMatrixUniform(Context *context, vec3 lookFrom, vec3 lookAt);
+
+        static int minBindingSize() { return sizeof(ViewProjectionUniforms); };
+
         void refreshProjectionMatrix(Context *context); // Useful if dimensions of window change
         void updateRotationAboutZAxis();
         void updateViewMatrix(glm::mat4x4 viewMatrix);

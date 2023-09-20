@@ -2,6 +2,7 @@
 
 #include "webgpu/webgpu.hpp"
 #include "primitives/textures/Texture2D.hpp"
+#include "primitives/buffers/uniforms/LightingUniform.hpp"
 
 /*
  * Scene
@@ -15,4 +16,7 @@ struct Scene {
     void buildDepthBuffer(const std::shared_ptr<Context>& context) {
         depthTexture = std::make_shared<engine::Texture2D::common::DefaultDepthTexture>(context.get());
     }
+
+    // Lighting data
+    std::shared_ptr<engine::LightingUniform> lightingUniform;
 };
