@@ -6,8 +6,10 @@
 
 #include "webgpu/Context.hpp"
 #include "webgpu/pipelines/Pipeline.hpp"
-#include "controllers/Controller.hpp"
 #include "webgpu/Scene.hpp"
+#include "webgpu/pipelines/TrianglePipeline.hpp"
+#include "webgpu/pipelines/TexturedTrianglePipeline.hpp"
+#include "controllers/Controller.hpp"
 
 
 // Forward declarations
@@ -26,9 +28,7 @@ public:
     int onFrame(); // internal call from main event loop
 
     void onResize(int, int);
-
     void setController(std::shared_ptr<Controller> controller);
-    void addPipeline(const std::shared_ptr<Pipeline>& pipeline);
 
     GLFWwindow *getWindow() { return window; };
 
@@ -39,6 +39,9 @@ public:
     int DISPLAY_HEIGHT;
 
     std::shared_ptr<Controller> controller = nullptr;
+
+    // Objects in scene
+    std::vector<std::shared_ptr<engine::Object>> objects;
 protected:
     // GLFW
     GLFWwindow *window;
@@ -48,7 +51,8 @@ protected:
     std::shared_ptr<Scene> scene = nullptr;
 
     // Pipeline objects
-    std::vector<std::shared_ptr<Pipeline>> pipelines;
+    std::shared_ptr<TrianglePipeline> trianglePipeline = nullptr;
+    std::shared_ptr<TexturedTrianglePipeline> texturedTrianglePipeline = nullptr;
 };
 
 void onWindowResize(GLFWwindow* window, int, int);

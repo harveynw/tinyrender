@@ -24,11 +24,11 @@ struct LightingUniforms {
 }
 
 @group(0) @binding(0) var<uniform> uMyUniforms: MyUniforms;
-@group(0) @binding(1) var<uniform> modelMatrix: mat4x4f;
-@group(0) @binding(2) var<uniform> uLighting: LightingUniforms;
-@group(0) @binding(3) var texture: texture_2d<f32>;
-@group(0) @binding(4) var textureSampler: sampler;
+@group(0) @binding(1) var<uniform> uLighting: LightingUniforms;
 
+@group(1) @binding(0) var<uniform> modelMatrix: mat4x4f;
+@group(1) @binding(1) var texture: texture_2d<f32>;
+@group(1) @binding(2) var textureSampler: sampler;
 
 @vertex
 fn vs_main(in: VertexInput) -> VertexOutput {
@@ -44,9 +44,6 @@ fn vs_main(in: VertexInput) -> VertexOutput {
 
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4f {
-    // TODO: Gamma correction
-    // https://eliemichel.github.io/LearnWebGPU/basic-3d-rendering/input-geometry/loading-from-file.html
-
     // Compute shading
     let normal = normalize(in.normal);
     var shading = vec3<f32>(0.0);

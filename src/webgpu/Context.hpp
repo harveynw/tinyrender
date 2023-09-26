@@ -4,6 +4,8 @@
 #include <GLFW/glfw3.h>
 #include "glfw3webgpu.h"
 
+#include "primitives/buffers/uniforms/UniformStructs.hpp"
+
 /*
  * Context
  * Encapsulates a tightly coupled instance of WebGPU resources. Can be passed around to provide easy access to them.

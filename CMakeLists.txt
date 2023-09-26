@@ -17,6 +17,8 @@ file(GLOB SOURCES
         src/webgpu/*.cpp
         src/webgpu/pipelines/*.hpp
         src/webgpu/pipelines/*.cpp
+        src/webgpu/primitives/shaders/*.hpp
+        src/webgpu/primitives/shaders/*.cpp
         src/webgpu/primitives/buffers/*.hpp
         src/webgpu/primitives/buffers/*.cpp
         src/webgpu/primitives/buffers/attributes/*.hpp

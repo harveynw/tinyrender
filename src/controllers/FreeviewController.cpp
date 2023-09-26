@@ -4,13 +4,9 @@
 
 #include "FreeviewController.hpp"
 
-FreeviewController::FreeviewController(std::shared_ptr<engine::ViewProjMatrixUniform> uniforms) {
-    this->uniforms = uniforms;
-}
-
 void
 FreeviewController::updateInternalBuffer() {
-    this->uniforms->updateViewMatrix(glm::lookAt(position, position + direction,
+    this->viewProjectionMatrix->updateViewMatrix(glm::lookAt(position, position + direction,
                                                  vec3(0, 0, 1)));
 }
 
@@ -103,12 +99,13 @@ FreeviewController::onScroll(double xoffset, double yoffset) {
     (void) yoffset;
 }
 
-void FreeviewController::enableListen(GLFWwindow *window) {
+void FreeviewController::updateMouseState() {
+    glfwSetInputMode(glfw_window, GLFW_CURSOR, captureMouse ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+}
+
+void FreeviewController::enableListen(GLFWwindow *window, std::shared_ptr<engine::ViewProjMatrixUniform> vpMatrix) {
+    this->viewProjectionMatrix = vpMatrix;
     printf("FreeviewController enabled - WASD, Space - Up, Z - Down, E - Speed, Esc - Uncapture\n");
     glfw_window = window;
     updateMouseState();
-}
-
-void FreeviewController::updateMouseState() {
-    glfwSetInputMode(glfw_window, GLFW_CURSOR, captureMouse ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 }

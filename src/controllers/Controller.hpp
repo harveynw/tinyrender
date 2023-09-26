@@ -12,15 +12,14 @@ class Controller {
 protected:
     virtual void updateInternalBuffer() = 0;
 public:
-    std::shared_ptr<engine::ViewProjMatrixUniform> uniforms;
 
     Controller() = default;
     virtual ~Controller() = default;
 
+    std::shared_ptr<engine::ViewProjMatrixUniform> viewProjectionMatrix = nullptr;
+
     virtual void tick() = 0;
-
-    virtual void enableListen(GLFWwindow *window) = 0;
-
+    virtual void enableListen(GLFWwindow *window, std::shared_ptr<engine::ViewProjMatrixUniform> vpMatrix) = 0;
     virtual void onMouseMove(double xpos, double ypos) = 0;
     virtual void onMouseButton(GLFWwindow *window, int button, int action, int mods) = 0;
     virtual void onScroll(double xoffset, double yoffset) = 0;

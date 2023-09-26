@@ -4,15 +4,12 @@
 
 #include "TurntableController.hpp"
 
-TurntableController::TurntableController(std::shared_ptr<engine::ViewProjMatrixUniform> uniforms) {
-    this->uniforms = uniforms;
-}
 
 void
 TurntableController::updateInternalBuffer() {
     float rr = std::exp(r);
     vec3 position = vec3(rr*sin(theta)*cos(phi), rr*sin(theta)*sin(phi), rr*cos(theta));
-    this->uniforms->updateViewMatrix(glm::lookAt(position, vec3(0.0f),
+    this->viewProjectionMatrix->updateViewMatrix(glm::lookAt(position, vec3(0.0f),
                                                  vec3(0, 0, 1)));
 }
 
@@ -71,4 +68,9 @@ TurntableController::onKeyEvent(int key, int scancode, int action, int mods) {
     (void) scancode;
     (void) action;
     (void) mods;
+}
+
+void TurntableController::enableListen(GLFWwindow *window, std::shared_ptr<engine::ViewProjMatrixUniform> vpMatrix) {
+    (void) window;
+    this->viewProjectionMatrix = vpMatrix;
 }

@@ -1,29 +1,26 @@
 #pragma once
 
 #include "../webgpu/primitives/buffers/uniforms/ModelMatrixUniform.hpp"
-#include "../webgpu/primitives/buffers/attributes/AttributeBuffer.hpp"
+#include "../webgpu/primitives/buffers/AttributeBuffer.hpp"
+#include "../webgpu/primitives/buffers/IndexBuffer.hpp"
+#include "../webgpu/Scene.hpp"
+#include "ObjectResources.hpp"
 
 namespace engine {
 
-    // TODO: Delete IndexedTrianglePipeline and create isIndexed: bool and indexBuffer (empty by default), pipeline can use that
-
-    enum ObjectPipeline {
-        Indexed,
-        TexturedTriangle,
-        Triangle
-    };
-
     class Object {
-        ObjectPipeline destinationPipeline;
+    protected:
+        Context *context;
+        Scene *scene;
 
-        // WebGPU resources
-        std::shared_ptr<engine::AttributeBuffer> data = nullptr;
-        std::shared_ptr<engine::ModelMatrixUniform> modelMatrix = nullptr; // this class should produce a bindgrouplayoutdesc for itself
-        wgpu::BindGroup bindGroup = nullptr;
+        ObjectPipeline targetPipeline = ColoredTriangle;
+    public:
+        void setColor(glm::vec3 c);
+        void setTexture(std::shared_ptr<engine::Texture2D::Texture> texture);
+        ObjectPipeline currentTargetPipeline();
+        std::shared_ptr<engine::ModelMatrixUniform> modelMatrix() const;
 
-        Object(Context *c, DataDelegate *data): _data(data) {
-
-
-        };
+        std::shared_ptr<ObjectResources> resources = nullptr;
     };
+
 }

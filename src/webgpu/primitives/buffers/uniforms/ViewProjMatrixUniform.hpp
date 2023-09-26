@@ -9,21 +9,11 @@
 #include "glm/ext.hpp"
 
 #include "../Buffer.hpp"
+#include "UniformStructs.hpp"
 
 using glm::mat4x4;
 using glm::vec4;
 using glm::vec3;
-
-namespace {
-    struct ViewProjectionUniforms {
-        mat4x4 projectionMatrix;
-        mat4x4 viewMatrix;
-        vec4 color; // Unused
-        float time;
-        float _pad[3];
-    };
-    static_assert(sizeof(ViewProjectionUniforms) % 16 == 0, "Must be multiple of 16 bytes");
-}
 
 namespace engine {
 
@@ -40,8 +30,6 @@ namespace engine {
         float fov;
     public:
         ViewProjMatrixUniform(Context *context, vec3 lookFrom, vec3 lookAt);
-
-        static int minBindingSize() { return sizeof(ViewProjectionUniforms); };
 
         void refreshProjectionMatrix(Context *context); // Useful if dimensions of window change
         void updateRotationAboutZAxis();

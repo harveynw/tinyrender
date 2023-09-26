@@ -75,7 +75,6 @@ buildNewContext(GLFWwindow *window, int width, int height) {
      * Final step: Create the swapchain so we can output to screen.
      */
     context->buildSwapChain();
-
     context->queue = context->device.getQueue();
     context->print();
     return context;

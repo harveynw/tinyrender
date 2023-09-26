@@ -5,7 +5,10 @@
 #ifndef TINYGAME_PIPELINE_H
 #define TINYGAME_PIPELINE_H
 
+#include "tiny_obj_loader.h"
+
 #include <webgpu/webgpu.hpp>
+#include "../../objects/Object.hpp"
 
 
 class Pipeline {
@@ -15,9 +18,10 @@ protected:
     bool shouldClear = false;
     wgpu::Color clearValue;
 public:
-    Pipeline() {};
+    Pipeline() = default;
     virtual ~Pipeline() = default;
-    virtual void onFrame(wgpu::TextureView&, wgpu::CommandEncoder&) = 0;
+    virtual void onFrame(wgpu::TextureView&, wgpu::CommandEncoder&,
+                         std::vector<std::shared_ptr<engine::Object>>&) = 0;
 
     void enableClear(wgpu::Color color) {
         shouldClear = true;

@@ -8,17 +8,11 @@
 #include "glm/ext.hpp"
 
 #include "../Buffer.hpp"
+#include "UniformStructs.hpp"
 
 using glm::mat4x4;
 using glm::vec4;
 using glm::vec3;
-
-namespace {
-    struct ModelUniform {
-        mat4x4 modelMatrix;
-    };
-    static_assert(sizeof(ModelUniform) % 16 == 0, "Must be multiple of 16 bytes");
-}
 
 namespace engine {
 
@@ -36,8 +30,6 @@ namespace engine {
         void updateBuffer();
     public:
         explicit ModelMatrixUniform(Context *context);
-
-        static int minBindingSize() { return sizeof(ModelUniform); };
 
         void setScale(float s) { scale = s; updateBuffer(); };
         void setTranslation(vec3 t) { translate = t; updateBuffer(); };

@@ -1,7 +1,3 @@
-//
-// Created by Harvey Williams on 09/08/2023.
-//
-
 #ifndef TINYGAME_BUFFER_H
 #define TINYGAME_BUFFER_H
 

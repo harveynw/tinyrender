@@ -30,10 +30,10 @@ protected:
 
     void updateInternalBuffer() override;
 public:
-    explicit TurntableController(std::shared_ptr<engine::ViewProjMatrixUniform> uniforms);
+    TurntableController() = default;
 
     void tick() override {};
-    void enableListen(GLFWwindow *window) override { (void) window; };
+    void enableListen(GLFWwindow *window, std::shared_ptr<engine::ViewProjMatrixUniform> vpMatrix) override;
 
     void onMouseMove(double xpos, double ypos) override;
     void onMouseButton(GLFWwindow *window, int button, int action, int mods) override;

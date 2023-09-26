@@ -4,7 +4,6 @@
 #include <glm/glm.hpp>
 #include <webgpu/webgpu.hpp>
 
-#include "webgpu/pipelines/IndexedTrianglePipeline.hpp"
 #include "webgpu/pipelines/TexturedTrianglePipeline.hpp"
 #include "webgpu/pipelines/TrianglePipeline.hpp"
 
@@ -100,27 +99,5 @@ namespace shape_helpers {
        }
 
        return v;
-   }
-
-    [[maybe_unused]] static IndexedTrianglePipelineData
-   asIndexedTriangles(ShapeData &shapeData) {
-       std::vector<TriangleVertexAttributes> v;
-
-       auto it_p = shapeData.positionData.begin();
-       auto it_n = shapeData.normalData.begin();
-       auto it_c = shapeData.colorData.begin();
-
-       while(it_p != shapeData.positionData.end()) {
-           auto pos = take_vec3(it_p);
-           auto normal = take_vec3(it_n);
-           auto color = take_vec3(it_c);
-           v.push_back({pos, normal, color});
-           std::advance(it_p, 3); std::advance(it_n, 3); std::advance(it_c, 3);
-       }
-
-       auto *data = reinterpret_cast<float *>(v.data()); // Flatten
-       int n_data = sizeof(TriangleVertexAttributes) * v.size();
-       std::vector<float> vertexData(data, data + n_data);
-       return { vertexData, shapeData.indexData };
    }
 }

@@ -32,9 +32,20 @@ Engine::launch() {
 
     // Create webgpu resources
     this->context = buildNewContext(window, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+
+    // TODO: Scene can absorb this complexity
     this->scene = std::make_shared<Scene>();
     this->scene->buildDepthBuffer(this->context);
     this->scene->lightingUniform = std::make_shared<engine::LightingUniform>(this->context.get());
+    this->scene->texturedShader = std::make_shared<engine::TexturedShader>(this->context.get());
+    this->scene->coloredShader = std::make_shared<engine::ColoredShader>(this->context.get());
+    this->scene->buildViewProj(this->context);
+
+    //this->trianglePipeline = std::make_shared<TrianglePipeline>(this->context.get(), this->scene.get());
+    this->texturedTrianglePipeline = std::make_shared<TexturedTrianglePipeline>(this->context.get(), this->scene.get());
+
+    // Important
+    this->texturedTrianglePipeline->enableClear(Color{1.0, 1.0, 1.0, 1.0});
 }
 
 int Engine::onFrame() {
@@ -59,8 +70,8 @@ int Engine::onFrame() {
     /*
      * Draw each pipeline
      */
-    for(const auto& p: pipelines)
-        p->onFrame(nextTexture, encoder);
+    //trianglePipeline->onFrame(nextTexture, encoder, objects);
+    texturedTrianglePipeline->onFrame(nextTexture, encoder, objects);
 
     /*
      * Finish up
@@ -89,7 +100,7 @@ Engine::~Engine() {
 void
 Engine::setController(std::shared_ptr<Controller> c) {
     controller = c;
-    controller->enableListen(window);
+    controller->enableListen(window, this->scene->viewProjUniform);
     controller->tick();
 }
 
@@ -106,11 +117,6 @@ Engine::enterMainLoop() {
     return 0;
 }
 
-void
-Engine::addPipeline(const std::shared_ptr<Pipeline>& pipeline) {
-    pipelines.push_back(pipeline);
-}
-
 void Engine::onResize(int width, int height) {
     printf("Resize to (%i, %i)\n", width, height);
     // Update fields
@@ -122,7 +128,7 @@ void Engine::onResize(int width, int height) {
     context->buildSwapChain();
     scene->buildDepthBuffer(context);
     if(controller != nullptr)
-        controller->uniforms->refreshProjectionMatrix(context.get());
+        controller->viewProjectionMatrix->refreshProjectionMatrix(context.get());
 }
 
 void
