@@ -10,7 +10,6 @@
 #include "Pipeline.hpp"
 #include "../../objects/Object.hpp"
 
-using namespace wgpu;
 using glm::mat4x4;
 using glm::vec4;
 using glm::vec3;
@@ -21,12 +20,12 @@ protected:
     Context *context = nullptr;
     Scene *scene = nullptr;
 
-    wgpu::RenderPipeline pipeline = nullptr;
 
     // Intermediate objects for setting up the pipeline, persisted here.
     DepthStencilState depthStencilState = Default;
     TextureFormat depthTextureFormat = TextureFormat::Undefined;
-    PipelineLayout layout = nullptr;
+    wgpu::RenderPipeline pipeline = nullptr;
+    wgpu::PipelineLayout layout = nullptr;
 
     // All necessary to be called pre onFrame(), can be done in any order.
     void initialiseShader(RenderPipelineDescriptor &desc);

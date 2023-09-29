@@ -10,18 +10,21 @@ ObjectResources::ObjectResources(Context *context, Scene *scene, std::shared_ptr
 }
 
 ObjectResources::~ObjectResources() {
-    if(this->bindGroup != nullptr)
-        this->bindGroup.release();
+    if(bindGroup != nullptr)
+        bindGroup.release();
 }
 
 void
 ObjectResources::resetBindGroup(Context *context, Scene *scene, ObjectPipeline target) {
-    if(bindGroup != nullptr)
+    printf("\nDEBUG: Attempting to reset bind group for ObjectResources\n");
+    if(bindGroup != nullptr) {
         bindGroup.release();
-    bindGroupData.clear();
+        printf("DEBUG: Bind group released.\n");
+    }
 
     switch(target) {
         case ColoredTriangle: {
+            printf("DEBUG: ColoredTriangle\n");
             bindGroupData = std::vector<BindGroupEntry>(2);
             bindGroupData[0] = this->modelMatrix->generateUniformBindGroupEntry(0);
             bindGroupData[1] = this->color->generateUniformBindGroupEntry(1);
@@ -34,6 +37,7 @@ ObjectResources::resetBindGroup(Context *context, Scene *scene, ObjectPipeline t
             break;
         }
         case TexturedTriangle: {
+            printf("DEBUG: TexturedTriangle\n");
             bindGroupData = std::vector<BindGroupEntry>(3);
             bindGroupData[0] = this->modelMatrix->generateUniformBindGroupEntry(0);
             bindGroupData[1].binding = 1;
@@ -49,6 +53,8 @@ ObjectResources::resetBindGroup(Context *context, Scene *scene, ObjectPipeline t
             break;
         }
     }
+
+    printf("\n");
 
 }
 

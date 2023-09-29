@@ -65,17 +65,17 @@ coloredModelUniformLayout(Context *context) {
      * Colored Model: Model matrix + color
      */
 
-    wgpu::BindGroupLayoutEntry &modelBindingLayout2 = entries[0];
-    modelBindingLayout2.binding = 0;
-    modelBindingLayout2.visibility = wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment;
-    modelBindingLayout2.buffer.type = wgpu::BufferBindingType::Uniform;
-    modelBindingLayout2.buffer.minBindingSize = sizeof(ModelUniform);
+    wgpu::BindGroupLayoutEntry &modelBindingLayout = entries[0];
+    modelBindingLayout.binding = 0;
+    modelBindingLayout.visibility = wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment;
+    modelBindingLayout.buffer.type = wgpu::BufferBindingType::Uniform;
+    modelBindingLayout.buffer.minBindingSize = sizeof(ModelUniform);
 
     wgpu::BindGroupLayoutEntry &colorBindingLayout = entries[1];
     colorBindingLayout.binding = 1;
     colorBindingLayout.visibility = wgpu::ShaderStage::Fragment;
     colorBindingLayout.buffer.type = wgpu::BufferBindingType::Uniform;
-    colorBindingLayout.buffer.minBindingSize = sizeof(glm::vec3);
+    colorBindingLayout.buffer.minBindingSize = sizeof(ColorUniforms);
 
     bindGroupLayoutDesc.entryCount = (uint32_t) entries.size();
     bindGroupLayoutDesc.entries = entries.data();

@@ -18,8 +18,8 @@ namespace engine {
         void setColor(glm::vec3 c);
         void setTexture(std::shared_ptr<engine::Texture2D::Texture> texture);
         ObjectPipeline currentTargetPipeline();
-        std::shared_ptr<engine::ModelMatrixUniform> modelMatrix() const;
 
+        std::shared_ptr<engine::ModelMatrixUniform> modelMatrix() const;
         std::shared_ptr<ObjectResources> resources = nullptr;
     };
 

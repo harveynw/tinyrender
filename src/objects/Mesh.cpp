@@ -4,7 +4,7 @@ engine::Mesh::Mesh(Context *c, Scene *s, const std::string& path) {
     this->context = c;
     this->scene = s;
 
-    // Populate this->data
+    // Populate
     if(STR_SUFFIX(path, std::string(".obj")))
         loadFromObjFile(path);
     else

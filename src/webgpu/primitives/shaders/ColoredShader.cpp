@@ -20,19 +20,19 @@ engine::ColoredShader::ColoredShader(Context *context): context(context) {
     // Position attribute
     vertexAttribs[0].shaderLocation = 0;
     vertexAttribs[0].format = VertexFormat::Float32x3;
-    vertexAttribs[0].offset = offsetof(TriangleVertexAttributes, position);
+    vertexAttribs[0].offset = offsetof(UVTriangleVertexAttributes, position);
     // Normal attribute
     vertexAttribs[1].shaderLocation = 1;
     vertexAttribs[1].format = VertexFormat::Float32x3;
-    vertexAttribs[1].offset = offsetof(TriangleVertexAttributes, normal);
+    vertexAttribs[1].offset = offsetof(UVTriangleVertexAttributes, normal);
     // Color attribute
     vertexAttribs[2].shaderLocation = 2;
     vertexAttribs[2].format = VertexFormat::Float32x3;
-    vertexAttribs[2].offset = offsetof(TriangleVertexAttributes, color);
+    vertexAttribs[2].offset = offsetof(UVTriangleVertexAttributes, color);
     // Single vertex buffer layout (specified by TriangleVertexAttributes)
     vertexBufferLayout.attributeCount = (uint32_t)vertexAttribs.size();
     vertexBufferLayout.attributes = vertexAttribs.data();
-    vertexBufferLayout.arrayStride = sizeof(TriangleVertexAttributes);
+    vertexBufferLayout.arrayStride = sizeof(UVTriangleVertexAttributes); // TODO: Can we skip over UV coords?
     vertexBufferLayout.stepMode = VertexStepMode::Vertex;
 }
 

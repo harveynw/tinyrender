@@ -85,6 +85,7 @@ TexturedTrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandE
 
 TexturedTrianglePipeline::~TexturedTrianglePipeline() {
     layout.release();
+    pipeline.release();
 }
 
 void

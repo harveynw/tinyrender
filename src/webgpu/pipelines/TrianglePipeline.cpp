@@ -11,6 +11,8 @@ TrianglePipeline::TrianglePipeline(Context *context, Scene *scene):
     initialisePipelineOptions(desc);
     initialiseDepthStencil(desc);
 
+    desc.layout = scene->coloredShader->pipelineLayout();
+
     pipeline = context->device.createRenderPipeline(desc);
     std::cout << "Render pipeline: " << pipeline << std::endl;
 }
@@ -78,6 +80,7 @@ TrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &
 TrianglePipeline::~TrianglePipeline() {
     // Intermediate resources
     layout.release();
+    pipeline.release();
 }
 
 void

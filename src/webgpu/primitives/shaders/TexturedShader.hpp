@@ -20,6 +20,7 @@ namespace engine {
 
         wgpu::BindGroupLayout viewProjBindGroupLayout() override;
         wgpu::BindGroupLayout objectBindGroupLayout() override;
+
         void setAsTarget(RenderPipelineDescriptor &desc) override;
     };
 

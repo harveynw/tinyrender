@@ -44,14 +44,27 @@ struct Scene {
         viewProjUniformBindGroupData[0] = viewProjUniform->generateUniformBindGroupEntry(0);
         viewProjUniformBindGroupData[1] = lightingUniform->generateUniformBindGroupEntry(1);
 
-        BindGroupDescriptor bindGroupDesc;
-        bindGroupDesc.entryCount = (uint32_t) viewProjUniformBindGroupData.size();
-        bindGroupDesc.entries = viewProjUniformBindGroupData.data();
+        {
+            BindGroupDescriptor bindGroupDesc;
+            bindGroupDesc.entryCount = (uint32_t) viewProjUniformBindGroupData.size();
+            bindGroupDesc.entries = viewProjUniformBindGroupData.data();
+            bindGroupDesc.layout = coloredShader->viewProjBindGroupLayout();
+            coloredViewProjBindGroup = context->device.createBindGroup(bindGroupDesc);
+        }
 
-        bindGroupDesc.layout = coloredShader->viewProjBindGroupLayout();
-        coloredViewProjBindGroup = context->device.createBindGroup(bindGroupDesc);
+        {
+            BindGroupDescriptor bindGroupDesc;
+            bindGroupDesc.entryCount = (uint32_t) viewProjUniformBindGroupData.size();
+            bindGroupDesc.entries = viewProjUniformBindGroupData.data();
+            bindGroupDesc.layout = texturedShader->viewProjBindGroupLayout();
+            texturedViewProjBindGroup = context->device.createBindGroup(bindGroupDesc);
+        }
+    }
 
-        bindGroupDesc.layout = texturedShader->viewProjBindGroupLayout();
-        texturedViewProjBindGroup = context->device.createBindGroup(bindGroupDesc);
+    ~Scene() {
+        if(coloredViewProjBindGroup != nullptr)
+            coloredViewProjBindGroup.release();
+        if(texturedViewProjBindGroup != nullptr)
+            texturedViewProjBindGroup.release();
     }
 };

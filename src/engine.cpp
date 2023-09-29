@@ -41,11 +41,11 @@ Engine::launch() {
     this->scene->coloredShader = std::make_shared<engine::ColoredShader>(this->context.get());
     this->scene->buildViewProj(this->context);
 
-    //this->trianglePipeline = std::make_shared<TrianglePipeline>(this->context.get(), this->scene.get());
+    this->trianglePipeline = std::make_shared<TrianglePipeline>(this->context.get(), this->scene.get());
     this->texturedTrianglePipeline = std::make_shared<TexturedTrianglePipeline>(this->context.get(), this->scene.get());
 
     // Important
-    this->texturedTrianglePipeline->enableClear(Color{1.0, 1.0, 1.0, 1.0});
+    this->trianglePipeline->enableClear(Color{1.0, 1.0, 1.0, 1.0});
 }
 
 int Engine::onFrame() {
@@ -70,7 +70,7 @@ int Engine::onFrame() {
     /*
      * Draw each pipeline
      */
-    //trianglePipeline->onFrame(nextTexture, encoder, objects);
+    trianglePipeline->onFrame(nextTexture, encoder, objects);
     texturedTrianglePipeline->onFrame(nextTexture, encoder, objects);
 
     /*
@@ -92,6 +92,10 @@ int Engine::onFrame() {
 }
 
 Engine::~Engine() {
+    trianglePipeline.reset();
+    texturedTrianglePipeline.reset();
+
+    scene.reset();
     context.reset(); // Calls the context destructor which will free all the WebGPU resources.
     glfwDestroyWindow(window);
     glfwTerminate();
