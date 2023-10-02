@@ -13,6 +13,8 @@ file(GLOB SOURCES
         src/*.cpp
         src/objects/*.hpp
         src/objects/*.cpp
+        src/objects/loaders/*.hpp
+        src/objects/loaders/*.cpp
         src/webgpu/*.hpp
         src/webgpu/*.cpp
         src/webgpu/pipelines/*.hpp

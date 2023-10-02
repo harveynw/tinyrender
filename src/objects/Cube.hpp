@@ -1,4 +1,14 @@
-# Blender v3.4.0 OBJ File: ''
+#pragma once
+
+#include "tiny_obj_loader.h"
+#include <utility>
+#include <string>
+
+#include "Object.hpp"
+#include "loaders/obj.hpp"
+
+const std::string defn =
+R"(# Blender v3.4.0 OBJ File: ''
 # www.blender.org
 o Cube
 v 1.000000 1.000000 -1.000000
@@ -36,3 +46,12 @@ f 8/8/3 7/9/3 5/10/3 6/11/3
 f 6/12/4 2/13/4 4/5/4 8/14/4
 f 2/13/5 1/1/5 3/4/5 4/5/5
 f 6/11/6 5/10/6 1/1/6 2/13/6
+)";
+
+namespace engine {
+
+    class Cube : public Object {
+    public:
+        Cube(Context *c, Scene *s);
+    };
+}

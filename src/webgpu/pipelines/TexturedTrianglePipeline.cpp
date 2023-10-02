@@ -84,7 +84,8 @@ TexturedTrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandE
 }
 
 TexturedTrianglePipeline::~TexturedTrianglePipeline() {
-    layout.release();
+    // TODO: Bug, you would think layout.release() would be required but crashes
+    //layout.release();
     pipeline.release();
 }
 

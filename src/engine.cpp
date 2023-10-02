@@ -92,11 +92,14 @@ int Engine::onFrame() {
 }
 
 Engine::~Engine() {
+    objects.clear();
+    controller.reset();
+    scene.reset();
+
     trianglePipeline.reset();
     texturedTrianglePipeline.reset();
 
-    scene.reset();
-    context.reset(); // Calls the context destructor which will free all the WebGPU resources.
+    context.reset(); // Calls the context destructor which will free all the core WebGPU resources.
     glfwDestroyWindow(window);
     glfwTerminate();
 }

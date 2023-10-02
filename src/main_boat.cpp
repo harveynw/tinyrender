@@ -6,6 +6,7 @@
 #include "controllers/TurntableController.hpp"
 #include "controllers/FreeviewController.hpp"
 #include "objects/Mesh.hpp"
+#include "objects/Cube.hpp"
 
 using namespace wgpu;
 using glm::mat4x4;
@@ -33,8 +34,13 @@ int main (int, char**) {
             engine->getContext().get(), "resources/fourareen2K_albedo.jpg");
     std::shared_ptr<engine::Object> object = std::make_shared<engine::Mesh>(c, s, "resources/fourareen.obj");
     engine->objects.push_back(object);
-    //object->setTexture(texture);
-    object->setColor(vec3(1.0, 0.5, 0.2));
+    object->setTexture(texture);
+    //object->setColor(vec3(1.0, 0.5, 0.2));
+
+    auto object2 = std::make_shared<engine::Cube>(c, s);
+    object2->modelMatrix()->setScale(0.2f);
+    object2->setColor(vec3(0.9, 0.9, 1.0));
+    engine->objects.push_back(object2);
 
     while (!glfwWindowShouldClose(engine->getWindow())) {
         glfwPollEvents();

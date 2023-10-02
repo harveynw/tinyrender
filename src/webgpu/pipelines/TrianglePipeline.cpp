@@ -78,8 +78,7 @@ TrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &
 }
 
 TrianglePipeline::~TrianglePipeline() {
-    // Intermediate resources
-    layout.release();
+    //layout.release();
     pipeline.release();
 }
 
