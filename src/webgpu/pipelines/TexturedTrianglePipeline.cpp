@@ -72,7 +72,7 @@ TexturedTrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandE
     renderPass.setBindGroup(0, this->scene->texturedViewProjBindGroup, 0, nullptr);
 
     for(auto & object : objects) {
-        if(object->currentTargetPipeline() != TexturedTriangle)
+        if(object->SKIP_DRAW || object->currentTargetPipeline() != TexturedTriangle)
             continue;
 
         renderPass.setVertexBuffer(0, object->resources->attributeBuffer->getUnderlyingBuffer(), 0, object->resources->attributeBuffer->getSize());

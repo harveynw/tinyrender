@@ -54,6 +54,7 @@ int main (int, char**) {
 
     {
         auto object = std::make_shared<engine::Pyramid>(c, s, vec3(0, 0, 3), 2, 3);
+        object->SKIP_DRAW = true;
         object->modelMatrix()->setScale(0.2f);
         object->setColor(vec3(1.0, 0.0, 1.0));
         engine->objects.push_back(object);

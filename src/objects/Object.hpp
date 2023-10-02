@@ -19,6 +19,8 @@ namespace engine {
         void setTexture(std::shared_ptr<engine::Texture2D::Texture> texture);
         ObjectPipeline currentTargetPipeline();
 
+        bool SKIP_DRAW = false;
+
         std::shared_ptr<engine::ModelMatrixUniform> modelMatrix() const;
         std::shared_ptr<ObjectResources> resources = nullptr;
     };

@@ -66,7 +66,7 @@ TrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &
     renderPass.setBindGroup(0, this->scene->coloredViewProjBindGroup, 0, nullptr);
 
     for(auto & object : objects) {
-        if(object->currentTargetPipeline() != ColoredTriangle)
+        if(object->SKIP_DRAW || object->currentTargetPipeline() != ColoredTriangle)
             continue;
 
         renderPass.setVertexBuffer(0, object->resources->attributeBuffer->getUnderlyingBuffer(), 0, object->resources->attributeBuffer->getSize());
