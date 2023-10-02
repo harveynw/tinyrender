@@ -52,27 +52,27 @@ FreeviewController::onKeyEvent(int key, int scancode, int action, int mods) {
     }
 }
 
-void FreeviewController::tick() {
+void
+FreeviewController::onFrame(float dt) {
     float speed = fast ? fastSpeed : moveSpeed;
 
     if(longitudinal == 0 && lateral == 0 && vertical == 0)
         return; // Not moving
 
     if(lateral != 0) {
-        // This is a little wasteful recomputing the rotation matrices every tick but simple
         float angle = (float) -lateral * glm::pi<float>()/2.0f;
         glm::mat2x2 rot = glm::mat2x2(cos(angle), -sin(angle), sin(angle),
                                       cos(angle));
         glm::vec2 rotDir = rot * glm::vec2(direction.x, direction.y);
-        position.x += speed * rotDir.x;
-        position.y += speed * rotDir.y;
+        position.x += dt * speed * rotDir.x;
+        position.y += dt * speed * rotDir.y;
     }
 
     if(longitudinal != 0)
-        position += (float) longitudinal * speed * direction;
+        position += (float) longitudinal * dt * speed * direction;
 
     if(vertical != 0)
-        position += (float) vertical * speed * vec3(0, 0, 1);
+        position += (float) vertical * dt * speed * vec3(0, 0, 1);
 
     updateInternalBuffer();
 }
@@ -107,5 +107,6 @@ void FreeviewController::enableListen(GLFWwindow *window, std::shared_ptr<engine
     this->viewProjectionMatrix = vpMatrix;
     printf("FreeviewController enabled - WASD, Space - Up, Z - Down, E - Speed, Esc - Uncapture\n");
     glfw_window = window;
+    updateInternalBuffer();
     updateMouseState();
 }

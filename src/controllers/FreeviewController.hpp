@@ -29,12 +29,12 @@ protected:
     int longitudinal = 0;
     int vertical = 0;
     vec2 mousePosition;
-    bool captureMouse = true;
+    bool captureMouse = false;
     bool fast = false;
 
     // Config
-    float moveSpeed = 0.1f;
-    float fastSpeed = 0.5f;
+    float moveSpeed = 10.0f;
+    float fastSpeed = 50.0f;
     float mouseSensitivity = 0.01f;
 
     void updateInternalBuffer() override;
@@ -42,7 +42,7 @@ protected:
 public:
     FreeviewController() = default;
 
-    void tick() override;
+    void onFrame(float dt) override;
     void enableListen(GLFWwindow *window, std::shared_ptr<engine::ViewProjMatrixUniform> vpMatrix) override;
 
     void onMouseMove(double xpos, double ypos) override;

@@ -48,11 +48,11 @@ Engine::launch() {
     this->trianglePipeline->enableClear(Color{1.0, 1.0, 1.0, 1.0});
 }
 
-int Engine::onFrame() {
+int Engine::onFrame(float dt) {
     /*
      * Update controller
      */
-    controller->tick();
+    controller->onFrame(dt);
 
     /*
      * Get texture view from swapchain
@@ -108,7 +108,7 @@ void
 Engine::setController(std::shared_ptr<Controller> c) {
     controller = c;
     controller->enableListen(window, this->scene->viewProjUniform);
-    controller->tick();
+    controller->onFrame(0);
 }
 
 [[maybe_unused]] int
@@ -116,7 +116,7 @@ Engine::enterMainLoop() {
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
 
-        int result = onFrame();
+        int result = onFrame(0.01);
         if(result != 0)
             return result;
     }

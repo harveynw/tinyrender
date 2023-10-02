@@ -66,7 +66,7 @@ int main (int, char**) {
     while (!glfwWindowShouldClose(engine->getWindow())) {
         glfwPollEvents();
 
-        int result = engine->onFrame();
+        int result = engine->onFrame(0.01);
         if(result != 0)
             return result;
     }

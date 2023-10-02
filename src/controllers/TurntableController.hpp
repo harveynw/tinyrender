@@ -32,7 +32,7 @@ protected:
 public:
     TurntableController() = default;
 
-    void tick() override {};
+    void onFrame(float dt) override;
     void enableListen(GLFWwindow *window, std::shared_ptr<engine::ViewProjMatrixUniform> vpMatrix) override;
 
     void onMouseMove(double xpos, double ypos) override;

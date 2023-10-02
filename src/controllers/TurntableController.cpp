@@ -70,7 +70,13 @@ TurntableController::onKeyEvent(int key, int scancode, int action, int mods) {
     (void) mods;
 }
 
-void TurntableController::enableListen(GLFWwindow *window, std::shared_ptr<engine::ViewProjMatrixUniform> vpMatrix) {
+void
+TurntableController::enableListen(GLFWwindow *window, std::shared_ptr<engine::ViewProjMatrixUniform> vpMatrix) {
     (void) window;
     this->viewProjectionMatrix = vpMatrix;
+}
+
+void
+TurntableController::onFrame(float dt) {
+    (void) dt;
 }

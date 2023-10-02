@@ -25,7 +25,7 @@ public:
     void launch(); // Launch GLFW window
     [[maybe_unused]] int enterMainLoop();
 
-    int onFrame(); // internal call from main event loop
+    int onFrame(float dt); // internal call from main event loop
 
     void onResize(int, int);
     void setController(std::shared_ptr<Controller> controller);
