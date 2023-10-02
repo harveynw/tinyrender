@@ -142,8 +142,3 @@ function(add_test name sources)
 endfunction()
 
 #add_test(shape_helpers_test "src/shape_helpers_test.cpp;src/shape_helpers.hpp;src/shape_helpers.cpp")
-
-#add_executable(shape_helpers_test src/shape_helpers_test.cpp src/shape_helpers.hpp src/shape_helpers.cpp)
-#target_link_libraries(shape_helpers_test GTest::gtest_main glm::glm webgpu glfw glfw3webgpu)
-#target_copy_webgpu_binaries(shape_helpers_test)
-#gtest_discover_tests(shape_helpers_test)

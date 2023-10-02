@@ -5,7 +5,7 @@
 #include <string>
 
 #include "Object.hpp"
-#include "loaders/obj.hpp"
+#include "loaders/Obj.hpp"
 
 const std::string defn =
 R"(# Blender v3.4.0 OBJ File: ''

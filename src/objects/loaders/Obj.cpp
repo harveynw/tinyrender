@@ -1,10 +1,10 @@
-#include "obj.hpp"
+#include "Obj.hpp"
 
 
 namespace {
 
     void
-    load(tinyobj::ObjReader &reader, Obj &obj) {
+    load(tinyobj::ObjReader &reader, Polygons &p) {
         if (!reader.Error().empty()) {
             std::cerr << "TinyObjReader: " << reader.Error();
             exit(1);
@@ -54,26 +54,26 @@ namespace {
         auto *data = reinterpret_cast<float *>(vertexData.data()); // Flatten
         int n_data = sizeof(UVTriangleVertexAttributes) * vertexData.size();
 
-        obj.data = std::vector<float>(data, data + n_data);
-        obj.vertices = vertexData.size();
+        p.data = std::vector<float>(data, data + n_data);
+        p.vertices = vertexData.size();
     }
 
 }
 
 void
-loadFromObjFile(std::string path, Obj &obj) {
+loadFromObjFile(std::string path, Polygons &p) {
     tinyobj::ObjReader reader;
     tinyobj::ObjReaderConfig reader_config;
     reader_config.mtl_search_path = "./"; // Path to material files
 
     reader.ParseFromFile(path, reader_config);
-    load(reader, obj);
+    load(reader, p);
 }
 
 void
-loadFromObj(std::string defn, Obj &obj) {
+loadFromObj(std::string defn, Polygons &p) {
     tinyobj::ObjReader reader;
 
     reader.ParseFromString(defn, "");
-    load(reader, obj);
+    load(reader, p);
 }
