@@ -35,11 +35,9 @@ file(GLOB SOURCES
         src/controllers/*.cpp
         )
 list(FILTER SOURCES EXCLUDE REGEX "_test.cpp$")
+list(FILTER SOURCES EXCLUDE REGEX "src/main_old.cpp$")
 
-list(FILTER SOURCES EXCLUDE REGEX "src/main.cpp$")
-
-#add_executable(App src/main.cpp ${SOURCES})
-add_executable(App src/main_boat.cpp ${SOURCES})
+add_executable(App src/main.cpp ${SOURCES})
 set_property(TARGET App PROPERTY CXX_STANDARD 17)
 
 # Make sure to show as many warnings as possible

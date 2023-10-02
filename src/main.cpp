@@ -3,13 +3,10 @@
 #include <glm/glm.hpp>
 
 #include "engine.hpp"
-#include "shape_helpers.hpp"
-#include "webgpu/primitives/buffers/attributes/TexturedAttribute.hpp"
-#include "webgpu/pipelines/IndexedTrianglePipeline.hpp"
-#include "webgpu/pipelines/TrianglePipeline.hpp"
-#include "webgpu/pipelines/TexturedTrianglePipeline.hpp"
 #include "controllers/TurntableController.hpp"
 #include "controllers/FreeviewController.hpp"
+#include "objects/Mesh.hpp"
+#include "objects/Cube.hpp"
 
 using namespace wgpu;
 using glm::mat4x4;
@@ -18,152 +15,46 @@ using glm::vec3;
 
 
 int main (int, char**) {
-    // TODO: Implement dt into controllers
-    // TODO: Shift model matrix into own bind group tied to 'objects' not pipelines
-    // TODO: More primitives
+    /*
+     * Init engine
+     */
 
     auto *engine = new Engine(640, 480);
     engine->launch();
     Context *c = engine->getContext().get();
     Scene *s = engine->getScene().get();
 
-    auto modelMatrix = std::make_shared<engine::ModelMatrixUniform>(c);
+    /*
+     * Set helper class for moving camera about
+     */
 
-    auto uniforms = std::make_shared<engine::ViewProjMatrixUniform>(c, vec3(5.0, -5.0, 5.0),
-                                                                    vec3(0, 0, 0));
-
-    auto controller = std::make_shared<FreeviewController>(uniforms);
     //auto controller = std::make_shared<TurntableController>(uniforms);
+    auto controller = std::make_shared<FreeviewController>();
     engine->setController(controller);
 
-    bool success;
-
     /*
-     * Shape pipeline
+     * Create the objects
      */
-
-    auto pyramidModelMatrix = std::make_shared<engine::ModelMatrixUniform>(c);
-    auto triangles = shape_helpers::makePyramid(vec3(0.0, 0.0, 1.0), 1.0, 1.0);
-    auto data = shape_helpers::asIndexedTriangles(triangles);
-    auto indexDataBuffer = std::make_shared<engine::IndexBuffer>(c, data.indexData);
-    auto attributeDataBuffer = std::make_shared<engine::IndexedAttribute>(c, data);
-    std::vector<IndexedTriangleObject> objects_indexed;
-    objects_indexed.push_back({
-            pyramidModelMatrix,
-            indexDataBuffer,
-            attributeDataBuffer,
-    });
-    auto itPipeline = std::make_shared<IndexedTrianglePipeline>(c, s, uniforms, objects_indexed);
-    itPipeline->enableClear(Color{ 0.631, 0.666, 1.0, 1.0 });
-    engine->addPipeline(itPipeline);
-
-    /*
-     * OBJs pipeline
-     */
-
-    auto mammothModelMatrix = std::make_shared<engine::ModelMatrixUniform>(c);
-    auto teapotModelMatrix = std::make_shared<engine::ModelMatrixUniform>(c);
-    std::vector<TriangleObject> tri_objects;
     {
-        std::vector<TriangleVertexAttributes> vertexData;
-        success = loadObjIntoTriangleData("resources/mammoth.obj", vertexData);
-        //bool success = loadObjIntoTriangleData("resources/coffee_cup_obj.obj", vertexData);
-        //bool success = loadObjIntoTriangleData("resources/bugatti.obj", vertexData);
-        if (!success) {
-            std::cerr << "Could not load geometry!" << std::endl;
-            return 1;
-        }
-
-        auto attr = std::make_shared<engine::NonTexturedAttribute>(c, vertexData);
-
-        tri_objects.push_back({mammothModelMatrix, attr});
+        auto texture = std::make_shared<engine::Texture2D::common::BasicImgRepeatingTexture>(
+                engine->getContext().get(), "resources/fourareen2K_albedo.jpg");
+        std::shared_ptr<engine::Object> object = std::make_shared<engine::Mesh>(c, s, "resources/fourareen.obj");
+        engine->objects.push_back(object);
+        object->setTexture(texture);
+        //object->setColor(vec3(1.0, 0.5, 0.2));
     }
+
     {
-        std::vector<TriangleVertexAttributes> vertexData;
-        success = loadObjIntoTriangleData("resources/teapot.obj", vertexData);
-        if (!success) {
-            std::cerr << "Could not load geometry!" << std::endl;
-            return 1;
-        }
-
-        auto attr = std::make_shared<engine::NonTexturedAttribute>(c, vertexData);
-
-        tri_objects.push_back({teapotModelMatrix, attr});
-    }
-    engine->addPipeline(std::make_shared<TrianglePipeline>(c, s, uniforms, tri_objects));
-
-    /*
-     * Textured OBJ pipeline
-     */
-    // Texture test
-    auto cubeModelMatrix = std::make_shared<engine::ModelMatrixUniform>(c);
-    //auto texture = std::make_shared<engine::DebugTexture2D>(engine, 256, 256);
-    auto texture = std::make_shared<engine::Texture2D::common::BasicImgRepeatingTexture>(
-            engine->getContext().get(), "resources/img/grass.png");
-    std::vector<UVTriangleVertexAttributes> vertexData3;
-    success = loadTexturedObjIntoTriangleData("resources/cube.obj", vertexData3);
-    if (!success) {
-        std::cerr << "Could not load geometry!" << std::endl;
-        return 1;
+        auto object = std::make_shared<engine::Cube>(c, s);
+        object->modelMatrix()->setScale(0.2f);
+        object->setColor(vec3(0.9, 0.9, 1.0));
+        engine->objects.push_back(object);
     }
 
-    auto attrs = std::make_shared<engine::TexturedAttribute>(c, vertexData3);
-    std::vector<TexturedTriangleObject> objects(1);
-    objects[0] = { cubeModelMatrix, attrs };
-
-    engine->addPipeline(std::make_shared<TexturedTrianglePipeline>(c, s, uniforms, texture, objects));
-
     /*
-     * Viking room
+     * Render loop
      */
-    auto roomModelMatrix = std::make_shared<engine::ModelMatrixUniform>(c);
-    roomModelMatrix->setTranslation(vec3(0, 0, 3));
-    roomModelMatrix->setRotationX(-glm::pi<float>()/2.0);
-    auto roomTexture = std::make_shared<engine::Texture2D::common::BasicImgTexture>(
-            engine->getContext().get(), "resources/viking_room.png");
-    std::vector<UVTriangleVertexAttributes> vikingRoomData;
-    success = loadTexturedObjIntoTriangleData("resources/viking_room.obj", vertexData3);
-    if (!success) {
-        std::cerr << "Could not load geometry!" << std::endl;
-        return 1;
-    }
-
-    auto vikingAttrs = std::make_shared<engine::TexturedAttribute>(c, vertexData3);
-    std::vector<TexturedTriangleObject> viking_objects(1);
-    viking_objects[0] = { roomModelMatrix, vikingAttrs };
-
-    engine->addPipeline(std::make_shared<TexturedTrianglePipeline>(c, s, uniforms, roomTexture, viking_objects));
-
-    /*
-     * Plane pipeline
-     */
-    float z_pos = -0.5;
-    float lg = 100;
-    auto plane = shape_helpers::makeQuad(vec3(-lg, -lg, z_pos), vec3(lg, -lg, z_pos),
-                                         vec3(lg, lg, z_pos), vec3(-lg, lg, z_pos));
-    //auto planeTexture = std::make_shared<engine::ImageTexture2D>(engine, "resources/img/grass.png");
-    auto planeTexture = std::make_shared<engine::Texture2D::common::DebugTexture>(c, 256, 256);
-    auto planeData = shape_helpers::asTexturedTriangles(plane);
-    auto planeBuffer = std::make_shared<engine::TexturedAttribute>(c, planeData);
-    std::vector<TexturedTriangleObject> objects_2(1);
-    objects_2[0] = { modelMatrix, planeBuffer };
-    engine->addPipeline(std::make_shared<TexturedTrianglePipeline>(c, s, uniforms, planeTexture, objects_2));
-
-    mammothModelMatrix->setTranslation(vec3(5.0, 0.0, 1.0));
-    mammothModelMatrix->setScale(2.0);
-
-    roomModelMatrix->setScale(5.0);
-
-    pyramidModelMatrix->setTranslation(vec3(-3.0, -3.0, -1.0));
-
-    //int exit_result = engine->enterMainLoop();
-    float rot = 0;
     while (!glfwWindowShouldClose(engine->getWindow())) {
-        rot += 0.01;
-
-        mammothModelMatrix->setRotationZ(rot);
-        pyramidModelMatrix->setRotationZ(2*rot);
-
         glfwPollEvents();
 
         int result = engine->onFrame();
@@ -172,7 +63,5 @@ int main (int, char**) {
     }
 
     delete engine;
-
-    //return exit_result;
     return 0;
 }
