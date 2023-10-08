@@ -1,5 +1,6 @@
 #include "Context.hpp"
 
+
 std::shared_ptr<Context>
 buildNewContext(GLFWwindow *window, int width, int height) {
     auto context = std::make_shared<Context>();
@@ -24,7 +25,13 @@ buildNewContext(GLFWwindow *window, int width, int height) {
     context->adapter = context->instance.requestAdapter(adapterOpts);
 
     wgpu::SupportedLimits supportedLimits;
-    context->adapter.getLimits(&supportedLimits);
+    #ifdef __EMSCRIPTEN__
+        // Error in Chrome so we hardcode values:
+        supportedLimits.limits.minStorageBufferOffsetAlignment = 256;
+        supportedLimits.limits.minUniformBufferOffsetAlignment = 256;
+    #else
+        context->adapter.getLimits(&supportedLimits);
+    #endif
     //std::cout << "adapter.maxVertexAttributes: " << supportedLimits.limits.maxVertexAttributes << std::endl;
 
     wgpu::RequiredLimits requiredLimits = wgpu::Default;

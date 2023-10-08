@@ -12,6 +12,8 @@ _create(create),
 _view(view),
 _samp(samp)
 {
+    this->context = context;
+
     // Data delegate gives us information on how big the texture is
     _data->initialise(this->width, this->height, this->mips);
 

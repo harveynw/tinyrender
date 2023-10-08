@@ -32,3 +32,8 @@ ObjectPipeline engine::Object::currentTargetPipeline() {
     return targetPipeline;
 }
 
+void engine::Object::update(float dt) {
+    (void) dt;
+    return;
+}
+

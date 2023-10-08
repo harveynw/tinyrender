@@ -3,9 +3,9 @@
 ShaderModule
 loadShaderModule(std::string path, Device device) {
     std::ifstream file(path);
-    if (!file.is_open()) {
-        return nullptr;
-    }
+    if (!file.is_open())
+        throw std::runtime_error("Couldn't open shader path " + path);
+
     file.seekg(0, std::ios::end);
     size_t size = file.tellg();
     std::string shaderSource(size, ' ');

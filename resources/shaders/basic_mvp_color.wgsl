@@ -12,8 +12,6 @@ struct VertexOutput {
 struct MyUniforms {
     projectionMatrix: mat4x4f,
     viewMatrix: mat4x4f,
-    color: vec4f,
-    time: f32,
 };
 
 struct LightingUniforms {

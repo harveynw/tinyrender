@@ -15,4 +15,5 @@ struct UVTriangleVertexAttributes {
     glm::vec3 color;
     glm::vec2 uv;
 };
+static_assert(sizeof(UVTriangleVertexAttributes) == sizeof(glm::vec3) * 3 + sizeof(glm::vec2));
 

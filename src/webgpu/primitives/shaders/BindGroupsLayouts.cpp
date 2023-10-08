@@ -81,3 +81,45 @@ coloredModelUniformLayout(Context *context) {
     bindGroupLayoutDesc.entries = entries.data();
     return context->device.createBindGroupLayout(bindGroupLayoutDesc);
 }
+
+wgpu::BindGroupLayout
+wavesUniformLayout(Context *context) {
+    std::vector<wgpu::BindGroupLayoutEntry> entries(5, wgpu::Default);
+    wgpu::BindGroupLayoutDescriptor bindGroupLayoutDesc{};
+
+    /*
+     * Waves: Model matrix + simulation data
+     */
+    wgpu::BindGroupLayoutEntry &modelBindingLayout = entries[0];
+    modelBindingLayout.binding = 0;
+    modelBindingLayout.visibility = wgpu::ShaderStage::Vertex;
+    modelBindingLayout.buffer.type = wgpu::BufferBindingType::Uniform;
+    modelBindingLayout.buffer.minBindingSize = sizeof(ModelUniform);
+
+    wgpu::BindGroupLayoutEntry& textureBindingLayout = entries[1];
+    textureBindingLayout.binding = 1;
+    textureBindingLayout.visibility = wgpu::ShaderStage::Vertex;
+    textureBindingLayout.texture.sampleType = wgpu::TextureSampleType::Float; // Because using normalised format
+    textureBindingLayout.texture.viewDimension = wgpu::TextureViewDimension::_2D;
+
+    wgpu::BindGroupLayoutEntry& samplerBindingLayout = entries[2];
+    samplerBindingLayout.binding = 2;
+    samplerBindingLayout.visibility = wgpu::ShaderStage::Vertex;
+    samplerBindingLayout.sampler.type = wgpu::SamplerBindingType::Filtering;
+
+    wgpu::BindGroupLayoutEntry& maxDispBindingLayout = entries[3];
+    maxDispBindingLayout.binding = 3;
+    maxDispBindingLayout.visibility = wgpu::ShaderStage::Vertex;
+    maxDispBindingLayout.buffer.type = wgpu::BufferBindingType::Uniform;
+    maxDispBindingLayout.buffer.minBindingSize = sizeof(ScalarUniforms);
+
+    wgpu::BindGroupLayoutEntry &colorBindingLayout = entries[4];
+    colorBindingLayout.binding = 4;
+    colorBindingLayout.visibility = wgpu::ShaderStage::Vertex;
+    colorBindingLayout.buffer.type = wgpu::BufferBindingType::Uniform;
+    colorBindingLayout.buffer.minBindingSize = sizeof(ColorUniforms);
+
+    bindGroupLayoutDesc.entryCount = (uint32_t) entries.size();
+    bindGroupLayoutDesc.entries = entries.data();
+    return context->device.createBindGroupLayout(bindGroupLayoutDesc);
+}

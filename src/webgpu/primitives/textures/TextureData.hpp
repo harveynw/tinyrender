@@ -38,6 +38,53 @@ namespace engine::Texture2D {
         }
     };
 
+    class SolidColor : public DataDelegate {
+    protected:
+        unsigned int _width;
+        unsigned int _height;
+        glm::vec3 _color;
+
+        std::vector<uint8_t> data;
+    public:
+        SolidColor(unsigned int width, unsigned int height, glm::vec3 color):
+        _width(width), _height(height), _color(color) {};
+        ~SolidColor() override = default;
+
+        void initialise(unsigned int &width, unsigned int &height, unsigned int &mips) override {
+            width = this->_width;
+            height = this->_height;
+            mips = 1;
+
+            data = std::vector<uint8_t>(4 * width * height);
+            for(auto i = data.begin(); i != data.end(); i += 4) {
+                *i = (uint8_t) (255 * _color.x);
+                *(i+1) = (uint8_t) (255 * _color.y);
+                *(i+2) = (uint8_t) (255 * _color.z);
+                *(i+3) = 255;
+            }
+        }
+
+        void write(Context *context, wgpu::Texture underlying) override {
+            // Setup copy from data to texture
+            wgpu::ImageCopyTexture destination;
+            destination.texture = underlying;
+            destination.origin = { 0, 0, 0 }; // equivalent of the offset argument of Queue::writeBuffer
+            destination.aspect = wgpu::TextureAspect::All; // only relevant for depth/Stencil textures
+            destination.mipLevel = 0;
+
+            // Setup how data is laid out in C++
+            wgpu::TextureDataLayout source;
+            source.offset = 0;
+
+            // Compute from the mip level size
+            source.bytesPerRow = 4 * _width;
+            source.rowsPerImage = _height;
+
+            context->queue.writeTexture(destination, data.data(), data.size(),
+                                        source,{_width, _height, 1});
+        }
+    };
+
     class DebugData : public DataDelegate {
     protected:
         unsigned int _width;

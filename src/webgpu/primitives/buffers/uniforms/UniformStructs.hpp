@@ -9,9 +9,6 @@ using glm::vec4;
 struct ViewProjectionUniforms {
     mat4x4 projectionMatrix;
     mat4x4 viewMatrix;
-    vec4 color; // Unused
-    float time;
-    float _pad[3];
 };
 static_assert(sizeof(ViewProjectionUniforms) % 16 == 0, "Must be multiple of 16 bytes");
 
@@ -34,3 +31,9 @@ struct ColorUniforms {
     float _pad;
 };
 static_assert(sizeof(ColorUniforms) % 16 == 0);
+
+struct ScalarUniforms {
+    float scalar;
+    float _pad[3];
+};
+static_assert(sizeof(ScalarUniforms) % 16 == 0);

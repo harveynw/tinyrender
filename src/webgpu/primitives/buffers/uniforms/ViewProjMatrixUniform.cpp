@@ -16,7 +16,6 @@ engine::ViewProjMatrixUniform::ViewProjMatrixUniform(Context *context, vec3 look
     this->fov = 2 * glm::atan(1 / focalLength);
     uniforms.viewMatrix = glm::lookAt(lookFrom, lookAt, vec3(0, 0, 1));
     uniforms.projectionMatrix = glm::perspective(fov, ratio, near, far);
-    uniforms.time = 1.0f;
 
     // Buffer base class is initialised
     this->context = context;
@@ -24,20 +23,6 @@ engine::ViewProjMatrixUniform::ViewProjMatrixUniform(Context *context, vec3 look
     this->size = sizeof(ViewProjectionUniforms);
     this->mapped = false;
     this->initialise(&uniforms);
-}
-
-void
-engine::ViewProjMatrixUniform::updateRotationAboutZAxis() {
-    uniforms.time = static_cast<float>(glfwGetTime()); // glfwGetTime returns a double
-    // Only update the 1-st float of the buffer
-    context->queue.writeBuffer(underlying, offsetof(ViewProjectionUniforms, time),
-                              &uniforms.time,sizeof(ViewProjectionUniforms::time));
-
-    // Rotate camera around z-axis
-    mat4x4 newViewMatrix= glm::rotate(uniforms.viewMatrix, 2*glm::sin(uniforms.time),
-                                      vec3(0.0, 0.0, 1.0));
-    context->queue.writeBuffer(underlying, offsetof(ViewProjectionUniforms, viewMatrix),
-                              &newViewMatrix, sizeof(ViewProjectionUniforms::viewMatrix));
 }
 
 void

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <GLFW/glfw3.h>
-#include <glfw3webgpu.h>
 #include <webgpu/webgpu.hpp>
 
 #include "webgpu/Context.hpp"
@@ -10,6 +9,7 @@
 #include "webgpu/pipelines/TrianglePipeline.hpp"
 #include "webgpu/pipelines/TexturedTrianglePipeline.hpp"
 #include "controllers/Controller.hpp"
+#include "webgpu/pipelines/WavesPipeline.hpp"
 
 
 // Forward declarations
@@ -23,9 +23,9 @@ public:
     ~Engine();
 
     void launch(); // Launch GLFW window
-    [[maybe_unused]] int enterMainLoop();
 
-    int onFrame(float dt); // internal call from main event loop
+    bool isRunning();
+    void onFrame();
 
     void onResize(int, int);
     void setController(std::shared_ptr<Controller> controller);
@@ -53,6 +53,7 @@ protected:
     // Pipeline objects
     std::shared_ptr<TrianglePipeline> trianglePipeline = nullptr;
     std::shared_ptr<TexturedTrianglePipeline> texturedTrianglePipeline = nullptr;
+    std::shared_ptr<WavesPipeline> wavesPipeline = nullptr;
 };
 
 void onWindowResize(GLFWwindow* window, int, int);
@@ -60,3 +61,4 @@ void onWindowMouseMove(GLFWwindow* window, double xpos, double ypos);
 void onWindowMouseButton(GLFWwindow* window, int button, int action, int mods);
 void onWindowScroll(GLFWwindow* window, double xoffset, double yoffset);
 void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods);
+void onWindowTest(GLFWwindow* window, int, int);

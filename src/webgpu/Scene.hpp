@@ -5,6 +5,7 @@
 #include "primitives/buffers/uniforms/LightingUniform.hpp"
 #include "primitives/shaders/TexturedShader.hpp"
 #include "primitives/shaders/ColoredShader.hpp"
+#include "primitives/shaders/WavesShader.hpp"
 #include "primitives/buffers/uniforms/ViewProjMatrixUniform.hpp"
 
 /*
@@ -26,12 +27,14 @@ struct Scene {
     // Shaders
     std::shared_ptr<engine::TexturedShader> texturedShader;
     std::shared_ptr<engine::ColoredShader> coloredShader;
+    std::shared_ptr<engine::WavesShader> wavesShader;
 
     // Projection * View Matrix
     std::shared_ptr<engine::ViewProjMatrixUniform> viewProjUniform;
     std::vector<wgpu::BindGroupEntry> viewProjUniformBindGroupData;
     wgpu::BindGroup coloredViewProjBindGroup = nullptr;
     wgpu::BindGroup texturedViewProjBindGroup = nullptr;
+    wgpu::BindGroup wavesViewProjBindGroup = nullptr;
 
     void buildViewProj(const std::shared_ptr<Context>& context) {
         if(texturedShader == nullptr || coloredShader == nullptr)
@@ -59,12 +62,19 @@ struct Scene {
             bindGroupDesc.layout = texturedShader->viewProjBindGroupLayout();
             texturedViewProjBindGroup = context->device.createBindGroup(bindGroupDesc);
         }
+
+        {
+            BindGroupDescriptor bindGroupDesc;
+            bindGroupDesc.entryCount = (uint32_t) viewProjUniformBindGroupData.size();
+            bindGroupDesc.entries = viewProjUniformBindGroupData.data();
+            bindGroupDesc.layout = wavesShader->viewProjBindGroupLayout();
+            wavesViewProjBindGroup = context->device.createBindGroup(bindGroupDesc);
+        }
     }
 
     ~Scene() {
-        if(coloredViewProjBindGroup != nullptr)
-            coloredViewProjBindGroup.release();
-        if(texturedViewProjBindGroup != nullptr)
-            texturedViewProjBindGroup.release();
+        coloredViewProjBindGroup.release();
+        texturedViewProjBindGroup.release();
+        wavesViewProjBindGroup.release();
     }
 };

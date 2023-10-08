@@ -29,26 +29,37 @@ Engine::launch() {
     glfwSetScrollCallback(window, onWindowScroll);
     glfwSetKeyCallback(window, onKeyAction);
     glfwSetFramebufferSizeCallback(window, onWindowResize);
+    glfwSetWindowSizeCallback(window, onWindowTest);
 
     // Create webgpu resources
     this->context = buildNewContext(window, DISPLAY_WIDTH, DISPLAY_HEIGHT);
 
+    std::cout << "test message!" << std::endl;
     // TODO: Scene can absorb this complexity
     this->scene = std::make_shared<Scene>();
     this->scene->buildDepthBuffer(this->context);
     this->scene->lightingUniform = std::make_shared<engine::LightingUniform>(this->context.get());
     this->scene->texturedShader = std::make_shared<engine::TexturedShader>(this->context.get());
     this->scene->coloredShader = std::make_shared<engine::ColoredShader>(this->context.get());
+    this->scene->wavesShader = std::make_shared<engine::WavesShader>(this->context.get());
     this->scene->buildViewProj(this->context);
 
     this->trianglePipeline = std::make_shared<TrianglePipeline>(this->context.get(), this->scene.get());
     this->texturedTrianglePipeline = std::make_shared<TexturedTrianglePipeline>(this->context.get(), this->scene.get());
+    this->wavesPipeline = std::make_shared<WavesPipeline>(this->context.get(), this->scene.get());
 
     // Important
     this->trianglePipeline->enableClear(Color{1.0, 1.0, 1.0, 1.0});
 }
 
-int Engine::onFrame(float dt) {
+void Engine::onFrame() {
+    glfwPollEvents();
+    float dt = 0.01;
+
+    for(const auto& obj : objects) {
+        obj->update(dt);
+    }
+
     /*
      * Update controller
      */
@@ -60,7 +71,8 @@ int Engine::onFrame(float dt) {
     wgpu::TextureView nextTexture = context->swapChain.getCurrentTextureView();
     if (!nextTexture) {
         std::cerr << "Cannot acquire next swap chain texture" << std::endl;
-        return 1;
+        //return 1;
+        return;
     }
 
     wgpu::CommandEncoderDescriptor commandEncoderDesc;
@@ -72,10 +84,12 @@ int Engine::onFrame(float dt) {
      */
     trianglePipeline->onFrame(nextTexture, encoder, objects);
     texturedTrianglePipeline->onFrame(nextTexture, encoder, objects);
+    wavesPipeline->onFrame(nextTexture, encoder, objects);
 
     /*
      * Finish up
      */
+
     nextTexture.release();
 
     wgpu::CommandBufferDescriptor cmdBufferDescriptor;
@@ -83,12 +97,14 @@ int Engine::onFrame(float dt) {
     wgpu::CommandBuffer command = encoder.finish(cmdBufferDescriptor);
     context->queue.submit(command);
 
+    #ifndef __EMSCRIPTEN__
+    // No need if in browser
     context->swapChain.present();
+    #endif
+
     #ifdef WEBGPU_BACKEND_DAWN
     context->device.tick(); // Check for pending error callbacks
     #endif
-
-    return 0;
 }
 
 Engine::~Engine() {
@@ -111,19 +127,6 @@ Engine::setController(std::shared_ptr<Controller> c) {
     controller->onFrame(0);
 }
 
-[[maybe_unused]] int
-Engine::enterMainLoop() {
-    while (!glfwWindowShouldClose(window)) {
-        glfwPollEvents();
-
-        int result = onFrame(0.01);
-        if(result != 0)
-            return result;
-    }
-
-    return 0;
-}
-
 void Engine::onResize(int width, int height) {
     printf("Resize to (%i, %i)\n", width, height);
     // Update fields
@@ -138,8 +141,13 @@ void Engine::onResize(int width, int height) {
         controller->viewProjectionMatrix->refreshProjectionMatrix(context.get());
 }
 
+bool Engine::isRunning() {
+    return !glfwWindowShouldClose(getWindow());
+}
+
 void
 onWindowResize(GLFWwindow* window, int width, int height) {
+    std::cout << "Got window resize " << width << "," << height << std::endl;
     auto that = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
     if (that != nullptr) that->onResize(width, height);
 }
@@ -166,4 +174,12 @@ void
 onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods) {
     auto engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
     if (engine != nullptr && engine->controller != nullptr) engine->controller->onKeyEvent(key, scancode, action, mods);
+}
+
+//TODO remove
+void
+onWindowTest(GLFWwindow *window, int w, int h) {
+    (void) window;
+    glfwGetFramebufferSize(window, &w, &h);
+    std::cout << "Got window (test!) resize " << w << "," << h << std::endl;
 }

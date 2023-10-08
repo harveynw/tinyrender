@@ -174,3 +174,59 @@ loadPyramid(Polygons &p, glm::vec3 centre, float height, float width) {
     auto shape = makePyramid(centre, height, width);
     shape.asPolygons(p);
 }
+
+void
+loadPlaneMesh(Polygons &p, float width, float length, int nWidth, int nLength) {
+    float dx = width/(float) nWidth;
+    float dy = length/(float) nLength;
+
+    // Grid coordinate [0, nWidth] x [0, nLength] to world coordinate R x R x {0}
+    auto coordToPosition = [width, length, dx, dy](int x, int y) {
+        return glm::vec3((x * dx) - width/2.0, (y * dy) - length/2.0, 0.0);
+    };
+
+    auto v = std::vector<UVTriangleVertexAttributes>(6 * nWidth * nLength);
+    for(int y = 0; y < nLength; y++) {
+        for(int x = 0; x < nWidth; x++) {
+            auto it = v.begin() + 6 * (y * nWidth + x);
+
+            // Grid square in world positions
+            auto a = coordToPosition(x, y);
+            auto b = coordToPosition(x+1, y);
+            auto c = coordToPosition(x+1, y+1);
+            auto d = coordToPosition(x, y+1);
+
+            (*it).position = a;
+            (*(it+1)).position = b;
+            (*(it+2)).position = d;
+
+            (*(it+3)).position = d;
+            (*(it+4)).position = b;
+            (*(it+5)).position = c;
+
+            (*it).uv = glm::vec2(x/(float) nWidth, y/ (float) nLength);
+            (*(it+1)).uv = glm::vec2((x+1)/(float) nWidth, y/ (float) nLength);
+            (*(it+2)).uv = glm::vec2(x/(float) nWidth, (y+1)/ (float) nLength);
+
+            (*(it+3)).uv = glm::vec2(x/(float) nWidth, (y+1)/ (float) nLength);
+            (*(it+4)).uv = glm::vec2((x+1)/(float) nWidth, y/ (float) nLength);
+            (*(it+5)).uv = glm::vec2((x+1)/(float) nWidth, (y+1)/ (float) nLength);
+
+            (*it).normal = glm::vec3(0, 0, 1);
+            (*(it+1)).normal = glm::vec3(0, 0, 1);
+            (*(it+2)).normal = glm::vec3(0, 0, 1);
+
+            (*(it+3)).normal = glm::vec3(0, 0, 1);
+            (*(it+4)).normal = glm::vec3(0, 0, 1);
+            (*(it+5)).normal = glm::vec3(0, 0, 1);
+        };
+    }
+
+    auto *data = reinterpret_cast<float *>(v.data()); // Flatten
+    p.vertices = v.size();
+    size_t n_data = sizeof(UVTriangleVertexAttributes) * v.size();
+
+    p.data = std::vector<float>(data, data + n_data);
+    //p.data = std::vector<float>(n_data);
+    //p.data.assign(data, data + n_data);
+}

@@ -15,9 +15,11 @@ namespace engine {
 
         ObjectPipeline targetPipeline = ColoredTriangle;
     public:
-        void setColor(glm::vec3 c);
-        void setTexture(std::shared_ptr<engine::Texture2D::Texture> texture);
+        virtual void update(float dt);
+        virtual void setColor(glm::vec3 c);
+        virtual void setTexture(std::shared_ptr<engine::Texture2D::Texture> texture);
         ObjectPipeline currentTargetPipeline();
+        virtual ~Object() = default;
 
         bool SKIP_DRAW = false;
 

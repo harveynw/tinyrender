@@ -16,6 +16,10 @@ struct MyUniforms {
     viewMatrix: mat4x4f,
 };
 
+struct ScalarUniform {
+    scalar: f32
+};
+
 struct LightingUniforms {
     directions: array<vec4<f32>, 2>,
     colors: array<vec4<f32>, 2>,
@@ -25,16 +29,26 @@ struct LightingUniforms {
 @group(0) @binding(1) var<uniform> uLighting: LightingUniforms;
 
 @group(1) @binding(0) var<uniform> modelMatrix: mat4x4f;
-@group(1) @binding(1) var texture: texture_2d<f32>;
+@group(1) @binding(1) var heightmap: texture_2d<f32>;
 @group(1) @binding(2) var textureSampler: sampler;
+@group(1) @binding(3) var<uniform> maxDisplacement: f32;
+@group(1) @binding(4) var<uniform> wavesColor: vec3f;
 
 @vertex
 fn vs_main(in: VertexInput) -> VertexOutput {
-    // Forward to fragment shader
     var out: VertexOutput;
-    out.position = uMyUniforms.projectionMatrix * uMyUniforms.viewMatrix * modelMatrix * vec4f(in.position, 1.0);
-    out.color = in.color;
-    out.normal = (modelMatrix * vec4f(in.normal, 0.0)).xyz; // wrt to model matrix but not camera
+
+    // Displace according to heightmap, use textureSampleLevel which is available at vertex shader stage
+  	var d_pos : vec3f = in.position;
+  	d_pos.z += textureSampleLevel(heightmap, textureSampler, in.uv, 0.0).r * maxDisplacement;
+
+  	// Finite difference normal
+  	var grad: vec2f = textureSampleGrad(heightmap, textureSampler, in.uv, vec2f(0.01, 0.01), vec2f(0.01, 0.01)).xy;
+  	var n: vec3f = normalize(vec3f(grad.xy, 1.0));
+
+    out.position = uMyUniforms.projectionMatrix * uMyUniforms.viewMatrix * modelMatrix * vec4f(d_pos, 1.0);
+    out.color = wavesColor;
+    out.normal = (modelMatrix * vec4f(n, 0.0)).xyz;
     out.uv = in.uv;
 
     return out;
@@ -51,11 +65,6 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4f {
         shading += max(0.0, dot(direction, normal)) * color;
     }
 
-    // Sample texture
-    let baseColor = textureSample(texture, textureSampler, in.uv).rgb;
-
-    // Combine texture and lighting
-    let color = baseColor * shading;
-
-    return vec4f(color * shading, 1.0);
+    // Combine base color uniform and lighting
+    return vec4f(in.color * shading, 1.0);
 }
