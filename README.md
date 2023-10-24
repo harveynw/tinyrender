@@ -9,9 +9,9 @@ This might be cool if you just want to draw 3D scenes but don't want to touch gr
 
 ### Current State
 
-Rudimentary triangle rendering and transformations working on M1 Pro Mac:
+(Development screenshot) Phong lighting, OBJ files, fourier wave simulation:
 
-![Screenshot](img/screenshot_old.png)
+![Screenshot](img/screenshot.png)
 
 ### Building and running locally
 
@@ -21,9 +21,13 @@ cmake -S . -B build
 cmake --build build
 build/App
 ```
+Working with emscripten:
+```zsh
+emcmake cmake -B build-web
+cmake --build build-web
+```
 
 ### TODO
 - More primitives (spheres, tubes, planes)
 - Accelerated voxel rendering
-- More lighting (skybox, point lights)
-- Fake source-engine like water
+- Material API

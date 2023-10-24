@@ -9,6 +9,8 @@ void
 TurntableController::updateInternalBuffer() {
     float rr = std::exp(r);
     vec3 position = vec3(rr*sin(theta)*cos(phi), rr*sin(theta)*sin(phi), rr*cos(theta));
+
+    this->viewProjectionMatrix->updateCameraPosition(position);
     this->viewProjectionMatrix->updateViewMatrix(glm::lookAt(position, vec3(0.0f),
                                                  vec3(0, 0, 1)));
 }

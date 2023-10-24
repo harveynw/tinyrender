@@ -6,6 +6,7 @@
 
 void
 FreeviewController::updateInternalBuffer() {
+    this->viewProjectionMatrix->updateCameraPosition(position);
     this->viewProjectionMatrix->updateViewMatrix(glm::lookAt(position, position + direction,
                                                  vec3(0, 0, 1)));
 }

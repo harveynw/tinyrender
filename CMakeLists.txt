@@ -15,6 +15,8 @@ file(GLOB SOURCES
         src/objects/*.cpp
         src/objects/loaders/*.hpp
         src/objects/loaders/*.cpp
+        src/objects/wavesim/*.hpp
+        src/objects/wavesim/*.cpp
         src/webgpu/*.hpp
         src/webgpu/*.cpp
         src/webgpu/pipelines/*.hpp
@@ -116,11 +118,20 @@ find_package(OpenCV)
 target_link_libraries(App PRIVATE ${OpenCV_LIBS})
 endif()
 
+# FFTW 
+FetchContent_Declare(
+        fftw3
+        URL https://www.fftw.org/fftw-3.3.10.tar.gz
+        URL_HASH MD5=8ccbf6a5ea78a16dbc3e1306e234cc5c
+)
+FetchContent_MakeAvailable(fftw3)
+target_include_directories(App PRIVATE ${fftw3_SOURCE_DIR}/api)
+target_link_libraries(App PRIVATE fftw3)
+
 # At the end of the CMakeLists.txt
 if (EMSCRIPTEN)
     # Add Emscripten-specific link options
     target_link_options(App PRIVATE
-            -g
             -sUSE_GLFW=3 # Use Emscripten-provided GLFW
             -sUSE_WEBGPU # Handle WebGPU symbols
             -sASYNCIFY # Required by WebGPU-C++
@@ -130,6 +141,7 @@ if (EMSCRIPTEN)
             --preload-file "../resources"
             )
     # For debugging:
+    # -g
     #-sASSERTIONS=2
     #-sSAFE_HEAP=1
     #-sSTACK_OVERFLOW_CHECK=1

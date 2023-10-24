@@ -98,18 +98,18 @@ wavesUniformLayout(Context *context) {
 
     wgpu::BindGroupLayoutEntry& textureBindingLayout = entries[1];
     textureBindingLayout.binding = 1;
-    textureBindingLayout.visibility = wgpu::ShaderStage::Vertex;
+    textureBindingLayout.visibility = wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment;
     textureBindingLayout.texture.sampleType = wgpu::TextureSampleType::Float; // Because using normalised format
     textureBindingLayout.texture.viewDimension = wgpu::TextureViewDimension::_2D;
 
     wgpu::BindGroupLayoutEntry& samplerBindingLayout = entries[2];
     samplerBindingLayout.binding = 2;
-    samplerBindingLayout.visibility = wgpu::ShaderStage::Vertex;
+    samplerBindingLayout.visibility = wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment;
     samplerBindingLayout.sampler.type = wgpu::SamplerBindingType::Filtering;
 
     wgpu::BindGroupLayoutEntry& maxDispBindingLayout = entries[3];
     maxDispBindingLayout.binding = 3;
-    maxDispBindingLayout.visibility = wgpu::ShaderStage::Vertex;
+    maxDispBindingLayout.visibility = wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment;
     maxDispBindingLayout.buffer.type = wgpu::BufferBindingType::Uniform;
     maxDispBindingLayout.buffer.minBindingSize = sizeof(ScalarUniforms);
 

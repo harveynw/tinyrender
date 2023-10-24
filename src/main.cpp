@@ -65,7 +65,7 @@ int main (int, char**) {
     }
 
     // Wave Sim
-    auto waveSim = std::make_shared<engine::WaveSim>(c, s, 100, 100);
+    auto waveSim = std::make_shared<engine::WaveSim>(c, s, 50, 50);
     waveSim->SKIP_DRAW = false;
     waveSim->setColor(vec3(0.0, 0.019, 0.301));
     engine->objects.push_back(waveSim);
@@ -83,9 +83,8 @@ int main (int, char**) {
         0, true
     );
     #else
-    while (engine->isRunning()) {
+    while (engine->isRunning())
         engine->onFrame();
-    }
     #endif
 
     delete engine;

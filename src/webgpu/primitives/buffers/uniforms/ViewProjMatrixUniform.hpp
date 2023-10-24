@@ -22,6 +22,7 @@ namespace engine {
         ViewProjectionUniforms uniforms{};
 
         // Geometric properties
+        // TODO: a lot of these can be deleted and be managed by Controller/Camera class
         vec3 lookFrom;
         vec3 lookAt;
         float focalLength;
@@ -32,8 +33,8 @@ namespace engine {
         ViewProjMatrixUniform(Context *context, vec3 lookFrom, vec3 lookAt);
 
         void refreshProjectionMatrix(Context *context); // Useful if dimensions of window change
-        void updateRotationAboutZAxis();
         void updateViewMatrix(glm::mat4x4 viewMatrix);
+        void updateCameraPosition(glm::vec3 cameraWorldPosition);
     };
 
 }

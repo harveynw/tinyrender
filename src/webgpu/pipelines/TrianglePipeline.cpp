@@ -71,7 +71,7 @@ TrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &
 
         renderPass.setVertexBuffer(0, object->resources->attributeBuffer->getUnderlyingBuffer(), 0, object->resources->attributeBuffer->getSize());
         renderPass.setBindGroup(1, object->resources->bindGroup, 0, nullptr);
-        renderPass.draw(object->resources->attributeBuffer->getNDrawCalls(), 1, 0, 0);
+        renderPass.draw(object->resources->attributeBuffer->getDrawCalls(), 1, 0, 0);
     }
 
     renderPass.end();

@@ -2,6 +2,8 @@
 
 #include "Texture2D.hpp"
 
+// TODO this should really be a one-channel image
+
 namespace engine::Texture2D {
 
     class WavesDataTexture : public Texture {
@@ -13,7 +15,7 @@ namespace engine::Texture2D {
         new SolidColor(resWidth, resLength, glm::vec3(0.0, 0.0, 0.0)),
         new RGBA(),
         new RGBAView(),
-        new DefaultSampler(true, false, false)) {
+        new DefaultSampler(true, true, false)) {
             // Setup destination and source, so we can use them to update the texture
             destination.texture = underlying;
             destination.origin = { 0, 0, 0 }; // equivalent of the offset argument of Queue::writeBuffer

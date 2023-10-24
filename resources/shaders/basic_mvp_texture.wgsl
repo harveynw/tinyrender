@@ -14,12 +14,14 @@ struct VertexOutput {
 struct MyUniforms {
     projectionMatrix: mat4x4f,
     viewMatrix: mat4x4f,
+    cameraWorldPosition: vec3f,
 };
 
 struct LightingUniforms {
     directions: array<vec4<f32>, 2>,
     colors: array<vec4<f32>, 2>,
-}
+    ambient: f32,
+};
 
 @group(0) @binding(0) var<uniform> uMyUniforms: MyUniforms;
 @group(0) @binding(1) var<uniform> uLighting: LightingUniforms;
@@ -55,7 +57,8 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4f {
     let baseColor = textureSample(texture, textureSampler, in.uv).rgb;
 
     // Combine texture and lighting
-    let color = baseColor * shading;
+    let color = uLighting.ambient * baseColor + shading * baseColor;
 
-    return vec4f(color * shading, 1.0);
+    return vec4f(color, 1.0);
+
 }

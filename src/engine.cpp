@@ -18,7 +18,7 @@ Engine::launch() {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    window = glfwCreateWindow(DISPLAY_WIDTH, DISPLAY_HEIGHT, "TinyRender - WebGPU (ESC to unfocus)", NULL, NULL);
+    window = glfwCreateWindow(DISPLAY_WIDTH, DISPLAY_HEIGHT, "TinyRender", NULL, NULL);
     if (!window)
         throw std::runtime_error("Couldn't create GLFW window");
 
