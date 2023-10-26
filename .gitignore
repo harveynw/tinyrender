@@ -2,5 +2,6 @@
 build/
 build-web/
 doxygen/
+resources/untracked/
 
 .DS_Store
