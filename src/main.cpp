@@ -13,6 +13,7 @@
 #include "objects/Cube.hpp"
 #include "objects/Geometry.hpp"
 #include "objects/WaveSim.hpp"
+#include "objects/Voxels.hpp"
 
 using namespace wgpu;
 using glm::mat4x4;
@@ -58,8 +59,8 @@ int main (int, char**) {
     }
     {
         auto object = std::make_shared<engine::Pyramid>(c, s, vec3(0, 0, 3), 2, 3);
-        object->SKIP_DRAW = true;
         object->modelMatrix()->setScale(0.2f);
+        object->modelMatrix()->setTranslation(vec3(0.0, 0.0, 5.0));
         object->setColor(vec3(1.0, 0.0, 1.0));
         engine->objects.push_back(object);
     }
@@ -69,6 +70,11 @@ int main (int, char**) {
     waveSim->SKIP_DRAW = false;
     waveSim->setColor(vec3(0.0, 0.019, 0.301));
     engine->objects.push_back(waveSim);
+
+    // Voxels
+    auto voxels = std::make_shared<engine::Voxels>(c, s);
+    voxels->modelMatrix()->setScale(1.0f/2.0f);
+    engine->objects.push_back(voxels);
 
     /*
      * Render loop

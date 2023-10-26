@@ -16,7 +16,7 @@
 enum ObjectPipeline {
     TexturedTriangle,
     ColoredTriangle,
-    Waves
+    Waves,
 };
 
 // All the WebGPU resources owned by the object

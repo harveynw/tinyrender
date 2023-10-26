@@ -18,8 +18,9 @@ namespace engine {
         virtual void update(float dt);
         virtual void setColor(glm::vec3 c);
         virtual void setTexture(std::shared_ptr<engine::Texture2D::Texture> texture);
-        ObjectPipeline currentTargetPipeline();
         virtual ~Object() = default;
+
+        ObjectPipeline currentTargetPipeline();
 
         bool SKIP_DRAW = false;
 

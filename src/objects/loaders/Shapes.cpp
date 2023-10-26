@@ -64,7 +64,7 @@ namespace {
             }
 
             auto *data = reinterpret_cast<float *>(v.data()); // Flatten
-            int n_data = sizeof(UVTriangleVertexAttributes) * v.size();
+            int n_data = sizeof(UVTriangleVertexAttributes)/sizeof(float) * v.size();
 
             p.data = std::vector<float>(data, data + n_data);
             p.vertices = v.size();
@@ -227,6 +227,4 @@ loadPlaneMesh(Polygons &p, float width, float length, int nWidth, int nLength) {
     size_t n_data = sizeof(UVTriangleVertexAttributes) * v.size();
 
     p.data = std::vector<float>(data, data + n_data);
-    //p.data = std::vector<float>(n_data);
-    //p.data.assign(data, data + n_data);
 }

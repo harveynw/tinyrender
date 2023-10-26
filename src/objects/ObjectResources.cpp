@@ -52,7 +52,7 @@ ObjectResources::resetBindGroup(Context *context, Scene *scene, ObjectPipeline t
             bindGroup = context->device.createBindGroup(bindGroupDesc);
             break;
         }
-        case Waves:
+        case Waves: {
             printf("DEBUG: Waves\n");
             bindGroupData = std::vector<BindGroupEntry>(5);
             bindGroupData[0] = this->modelMatrix->generateUniformBindGroupEntry(0);
@@ -69,6 +69,7 @@ ObjectResources::resetBindGroup(Context *context, Scene *scene, ObjectPipeline t
             bindGroupDesc.entries = bindGroupData.data();
             bindGroup = context->device.createBindGroup(bindGroupDesc);
             break;
+        }
     }
 
     printf("\n");

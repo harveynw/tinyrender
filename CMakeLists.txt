@@ -128,7 +128,15 @@ FetchContent_MakeAvailable(fftw3)
 target_include_directories(App PRIVATE ${fftw3_SOURCE_DIR}/api)
 target_link_libraries(App PRIVATE fftw3)
 
-# At the end of the CMakeLists.txt
+# SimplexNoise
+#FetchContent_Declare(
+#        SimplexNoise
+#        GIT_REPOSITORY https://github.com/SRombauts/SimplexNoise.git
+#)
+#FetchContent_MakeAvailable(SimplexNoise)
+#target_include_directories(App PRIVATE ${SimplexNoise_SOURCE_DIR}/src)
+#target_link_libraries(App PRIVATE SimplexNoise)
+
 if (EMSCRIPTEN)
     # Add Emscripten-specific link options
     target_link_options(App PRIVATE

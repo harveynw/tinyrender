@@ -3,14 +3,22 @@
 
 engine::AttributeBuffer::AttributeBuffer(Context *context, std::vector<float> &data, int nDrawCalls) {
     this->nDrawCalls = nDrawCalls;
-    this->initialSize = data.size();
+    this->cpuBuffer = std::move(data);
+    this->initialSize = cpuBuffer.size() * sizeof(float);
+
+    /*
+    printf("Loading Attributes:\n");
+    for(auto f : cpuBuffer)
+        printf("%f, ", f);
+    printf("\n");
+    */
 
     // Buffer data
     this->context = context;
     this->type = VERTEX;
-    this->size = data.size();
+    this->size = cpuBuffer.size() * sizeof(float);
     this->mapped = false;
-    this->initialise(data.data());
+    this->initialise(this->cpuBuffer.data());
 }
 
 void

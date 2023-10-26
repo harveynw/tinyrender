@@ -8,10 +8,9 @@ struct Polygons {
 
     Polygons &operator+=(const Polygons &rhs) {
         this->data.insert(this->data.end(), rhs.data.begin(), rhs.data.end());
-        this->vertices = this->data.size();
+        this->vertices += rhs.vertices;
         return *this;
     }
-
 };
 
 struct InstancedPolygons {
