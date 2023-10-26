@@ -57,7 +57,7 @@ void Engine::onFrame() {
     float dt = 0.01;
 
     for(const auto& obj : objects) {
-        obj->update(dt);
+        obj->onUpdate(dt);
     }
 
     /*
@@ -105,6 +105,12 @@ void Engine::onFrame() {
     #ifdef WEBGPU_BACKEND_DAWN
     context->device.tick(); // Check for pending error callbacks
     #endif
+}
+
+void 
+Engine::addObject(std::shared_ptr<engine::Object> obj) {
+    obj->onInit(context.get(), scene.get());
+    objects.push_back(obj);
 }
 
 Engine::~Engine() {

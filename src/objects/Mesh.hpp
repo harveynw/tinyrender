@@ -11,7 +11,11 @@
 namespace engine {
 
     class Mesh : public Object {
+    protected:
+        std::string path;
     public:
-        Mesh(Context *c, Scene *s, const std::string& path);
+        Mesh(const std::string& path);
+
+        void onInit(Context *c, Scene *s) override;
     };
 }

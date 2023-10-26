@@ -14,10 +14,16 @@ namespace engine {
         Scene *scene;
 
         ObjectPipeline targetPipeline = ColoredTriangle;
+        
+        bool isInitialised = false;
     public:
-        virtual void update(float dt);
+        virtual void onInit(Context *c, Scene *s);
+        virtual void onUpdate(float dt);
+        virtual void onRemove() ;
+
         virtual void setColor(glm::vec3 c);
         virtual void setTexture(std::shared_ptr<engine::Texture2D::Texture> texture);
+
         virtual ~Object() = default;
 
         ObjectPipeline currentTargetPipeline();

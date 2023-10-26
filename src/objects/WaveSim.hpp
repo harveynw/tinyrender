@@ -7,9 +7,6 @@
 #include "loaders/Shapes.hpp"
 #include "../webgpu/primitives/textures/WavesDataTexture.hpp"
 
-#ifndef __EMSCRIPTEN__
-#include "wavesim/FFTopencv.hpp"
-#endif
 #include "wavesim/naive.hpp"
 #include "wavesim/FFTfftw.hpp"
 
@@ -20,25 +17,30 @@ namespace engine {
     private:
         using Object::setTexture; // disable
     protected:
-        Context *context;
-        Scene *scene;
+        // Properties
+        float WIDTH; // World space width
+        float LENGTH; // World space height
+        int MESH_RES_WIDTH = 256; // Mesh resolution
+        int MESH_RES_LENGTH = 256; // Mesh resolution
+        int DISP_MAP_RES = 512; // Resolution of the displacement map (square)
 
-        int MESH_RES_WIDTH = 256;
-        int MESH_RES_LENGTH = 256;
+        // Grid mesh for drawing the waves
+        std::shared_ptr<engine::AttributeBuffer> mesh = nullptr;
 
-        int DISP_MAP_RES = 512;
-
+        // Displacement of the surface is stored in a 1D vector, and uploaded to a texture on the GPU
         std::vector<uint8_t> displacementData;
         std::shared_ptr<engine::Texture2D::WavesDataTexture> texture;
 
-        #ifndef __EMSCRIPTEN__
-        std::unique_ptr<FFTopencv> openCVSim;
-        #endif
+        // Simulation methods
         std::unique_ptr<NaiveWaveSim> naive;
         std::unique_ptr<FFTfftw> fftw;
     public:
-        WaveSim(Context *c, Scene *s, float width, float length);
-        void update(float dt) override;
+        WaveSim(float width, float length);
+
+        void onInit(Context *c, Scene *s) override;
+        void onUpdate(float dt) override;
+        void onRemove() override;
+
         void setColor(glm::vec3 c) override;
     };
 

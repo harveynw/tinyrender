@@ -9,21 +9,35 @@
 #include "loaders/Polygons.hpp"
 #include "loaders/Shapes.hpp"
 
+// The geometric objects don't have special logic for onRemove as their memory footprint is small.
 
 namespace engine {
 
     class Triangle : public Object {
+    protected:
+        glm::vec3 a, b, c;
     public:
-        Triangle(Context *context, Scene *scene, glm::vec3 a, glm::vec3 b, glm::vec3 c);
+        Triangle(glm::vec3 a, glm::vec3 b, glm::vec3 c);
+
+        void onInit(Context *c, Scene *s) override;
     };
 
     class Quad : public Object {
+    protected:
+        glm::vec3 a, b, c, d;
     public:
-        Quad(Context *context, Scene *scene, glm::vec3 a, glm::vec3 b, glm::vec3 c, glm::vec3 d);
+        Quad(glm::vec3 a, glm::vec3 b, glm::vec3 c, glm::vec3 d);
+
+        void onInit(Context *c, Scene *s) override;
     };
 
     class Pyramid : public Object {
+    protected:
+        glm::vec3 centre;
+        float height, width;
     public:
-        Pyramid(Context *context, Scene *scene, glm::vec3 centre, float height, float width);
+        Pyramid(glm::vec3 centre, float height, float width);
+        
+        void onInit(Context *c, Scene *s) override;
     };
 }

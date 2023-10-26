@@ -3,9 +3,10 @@
 #include "Mesh.hpp"
 
 
-engine::Mesh::Mesh(Context *c, Scene *s, const std::string& path) {
-    this->context = c;
-    this->scene = s;
+engine::Mesh::Mesh(const std::string& path): path(path) {}
+
+void engine::Mesh::onInit(Context *c, Scene *s) {
+    Object::onInit(c, s);
 
     // Populate
     if(STR_SUFFIX(path, std::string(".obj"))) {

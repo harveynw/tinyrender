@@ -32,8 +32,27 @@ ObjectPipeline engine::Object::currentTargetPipeline() {
     return targetPipeline;
 }
 
-void engine::Object::update(float dt) {
+void 
+engine::Object::onInit(Context *c, Scene *s) {
+    this->context = c;
+    this->scene = s;
+
+    if(this->isInitialised)
+        throw std::runtime_error("Object is already initialised");
+
+    this->isInitialised = true;
+}
+
+void engine::Object::onUpdate(float dt)
+{
     (void) dt;
     return;
 }
 
+void 
+engine::Object::onRemove() {
+    if(!this->isInitialised)
+        throw std::runtime_error("Object has not been initialised");
+
+    this->isInitialised = false;
+}

@@ -1,6 +1,3 @@
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#define GLM_FORCE_LEFT_HANDED
-#include <glm/glm.hpp>
 
 #ifdef __EMSCRIPTEN__
 #include <emscripten/html5.h>
@@ -15,7 +12,6 @@
 #include "objects/WaveSim.hpp"
 #include "objects/Voxels.hpp"
 
-using namespace wgpu;
 using glm::mat4x4;
 using glm::vec4;
 using glm::vec3;
@@ -28,8 +24,6 @@ int main (int, char**) {
 
     auto *engine = new Engine(640, 480);
     engine->launch();
-    Context *c = engine->getContext().get();
-    Scene *s = engine->getScene().get();
 
     /*
      * Set helper class for moving camera about
@@ -45,36 +39,45 @@ int main (int, char**) {
     {
         auto texture = std::make_shared<engine::Texture2D::common::BasicImgRepeatingTexture>(
                 engine->getContext().get(), "resources/fourareen2K_albedo.jpg");
-        std::shared_ptr<engine::Object> object = std::make_shared<engine::Mesh>(c, s, "resources/fourareen.obj");
-        engine->objects.push_back(object);
+        std::shared_ptr<engine::Object> object = std::make_shared<engine::Mesh>("resources/fourareen.obj");
+        engine->addObject(object);
+
         object->modelMatrix()->setTranslation(vec3(0,0,0.5));
         object->setTexture(texture);
     }
     {
-        auto object = std::make_shared<engine::Cube>(c, s);
+        auto object = std::make_shared<engine::Cube>();
+        engine->addObject(object);
+
         object->modelMatrix()->setScale(0.2f);
         object->modelMatrix()->setTranslation(vec3(0,0,0.5));
         object->setColor(vec3(0.9, 0.9, 1.0));
         engine->objects.push_back(object);
     }
     {
-        auto object = std::make_shared<engine::Pyramid>(c, s, vec3(0, 0, 3), 2, 3);
+        auto object = std::make_shared<engine::Pyramid>(vec3(0, 0, 3), 2, 3);
+        engine->addObject(object);
+
         object->modelMatrix()->setScale(0.2f);
         object->modelMatrix()->setTranslation(vec3(0.0, 0.0, 5.0));
         object->setColor(vec3(1.0, 0.0, 1.0));
         engine->objects.push_back(object);
     }
+    {
+        // Wave Sim
+        auto object = std::make_shared<engine::WaveSim>(50, 50);
+        engine->addObject(object);
 
-    // Wave Sim
-    auto waveSim = std::make_shared<engine::WaveSim>(c, s, 50, 50);
-    waveSim->SKIP_DRAW = false;
-    waveSim->setColor(vec3(0.0, 0.019, 0.301));
-    engine->objects.push_back(waveSim);
+        object->SKIP_DRAW = false;
+        object->setColor(vec3(0.0, 0.019, 0.301));
+    }
+    {
+        // Voxels
+        auto voxels = std::make_shared<engine::Voxels>();
+        engine->addObject(voxels);
 
-    // Voxels
-    auto voxels = std::make_shared<engine::Voxels>(c, s);
-    voxels->modelMatrix()->setScale(1.0f/2.0f);
-    engine->objects.push_back(voxels);
+        voxels->modelMatrix()->setScale(1.0f/2.0f);
+    }
 
     /*
      * Render loop

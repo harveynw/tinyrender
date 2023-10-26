@@ -1,8 +1,11 @@
 #include "Cube.hpp"
 
-engine::Cube::Cube(Context *c, Scene *s) {
-    this->context = c;
-    this->scene = s;
+engine::Cube::Cube() {
+}
+
+void 
+engine::Cube::onInit(Context *c, Scene *s) {
+    Object::onInit(c, s);
 
     Polygons p;
     loadFromObj(defn, p);

@@ -52,6 +52,8 @@ namespace engine {
 
     class Cube : public Object {
     public:
-        Cube(Context *c, Scene *s);
+        Cube();
+
+        void onInit(Context *c, Scene *s) override;
     };
 }

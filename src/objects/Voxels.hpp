@@ -13,8 +13,12 @@ namespace engine {
         using Object::setColor;
         using Object::setTexture;
     public:
-        Voxels(Context *c, Scene *s);
-        void update(float dt) override; 
+        Voxels();
+
+        void onInit(Context *c, Scene *s) override;
+        void onUpdate(float dt) override;
+        void onRemove() override;
+
         ~Voxels();
     };
 }
