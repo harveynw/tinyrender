@@ -17,6 +17,8 @@ file(GLOB SOURCES
         src/objects/loaders/*.cpp
         src/objects/wavesim/*.hpp
         src/objects/wavesim/*.cpp
+        src/objects/voxel/*.hpp
+        src/objects/voxel/*.cpp
         src/webgpu/*.hpp
         src/webgpu/*.cpp
         src/webgpu/pipelines/*.hpp

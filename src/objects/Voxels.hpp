@@ -1,20 +1,8 @@
 #pragma once
 
 #include "Object.hpp"
+#include "voxel/Chunk.hpp"
 #include "loaders/Shapes.hpp"
-
-
-#include <glm/glm.hpp>
-#include <stack>
-
-#define SIZE_X 16
-#define SIZE_Y 16
-#define SIZE_Z 256
-#define N_VOXELS (SIZE_X * SIZE_Y * SIZE_Z)
-
-namespace {
-    class Chunk;
-}
 
 
 namespace engine {
