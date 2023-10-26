@@ -1,19 +1,15 @@
-//
-// Created by Harvey Williams on 13/08/2023.
-//
-
 #pragma once
 
 #include <GLFW/glfw3.h>
 #include "../webgpu/primitives/buffers/uniforms/ViewProjMatrixUniform.hpp"
 
 
-class Controller {
+class Camera {
 protected:
     virtual void updateInternalBuffer() = 0;
 public:
-    Controller() = default;
-    virtual ~Controller() = default;
+    Camera() = default;
+    virtual ~Camera() = default;
 
     std::shared_ptr<engine::ViewProjMatrixUniform> viewProjectionMatrix = nullptr;
 

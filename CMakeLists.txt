@@ -35,8 +35,8 @@ file(GLOB SOURCES
         src/webgpu/primitives/textures/*.cpp
         src/webgpu/primitives/textures/utilities/*.hpp
         src/webgpu/primitives/textures/utilities/*.cpp
-        src/controllers/*.hpp
-        src/controllers/*.cpp
+        src/camera/*.hpp
+        src/camera/*.cpp
         )
 list(FILTER SOURCES EXCLUDE REGEX "_test.cpp$")
 list(FILTER SOURCES EXCLUDE REGEX "src/main_old.cpp$")

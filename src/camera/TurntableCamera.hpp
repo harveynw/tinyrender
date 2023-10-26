@@ -1,19 +1,14 @@
-//
-// Created by Harvey Williams on 13/08/2023.
-//
-
-#ifndef TINYGAME_TURNTABLE_H
-#define TINYGAME_TURNTABLE_H
+#pragma once
 
 #include "glm/ext.hpp"
 
-#include "Controller.hpp"
+#include "Camera.hpp"
 #include "../webgpu/primitives/buffers/uniforms/ViewProjMatrixUniform.hpp"
 
 
 using glm::vec2;
 
-class TurntableController : public Controller {
+class TurntableCamera : public Camera {
 protected:
     // Current view
     float phi = 0.8f;
@@ -30,7 +25,7 @@ protected:
 
     void updateInternalBuffer() override;
 public:
-    TurntableController() = default;
+    TurntableCamera() = default;
 
     void onFrame(float dt) override;
     void enableListen(GLFWwindow *window, std::shared_ptr<engine::ViewProjMatrixUniform> vpMatrix) override;
@@ -41,5 +36,3 @@ public:
     void onKeyEvent(int key, int scancode, int action, int mods) override;
 };
 
-
-#endif //TINYGAME_TURNTABLE_H

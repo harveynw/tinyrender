@@ -61,9 +61,9 @@ void Engine::onFrame() {
     }
 
     /*
-     * Update controller
+     * Update camera
      */
-    controller->onFrame(dt);
+    camera->onFrame(dt);
 
     /*
      * Get texture view from swapchain
@@ -115,7 +115,7 @@ Engine::addObject(std::shared_ptr<engine::Object> obj) {
 
 Engine::~Engine() {
     objects.clear();
-    controller.reset();
+    camera.reset();
     scene.reset();
 
     trianglePipeline.reset();
@@ -127,10 +127,10 @@ Engine::~Engine() {
 }
 
 void
-Engine::setController(std::shared_ptr<Controller> c) {
-    controller = c;
-    controller->enableListen(window, this->scene->viewProjUniform);
-    controller->onFrame(0);
+Engine::setCamera(std::shared_ptr<Camera> c) {
+    camera = c;
+    camera->enableListen(window, this->scene->viewProjUniform);
+    camera->onFrame(0);
 }
 
 void Engine::onResize(int width, int height) {
@@ -143,8 +143,8 @@ void Engine::onResize(int width, int height) {
 
     context->buildSwapChain();
     scene->buildDepthBuffer(context);
-    if(controller != nullptr)
-        controller->viewProjectionMatrix->refreshProjectionMatrix(context.get());
+    if(camera != nullptr)
+        camera->viewProjectionMatrix->refreshProjectionMatrix(context.get());
 }
 
 bool Engine::isRunning() {
@@ -161,25 +161,25 @@ onWindowResize(GLFWwindow* window, int width, int height) {
 void
 onWindowMouseMove(GLFWwindow* window, double xpos, double ypos) {
     auto engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
-    if (engine != nullptr && engine->controller != nullptr) engine->controller->onMouseMove(xpos, ypos);
+    if (engine != nullptr && engine->camera != nullptr) engine->camera->onMouseMove(xpos, ypos);
 }
 
 void
 onWindowMouseButton(GLFWwindow* window, int button, int action, int mods) {
     auto engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
-    if (engine != nullptr && engine->controller != nullptr) engine->controller->onMouseButton(window, button, action, mods);
+    if (engine != nullptr && engine->camera != nullptr) engine->camera->onMouseButton(window, button, action, mods);
 }
 
 void
 onWindowScroll(GLFWwindow* window, double xoffset, double yoffset) {
     auto engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
-    if (engine != nullptr && engine->controller != nullptr) engine->controller->onScroll(xoffset, yoffset);
+    if (engine != nullptr && engine->camera != nullptr) engine->camera->onScroll(xoffset, yoffset);
 }
 
 void
 onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods) {
     auto engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
-    if (engine != nullptr && engine->controller != nullptr) engine->controller->onKeyEvent(key, scancode, action, mods);
+    if (engine != nullptr && engine->camera != nullptr) engine->camera->onKeyEvent(key, scancode, action, mods);
 }
 
 //TODO remove

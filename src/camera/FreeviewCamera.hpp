@@ -1,12 +1,8 @@
-//
-// Created by Harvey Williams on 13/08/2023.
-//
-
 #pragma once
 
 #include "glm/ext.hpp"
 
-#include "Controller.hpp"
+#include "Camera.hpp"
 #include "../webgpu/primitives/buffers/uniforms/ViewProjMatrixUniform.hpp"
 
 
@@ -14,7 +10,7 @@ using glm::vec3;
 using glm::vec2;
 
 
-class FreeviewController : public Controller {
+class FreeviewCamera : public Camera {
 protected:
     GLFWwindow *glfw_window;
 
@@ -40,7 +36,7 @@ protected:
     void updateInternalBuffer() override;
     void updateMouseState();
 public:
-    FreeviewController() = default;
+    FreeviewCamera() = default;
 
     void onFrame(float dt) override;
     void enableListen(GLFWwindow *window, std::shared_ptr<engine::ViewProjMatrixUniform> vpMatrix) override;

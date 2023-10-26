@@ -12,7 +12,7 @@
 #include "webgpu/Scene.hpp"
 #include "webgpu/pipelines/TrianglePipeline.hpp"
 #include "webgpu/pipelines/TexturedTrianglePipeline.hpp"
-#include "controllers/Controller.hpp"
+#include "camera/Camera.hpp"
 #include "webgpu/pipelines/WavesPipeline.hpp"
 
 
@@ -34,7 +34,7 @@ public:
     void addObject(std::shared_ptr<engine::Object> obj);
 
     void onResize(int, int);
-    void setController(std::shared_ptr<Controller> controller);
+    void setCamera(std::shared_ptr<Camera> controller);
 
     GLFWwindow *getWindow() { return window; };
 
@@ -44,7 +44,7 @@ public:
     int DISPLAY_WIDTH;
     int DISPLAY_HEIGHT;
 
-    std::shared_ptr<Controller> controller = nullptr;
+    std::shared_ptr<Camera> camera = nullptr;
 
     // Objects in scene
     std::vector<std::shared_ptr<engine::Object>> objects;

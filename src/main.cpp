@@ -4,34 +4,31 @@
 #endif
 
 #include "engine.hpp"
-#include "controllers/TurntableController.hpp"
-#include "controllers/FreeviewController.hpp"
+#include "camera/TurntableCamera.hpp"
+#include "camera/FreeviewCamera.hpp"
 #include "objects/Mesh.hpp"
 #include "objects/Cube.hpp"
 #include "objects/Geometry.hpp"
 #include "objects/WaveSim.hpp"
 #include "objects/Voxels.hpp"
 
-using glm::mat4x4;
-using glm::vec4;
 using glm::vec3;
-
 
 int main (int, char**) {
     /*
      * Init engine
      */
 
-    auto *engine = new Engine(640, 480);
+    auto engine = std::make_unique<Engine>(640, 480);
     engine->launch();
 
     /*
      * Set helper class for moving camera about
      */
 
-    //auto controller = std::make_shared<TurntableController>(uniforms);
-    auto controller = std::make_shared<FreeviewController>();
-    engine->setController(controller);
+    //auto camera = std::make_shared<TurntableCamera>(uniforms);
+    auto camera = std::make_shared<FreeviewCamera>();
+    engine->setCamera(camera);
 
     /*
      * Create the objects
@@ -88,7 +85,7 @@ int main (int, char**) {
             Engine& app = *reinterpret_cast<Engine*>(userData);
             app.onFrame();
         },
-        (void*)engine,
+        (void*)engine.get(),
         0, true
     );
     #else
@@ -96,6 +93,5 @@ int main (int, char**) {
         engine->onFrame();
     #endif
 
-    delete engine;
     return 0;
 }

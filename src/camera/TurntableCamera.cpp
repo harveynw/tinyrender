@@ -1,12 +1,8 @@
-//
-// Created by Harvey Williams on 13/08/2023.
-//
-
-#include "TurntableController.hpp"
+#include "TurntableCamera.hpp"
 
 
 void
-TurntableController::updateInternalBuffer() {
+TurntableCamera::updateInternalBuffer() {
     float rr = std::exp(r);
     vec3 position = vec3(rr*sin(theta)*cos(phi), rr*sin(theta)*sin(phi), rr*cos(theta));
 
@@ -16,7 +12,7 @@ TurntableController::updateInternalBuffer() {
 }
 
 void
-TurntableController::onMouseMove(double xpos, double ypos) {
+TurntableCamera::onMouseMove(double xpos, double ypos) {
     if(!dragging)
         return;
 
@@ -33,7 +29,7 @@ TurntableController::onMouseMove(double xpos, double ypos) {
 }
 
 void
-TurntableController::onMouseButton(GLFWwindow *window, int button, int action, int mods) {
+TurntableCamera::onMouseButton(GLFWwindow *window, int button, int action, int mods) {
     (void) mods;
 
     if (button != GLFW_MOUSE_BUTTON_LEFT)
@@ -55,7 +51,7 @@ TurntableController::onMouseButton(GLFWwindow *window, int button, int action, i
 }
 
 void
-TurntableController::onScroll(double xoffset, double yoffset) {
+TurntableCamera::onScroll(double xoffset, double yoffset) {
     (void) xoffset;
 
     r += scrollSensitivity * (float) yoffset;
@@ -65,7 +61,7 @@ TurntableController::onScroll(double xoffset, double yoffset) {
 }
 
 void
-TurntableController::onKeyEvent(int key, int scancode, int action, int mods) {
+TurntableCamera::onKeyEvent(int key, int scancode, int action, int mods) {
     (void) key;
     (void) scancode;
     (void) action;
@@ -73,12 +69,12 @@ TurntableController::onKeyEvent(int key, int scancode, int action, int mods) {
 }
 
 void
-TurntableController::enableListen(GLFWwindow *window, std::shared_ptr<engine::ViewProjMatrixUniform> vpMatrix) {
+TurntableCamera::enableListen(GLFWwindow *window, std::shared_ptr<engine::ViewProjMatrixUniform> vpMatrix) {
     (void) window;
     this->viewProjectionMatrix = vpMatrix;
 }
 
 void
-TurntableController::onFrame(float dt) {
+TurntableCamera::onFrame(float dt) {
     (void) dt;
 }
