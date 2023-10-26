@@ -23,8 +23,8 @@ namespace engine {
         Context *context;
         Scene *scene;
 
-        int MESH_RES_WIDTH = 128;
-        int MESH_RES_LENGTH = 128;
+        int MESH_RES_WIDTH = 256;
+        int MESH_RES_LENGTH = 256;
 
         int DISP_MAP_RES = 512;
 
