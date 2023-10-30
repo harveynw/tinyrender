@@ -69,13 +69,9 @@ WavesPipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &com
     renderPass.setBindGroup(0, this->scene->wavesViewProjBindGroup, 0, nullptr);
 
     for(auto & object : objects) {
-        if(object->SKIP_DRAW || object->currentTargetPipeline() != Waves)
-            continue;
-
-        renderPass.setVertexBuffer(0, object->resources->attributeBuffer->getUnderlyingBuffer(), 0, object->resources->attributeBuffer->getSize());
-        renderPass.setBindGroup(1, object->resources->bindGroup, 0, nullptr);
-        renderPass.draw(object->resources->attributeBuffer->getDrawCalls(), 1, 0, 0);
-    }
+        if(object->currentTargetPipeline() == Waves)
+            object->onDraw(renderPass, 0, 1);
+    } 
 
     renderPass.end();
 }

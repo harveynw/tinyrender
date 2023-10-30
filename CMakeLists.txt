@@ -130,29 +130,33 @@ FetchContent_MakeAvailable(fftw3)
 target_include_directories(App PRIVATE ${fftw3_SOURCE_DIR}/api)
 target_link_libraries(App PRIVATE fftw3)
 
-# SimplexNoise
-#FetchContent_Declare(
-#        SimplexNoise
-#        GIT_REPOSITORY https://github.com/SRombauts/SimplexNoise.git
-#)
-#FetchContent_MakeAvailable(SimplexNoise)
-#target_include_directories(App PRIVATE ${SimplexNoise_SOURCE_DIR}/src)
-#target_link_libraries(App PRIVATE SimplexNoise)
+# FastNoiseLite for voxel terrain generation
+FetchContent_Declare(
+        FastNoiseLite
+        URL https://github.com/Auburn/FastNoiseLite/archive/refs/tags/v1.1.0.zip
+)
+FetchContent_MakeAvailable(FastNoiseLite)
+message(STATUS ${fastnoiselite_SOURCE_DIR} " is the folder")
+#add_library(NOISE_LIB STATIC ${fastnoiselite_SOURCE_DIR}/Cpp/FastNoiseLite.h)
+target_include_directories(App PRIVATE ${fastnoiselite_SOURCE_DIR}/Cpp)
+#target_link_libraries(App PRIVATE FastNoiseLite)
 
 if (EMSCRIPTEN)
     # Add Emscripten-specific link options
     target_link_options(App PRIVATE
-            -sUSE_GLFW=3 # Use Emscripten-provided GLFW
-            -sUSE_WEBGPU # Handle WebGPU symbols
-            -sASYNCIFY # Required by WebGPU-C++
-            -sALLOW_MEMORY_GROWTH
-            -sINITIAL_MEMORY=3GB
-            -sMAXIMUM_MEMORY=4GB
-            --preload-file "../resources"
-            )
+        -sUSE_GLFW=3 # Use Emscripten-provided GLFW
+        -sUSE_WEBGPU # Handle WebGPU symbols
+        -sASYNCIFY # Required by WebGPU-C++
+        -sALLOW_MEMORY_GROWTH
+        -sINITIAL_MEMORY=3GB
+        -sMAXIMUM_MEMORY=4GB
+        --preload-file "../resources"
+        )
     # For debugging:
+    # -O0
     # -g
     #-sASSERTIONS=2
+        #-fsanitize=address
     #-sSAFE_HEAP=1
     #-sSTACK_OVERFLOW_CHECK=1
 

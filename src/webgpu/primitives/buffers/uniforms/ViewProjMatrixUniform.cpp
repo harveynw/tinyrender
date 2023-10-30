@@ -11,7 +11,7 @@ engine::ViewProjMatrixUniform::ViewProjMatrixUniform(Context *context, vec3 look
     // Params
     this->focalLength = 2.0;
     this->near = 0.001f;
-    this->far = 100.0f;
+    this->far = 1000.0f;
     float ratio = context->DISPLAY_WIDTH / context->DISPLAY_HEIGHT;
     this->fov = 2 * glm::atan(1 / focalLength);
     uniforms.viewMatrix = glm::lookAt(lookFrom, lookAt, vec3(0, 0, 1));

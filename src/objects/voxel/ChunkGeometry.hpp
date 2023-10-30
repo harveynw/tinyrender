@@ -8,7 +8,7 @@
 // Chunk dimensions
 #define SIZE_X 16
 #define SIZE_Y 16
-#define SIZE_Z 256
+#define SIZE_Z 100
 #define N_VOXELS (SIZE_X * SIZE_Y * SIZE_Z)
 
 struct Face {

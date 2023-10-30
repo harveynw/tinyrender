@@ -1,8 +1,5 @@
-//
-// Created by Harvey Williams on 09/08/2023.
-//
-
 #include "Texture2D.hpp"
+
 
 engine::Texture2D::Texture::Texture(Context *context, engine::Texture2D::DataDelegate *data,
                            engine::Texture2D::CreationDelegate *create, engine::Texture2D::ViewDelegate *view,

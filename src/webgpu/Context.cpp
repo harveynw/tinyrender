@@ -4,8 +4,6 @@
 std::shared_ptr<Context>
 buildNewContext(GLFWwindow *window, int width, int height) {
     auto context = std::make_shared<Context>();
-    context->DISPLAY_WIDTH = width;
-    context->DISPLAY_HEIGHT = height;
 
     /*
      * First step: Create a context and get a surface from the GLFW window.
@@ -74,14 +72,11 @@ buildNewContext(GLFWwindow *window, int width, int height) {
         std::cout << std::endl;
     });
 
-    // We force this color format for now as Dawn is limited to this one
-    context->swapChainFormat = wgpu::TextureFormat::BGRA8Unorm;
-    //swapChainFormat = surface.getPreferredFormat(adapter);
 
     /*
      * Final step: Create the swapchain so we can output to screen.
      */
-    context->buildSwapChain();
+    context->buildSwapChain(width, height);
     context->queue = context->device.getQueue();
     context->print();
     return context;
@@ -95,14 +90,23 @@ void Context::print() {
     std::cout << "--" << std::endl;
 }
 
-void Context::buildSwapChain() {
-    if(swapChain != nullptr)
+void Context::buildSwapChain(int width, int height) {
+    DISPLAY_WIDTH = width;
+    DISPLAY_HEIGHT = height;
+
+    if(swapChain != nullptr) {
         swapChain.release();
+        swapChain = nullptr;
+    }
+
+    // We keep the default color format for now as Dawn is limited to it 
+    //context->swapChainFormat = surface.getPreferredFormat(adapter);
+    this->swapChainFormat = wgpu::TextureFormat::BGRA8Unorm;
 
     std::cout << "Creating swapchain..." << std::endl;
     wgpu::SwapChainDescriptor swapChainDesc;
-    swapChainDesc.width = this->DISPLAY_WIDTH;
-    swapChainDesc.height = this->DISPLAY_HEIGHT;
+    swapChainDesc.width = DISPLAY_WIDTH;
+    swapChainDesc.height = DISPLAY_HEIGHT;
     swapChainDesc.usage = wgpu::TextureUsage::RenderAttachment;
     swapChainDesc.format = this->swapChainFormat;
     swapChainDesc.presentMode = wgpu::PresentMode::Fifo;

@@ -8,19 +8,20 @@
 #include "webgpu/primitives/textures/Texture2D.hpp"
 
 
-Engine::Engine(int width, int height): DISPLAY_WIDTH(width), DISPLAY_HEIGHT(height) {
+Engine::Engine() {
     if (!glfwInit())
         throw std::runtime_error("Couldn't initialise GLFW");
 }
 
 void
-Engine::launch() {
+Engine::launch(int width, int height) {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    window = glfwCreateWindow(DISPLAY_WIDTH, DISPLAY_HEIGHT, "TinyRender", NULL, NULL);
+    window = glfwCreateWindow(width, height, "TinyRender", NULL, NULL);
     if (!window)
         throw std::runtime_error("Couldn't create GLFW window");
+    printf("GLFW window created at %p\n", (void*) window);
 
     // Receive everything from GLFW
     glfwSetWindowUserPointer(window, this);
@@ -29,12 +30,20 @@ Engine::launch() {
     glfwSetScrollCallback(window, onWindowScroll);
     glfwSetKeyCallback(window, onKeyAction);
     glfwSetFramebufferSizeCallback(window, onWindowResize);
-    glfwSetWindowSizeCallback(window, onWindowTest);
+
+    /*
+    #ifdef __EMSCRIPTEN__
+    strategy.scaleMode = EMSCRIPTEN_FULLSCREEN_CANVAS_SCALE_STDDEF;
+    strategy.filteringMode = EMSCRIPTEN_FULLSCREEN_FILTERING_DEFAULT;
+    strategy.canvasResizedCallback = EmscriptenWindowResizedCallback;
+    strategy.canvasResizedCallbackUserData = this;   
+    emscripten_enter_soft_fullscreen("#canvas", &strategy);
+    #endif
+    */
 
     // Create webgpu resources
-    this->context = buildNewContext(window, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+    this->context = buildNewContext(window, width, height);
 
-    std::cout << "test message!" << std::endl;
     // TODO: Scene can absorb this complexity
     this->scene = std::make_shared<Scene>();
     this->scene->buildDepthBuffer(this->context);
@@ -134,15 +143,17 @@ Engine::setCamera(std::shared_ptr<Camera> c) {
 }
 
 void Engine::onResize(int width, int height) {
-    printf("Resize to (%i, %i)\n", width, height);
-    // Update fields
-    DISPLAY_WIDTH = width;
-    DISPLAY_HEIGHT = height;
-    context->DISPLAY_WIDTH = width;
-    context->DISPLAY_HEIGHT = height;
+    //printf("Engine::onResize to (%i, %i) %p\n", width, height, (void*) this);
 
-    context->buildSwapChain();
+    // Terminate depth texture
+    scene->depthTexture = nullptr;
+
+    // Rebuild swap chain
+    context->buildSwapChain(width, height);
+
+    // Rebuild depth texture
     scene->buildDepthBuffer(context);
+
     if(camera != nullptr)
         camera->viewProjectionMatrix->refreshProjectionMatrix(context.get());
 }
@@ -153,8 +164,9 @@ bool Engine::isRunning() {
 
 void
 onWindowResize(GLFWwindow* window, int width, int height) {
-    std::cout << "Got window resize " << width << "," << height << std::endl;
-    auto that = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
+    void *ptr = glfwGetWindowUserPointer(window);
+    auto that = reinterpret_cast<Engine*>(ptr);
+    //printf("GLFW::onWindowResize (%i, %i), %p\n", width, height, ptr);
     if (that != nullptr) that->onResize(width, height);
 }
 
@@ -182,10 +194,18 @@ onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods) {
     if (engine != nullptr && engine->camera != nullptr) engine->camera->onKeyEvent(key, scancode, action, mods);
 }
 
-//TODO remove
-void
-onWindowTest(GLFWwindow *window, int w, int h) {
-    (void) window;
-    glfwGetFramebufferSize(window, &w, &h);
-    std::cout << "Got window (test!) resize " << w << "," << h << std::endl;
+#ifdef __EMSCRIPTEN__
+EM_BOOL EmscriptenWindowResizedCallback(int eventType, const void *event, void *userData)
+{
+    (void) eventType; (void) event; 
+
+	double width, height;
+	emscripten_get_element_css_size("canvas", &width, &height);
+    printf("Emscripten Callback : resize (%f, %f) Engine:%p\n", width, height, userData);
+
+	Engine* engine = (Engine*) userData;
+    glfwSetWindowSize(engine->getWindow(), (int) width, (int) height);
+
+    return EM_BOOL();
 }
+#endif

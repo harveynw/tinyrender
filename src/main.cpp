@@ -19,8 +19,8 @@ int main (int, char**) {
      * Init engine
      */
 
-    auto engine = std::make_unique<Engine>(640, 480);
-    engine->launch();
+    auto engine = std::make_unique<Engine>();
+    engine->launch(640, 480);
 
     /*
      * Set helper class for moving camera about
@@ -65,15 +65,13 @@ int main (int, char**) {
         auto object = std::make_shared<engine::WaveSim>(50, 50);
         engine->addObject(object);
 
-        object->SKIP_DRAW = false;
+        object->HIDDEN = false;
         object->setColor(vec3(0.0, 0.019, 0.301));
     }
     {
         // Voxels
         auto voxels = std::make_shared<engine::Voxels>();
         engine->addObject(voxels);
-
-        voxels->modelMatrix()->setScale(1.0f/2.0f);
     }
 
     /*
@@ -82,10 +80,10 @@ int main (int, char**) {
     #ifdef __EMSCRIPTEN__
     emscripten_set_main_loop_arg(
         [](void *userData) {
-            Engine& app = *reinterpret_cast<Engine*>(userData);
-            app.onFrame();
+            Engine *app = reinterpret_cast<Engine*>(userData);
+            app->onFrame();
         },
-        (void*)engine.get(),
+        (void*) engine.get(),
         0, true
     );
     #else

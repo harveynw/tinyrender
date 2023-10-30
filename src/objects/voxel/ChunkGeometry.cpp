@@ -73,7 +73,8 @@ visibleFrom(glm::ivec3 &c0, std::array<char, N_VOXELS> &voxels) {
             if(!inBounds(c_dash) || voxels[idx(c_dash)] == 0x00) {
                 s.push(c_dash); // Air to search from
             } else {
-                f.push_back({c, c_dash}); // Face found
+                // Face found
+                f.push_back({c, c_dash}); 
             }
         }
     }

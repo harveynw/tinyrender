@@ -50,6 +50,21 @@ void engine::Object::onUpdate(float dt)
 }
 
 void 
+engine::Object::onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot) {
+    // Check if set to hidden
+    if(HIDDEN)
+        return;
+    // Object may have no data to draw, which will confuse GPU
+    if(this->resources->attributeBuffer->getDrawCalls() == 0)
+        return;
+    
+    // Queue drawing the object
+    renderPass.setVertexBuffer(vertexBufferSlot, this->resources->attributeBuffer->getUnderlyingBuffer(), 0, this->resources->attributeBuffer->getSize());
+    renderPass.setBindGroup(bindGroupSlot, this->resources->bindGroup, 0, nullptr);
+    renderPass.draw(this->resources->attributeBuffer->getDrawCalls(), 1, 0, 0);
+}
+
+void 
 engine::Object::onRemove() {
     if(!this->isInitialised)
         throw std::runtime_error("Object has not been initialised");

@@ -19,6 +19,7 @@ namespace engine {
     public:
         virtual void onInit(Context *c, Scene *s);
         virtual void onUpdate(float dt);
+        virtual void onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot);
         virtual void onRemove() ;
 
         virtual void setColor(glm::vec3 c);
@@ -28,7 +29,7 @@ namespace engine {
 
         ObjectPipeline currentTargetPipeline();
 
-        bool SKIP_DRAW = false;
+        bool HIDDEN = false;
 
         std::shared_ptr<engine::ModelMatrixUniform> modelMatrix() const;
         std::shared_ptr<ObjectResources> resources = nullptr;
