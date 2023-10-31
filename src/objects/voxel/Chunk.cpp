@@ -1,7 +1,37 @@
 #include "Chunk.hpp"
 
+
 void 
-Chunk::syncBuffer() {
+Chunk::onUpdate() {
+    switch(auto s = this->state.load()) {
+        case CHUNK_NO_MESH: {
+            this->state.store(CHUNK_GENERATING_MESH);
+
+            loadingThread = std::thread([&]{
+                this->generateMesh();
+                this->state.store(CHUNK_MESH_READY);
+            }); 
+            break;
+        }
+        case CHUNK_MESH_READY: {
+            assert(this->mesh != nullptr);
+
+            this->syncBuffer();
+            this->state.store(CHUNK_LOADED);
+            break;
+        }
+        case CHUNK_GENERATING_MESH:
+        case CHUNK_LOADED:
+        default:
+            break;
+    }
+}
+
+void 
+Chunk::generateMesh() {
+    if(this->state.load() != CHUNK_GENERATING_MESH)
+        throw std::runtime_error("Not in a state to generate mesh");
+
     printf("syncBuffer with corner (%i, %i)\n", this->cornerCoordinate.x, this->cornerCoordinate.y);
     // Generate list of colored vertices by DFS
     auto start = glm::ivec3(-1, -1, 0);
@@ -9,7 +39,7 @@ Chunk::syncBuffer() {
     printf("%i faces found\n", (int) faces.size());
 
     // Generate attribute date
-    Polygons p = {{}, 0};
+    this->mesh = std::make_unique<Polygons>();
     for(auto &face : faces) {
         if(neighbourBlocked(face.from))
             continue;
@@ -40,19 +70,34 @@ Chunk::syncBuffer() {
 
         Polygons p_new;
         loadQuad(p_new, a, b, c, d);
-        p += p_new;
+        *(this->mesh.get()) += p_new;
     }
+}
 
-    // Upload
-    buffer = std::make_shared<engine::AttributeBuffer>(this->c, p.data, p.vertices);
-    printf("Synced %i vertices uploading chunk data\n", (int) p.vertices);
+void 
+Chunk::syncBuffer() {
+    if(this->state.load() != CHUNK_MESH_READY || this->mesh == nullptr)
+        throw std::runtime_error("Not in state to update GPU buffer");
+    
+    buffer = std::make_shared<engine::AttributeBuffer>(this->c, this->mesh->data, this->mesh->vertices);
+    printf("Synced %i vertices uploading chunk data\n", (int) this->mesh->vertices);
     resources = std::make_shared<ObjectResources>(this->c, this->s, this->buffer, ColoredTriangle);
     resources->modelMatrix->setTranslation(glm::vec3(this->cornerCoordinate, 0.0));
 }
 
+void 
+Chunk::unload() {
+    if(this->state.load() != CHUNK_LOADED)
+        return;
+    
+    this->buffer = nullptr;
+    this->resources = nullptr;
+    this->state.store(CHUNK_NO_MESH);
+}
+
 #define MOD(a, b) (((a % b) + b) % b)
-bool 
-Chunk::neighbourBlocked(glm::ivec3 outside) {
+bool Chunk::neighbourBlocked(glm::ivec3 outside)
+{
     std::weak_ptr<Chunk> neighbour;
 
     if(inBounds(outside))

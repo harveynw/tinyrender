@@ -11,6 +11,11 @@ struct Polygons {
         this->vertices += rhs.vertices;
         return *this;
     }
+
+    Polygons() {
+        data = {};
+        vertices = 0;
+    }
 };
 
 struct InstancedPolygons {

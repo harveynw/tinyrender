@@ -82,15 +82,14 @@ void engine::Voxels::onInit(Context *c, Scene *s) {
             loadChunk(glm::ivec2(x, y));
         }
     }
-
-    // Build mesh for each chunk after loading them
-    for(auto &c : loadedChunks)
-        c.second->syncBuffer();
 }
 
 void 
 engine::Voxels::onUpdate(float dt) {
     (void) dt;
+
+    for(auto &c: loadedChunks)
+        c.second->onUpdate();
 }
 
 void 
@@ -98,7 +97,7 @@ engine::Voxels::onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot
     // Chunks are drawn individually so we override Object::onDraw
     for(auto &loaded : loadedChunks) {
         auto &c = loaded.second;
-        if(c->resources != nullptr && c->resources->attributeBuffer->getDrawCalls() == 0)
+        if(c->state.load() != CHUNK_LOADED)
             continue;
 
         renderPass.setVertexBuffer(vertexBufferSlot, c->resources->attributeBuffer->getUnderlyingBuffer(), 0, c->resources->attributeBuffer->getSize());
