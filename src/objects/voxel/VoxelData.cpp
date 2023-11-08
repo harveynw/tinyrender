@@ -9,7 +9,7 @@ sphere(std::array<char, N_VOXELS> &voxels, int radius) {
         voxels[i] = 0x00;
 
         // Sphere around centre
-        auto cc = glm::vec3(c) - glm::vec3(SIZE_X/2.0, SIZE_Y/2.0, SIZE_Z/2.0);
+        auto cc = glm::vec3(c) - glm::vec3(SIZE_XY/2.0, SIZE_XY/2.0, SIZE_Z/2.0);
         float r = glm::sqrt(glm::dot(cc, cc));
         if(r < radius) {
             voxels[i] = 0x01;
@@ -28,11 +28,11 @@ minecraft(std::array<char, N_VOXELS> &voxels, glm::ivec2 cornerXY) {
     FastNoiseLite noise;
     noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
 
-    std::array<std::array<int, SIZE_Y>, SIZE_X> elevation;
+    std::array<std::array<int, SIZE_XY>, SIZE_XY> elevation;
 
     // Compute elevation
-    for(int x = 0; x < SIZE_X; x++) {
-        for(int y = 0; y < SIZE_Y; y++) {
+    for(int x = 0; x < SIZE_XY; x++) {
+        for(int y = 0; y < SIZE_XY; y++) {
             // World voxel position from chunk position 
             int xx = x + cornerXY.x;
             int yy = y + cornerXY.y;

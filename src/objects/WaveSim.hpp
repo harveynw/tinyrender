@@ -38,7 +38,7 @@ namespace engine {
         WaveSim(float width, float length);
 
         void onInit(Context *c, Scene *s) override;
-        void onUpdate(float dt) override;
+        void onUpdate(State &state, float dt) override;
         void onRemove() override;
 
         void setColor(glm::vec3 c) override;

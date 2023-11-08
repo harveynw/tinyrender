@@ -27,6 +27,8 @@ protected:
 public:
     TurntableCamera() = default;
 
+    glm::vec3 getPosition() override;
+
     void onFrame(float dt) override;
     void enableListen(GLFWwindow *window, std::shared_ptr<engine::ViewProjMatrixUniform> vpMatrix) override;
 

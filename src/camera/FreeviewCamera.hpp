@@ -30,13 +30,15 @@ protected:
 
     // Config
     float moveSpeed = 10.0f;
-    float fastSpeed = 50.0f;
+    float fastSpeed = 100.0f;
     float mouseSensitivity = 0.01f;
 
     void updateInternalBuffer() override;
     void updateMouseState();
 public:
     FreeviewCamera() = default;
+
+    glm::vec3 getPosition() override;
 
     void onFrame(float dt) override;
     void enableListen(GLFWwindow *window, std::shared_ptr<engine::ViewProjMatrixUniform> vpMatrix) override;

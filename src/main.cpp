@@ -68,11 +68,13 @@ int main (int, char**) {
         object->HIDDEN = false;
         object->setColor(vec3(0.0, 0.019, 0.301));
     }
+    /*
     {
         // Voxels
         auto voxels = std::make_shared<engine::Voxels>();
         engine->addObject(voxels);
     }
+    */
 
     /*
      * Render loop

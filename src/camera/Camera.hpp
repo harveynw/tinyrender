@@ -13,6 +13,8 @@ public:
 
     std::shared_ptr<engine::ViewProjMatrixUniform> viewProjectionMatrix = nullptr;
 
+    virtual glm::vec3 getPosition() = 0;
+
     virtual void onFrame(float dt) = 0;
     virtual void enableListen(GLFWwindow *window, std::shared_ptr<engine::ViewProjMatrixUniform> vpMatrix) = 0;
     virtual void onMouseMove(double xpos, double ypos) = 0;

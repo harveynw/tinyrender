@@ -43,9 +43,10 @@ engine::Object::onInit(Context *c, Scene *s) {
     this->isInitialised = true;
 }
 
-void engine::Object::onUpdate(float dt)
+void engine::Object::onUpdate(State &state, float dt)
 {
     (void) dt;
+    (void) state;
     return;
 }
 

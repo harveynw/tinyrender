@@ -30,7 +30,8 @@ engine::WaveSim::onInit(Context *c, Scene *s) {
 }
 
 void 
-engine::WaveSim::onUpdate(float dt) {
+engine::WaveSim::onUpdate(State &state, float dt) {
+    (void) state;
     //naive->update(dt, displacementData);
     fftw->update(dt, displacementData);
     this->texture->update(displacementData);

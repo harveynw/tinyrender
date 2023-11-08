@@ -46,15 +46,20 @@ FreeviewCamera::onKeyEvent(int key, int scancode, int action, int mods) {
     if(key == GLFW_KEY_Z)
         vertical = action == GLFW_PRESS ? -1 : (action == GLFW_RELEASE ? 0 : vertical);
     if(key == GLFW_KEY_E)
-        fast = action == GLFW_PRESS;
+        fast = action == GLFW_PRESS ? true : (action == GLFW_RELEASE ? false : fast);
     if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
         captureMouse = !captureMouse;
         updateMouseState();
     }
 }
 
-void
-FreeviewCamera::onFrame(float dt) {
+glm::vec3 
+FreeviewCamera::getPosition() {
+    return this->position;
+}
+
+void FreeviewCamera::onFrame(float dt)
+{
     float speed = fast ? fastSpeed : moveSpeed;
 
     if(longitudinal == 0 && lateral == 0 && vertical == 0)

@@ -4,7 +4,9 @@
 #include "../webgpu/primitives/buffers/AttributeBuffer.hpp"
 #include "../webgpu/primitives/buffers/IndexBuffer.hpp"
 #include "../webgpu/Scene.hpp"
+#include "../State.hpp"
 #include "ObjectResources.hpp"
+
 
 namespace engine {
 
@@ -18,7 +20,7 @@ namespace engine {
         bool isInitialised = false;
     public:
         virtual void onInit(Context *c, Scene *s);
-        virtual void onUpdate(float dt);
+        virtual void onUpdate(State &state, float dt);
         virtual void onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot);
         virtual void onRemove() ;
 

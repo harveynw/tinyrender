@@ -63,10 +63,14 @@ Engine::launch(int width, int height) {
 
 void Engine::onFrame() {
     glfwPollEvents();
+
     float dt = 0.01;
+    this->state.time += dt;
+    this->state.frame++;
+    this->state.cameraPosition = camera->getPosition();
 
     for(const auto& obj : objects) {
-        obj->onUpdate(dt);
+        obj->onUpdate(state, dt);
     }
 
     /*

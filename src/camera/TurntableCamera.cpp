@@ -3,9 +3,7 @@
 
 void
 TurntableCamera::updateInternalBuffer() {
-    float rr = std::exp(r);
-    vec3 position = vec3(rr*sin(theta)*cos(phi), rr*sin(theta)*sin(phi), rr*cos(theta));
-
+    auto position = this->getPosition();
     this->viewProjectionMatrix->updateCameraPosition(position);
     this->viewProjectionMatrix->updateViewMatrix(glm::lookAt(position, vec3(0.0f),
                                                  vec3(0, 0, 1)));
@@ -74,7 +72,13 @@ TurntableCamera::enableListen(GLFWwindow *window, std::shared_ptr<engine::ViewPr
     this->viewProjectionMatrix = vpMatrix;
 }
 
-void
-TurntableCamera::onFrame(float dt) {
+vec3 
+TurntableCamera::getPosition() {
+    float rr = std::exp(r);
+    return vec3(rr*sin(theta)*cos(phi), rr*sin(theta)*sin(phi), rr*cos(theta));
+}
+
+void TurntableCamera::onFrame(float dt)
+{
     (void) dt;
 }

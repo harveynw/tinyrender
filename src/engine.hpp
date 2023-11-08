@@ -12,6 +12,7 @@
 #include <GLFW/glfw3.h>
 #include <webgpu/webgpu.hpp>
 
+#include "State.hpp"
 #include "webgpu/Context.hpp"
 #include "webgpu/pipelines/Pipeline.hpp"
 #include "webgpu/Scene.hpp"
@@ -56,6 +57,9 @@ protected:
     #ifdef __EMSCRIPTEN__
     EmscriptenFullscreenStrategy strategy;
     #endif
+
+    // State for passing to objects
+    State state;
 
     // WebGPU
     std::shared_ptr<Context> context = nullptr;
