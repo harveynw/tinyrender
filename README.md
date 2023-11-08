@@ -1,9 +1,8 @@
 # tinyrender
 
-Originally following [Learn WebGPU](https://eliemichel.github.io/LearnWebGPU/) by @eliemichel.
-Turned into a sort of goal to build a barebones graphics engine for C++.
+[Docs / Usage / Examples](https://harveynw.github.io/tinyrender/) <<< Site (work in progress)
 
-Use of WebGPU and the wrapper provided in the series does the heavy lifting to provide cross-platform support (including WASM).
+Minimalist C++ WebGPU Rendering Engine.
 
 This might be cool if you just want to draw 3D scenes but don't want to touch graphics APIs nor the bloat of something like Unity.
 
@@ -31,3 +30,9 @@ cmake --build build-web
 - More primitives (spheres, tubes, planes)
 - Accelerated voxel rendering
 - Material API
+
+### References
+
+The library relies heavily on the infrastructure provided in the excellent tutorial series by @eliemichel:
+
+[Learn WebGPU : For native graphics in C++](https://eliemichel.github.io/LearnWebGPU/)
