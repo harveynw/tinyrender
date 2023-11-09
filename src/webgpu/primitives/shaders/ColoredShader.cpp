@@ -1,7 +1,7 @@
 #include "ColoredShader.hpp"
 
 
-engine::ColoredShader::ColoredShader(Context *context): context(context) {
+tinyrender::ColoredShader::ColoredShader(Context *context): context(context) {
     // Create shader module
     shaderModule = loadShaderModule("resources/shaders/basic_mvp_color.wgsl", context->device);
     std::cout << "Shader module: " << shaderModule << std::endl;
@@ -37,17 +37,17 @@ engine::ColoredShader::ColoredShader(Context *context): context(context) {
 }
 
 wgpu::BindGroupLayout
-engine::ColoredShader::objectBindGroupLayout() {
+tinyrender::ColoredShader::objectBindGroupLayout() {
     return bindGroupLayouts[1];
 }
 
 wgpu::BindGroupLayout
-engine::ColoredShader::viewProjBindGroupLayout() {
+tinyrender::ColoredShader::viewProjBindGroupLayout() {
     return bindGroupLayouts[0];
 }
 
 void
-engine::ColoredShader::setAsTarget(RenderPipelineDescriptor &desc) {
+tinyrender::ColoredShader::setAsTarget(RenderPipelineDescriptor &desc) {
     // Attributes
     // Specify that we have one buffer and this is the layout
     desc.vertex.bufferCount = 1;

@@ -40,7 +40,7 @@ class Chunk {
 
         // Uploads mesh to the GPU
         std::shared_ptr<Mesh> mesh = nullptr;
-        std::shared_ptr<engine::AttributeBuffer> buffer = nullptr;
+        std::shared_ptr<tinyrender::AttributeBuffer> buffer = nullptr;
         std::shared_ptr<ObjectResources> resources = nullptr;
         void syncBuffer();
     public:

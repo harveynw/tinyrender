@@ -15,7 +15,7 @@ using glm::mat4x4;
 using glm::vec4;
 using glm::vec3;
 
-namespace engine {
+namespace tinyrender {
 
     class ViewProjMatrixUniform : public Buffer {
     protected:

@@ -82,7 +82,7 @@ Mesh::generateMesh() {
     }
 }
 
-std::shared_ptr<engine::AttributeBuffer> 
+std::shared_ptr<tinyrender::AttributeBuffer> 
 Mesh::gpu(Context *context) {
-    return std::make_shared<engine::AttributeBuffer>(context, this->mesh->data, this->mesh->vertices);
+    return std::make_shared<tinyrender::AttributeBuffer>(context, this->mesh->data, this->mesh->vertices);
 }

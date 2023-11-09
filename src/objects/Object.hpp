@@ -8,7 +8,7 @@
 #include "ObjectResources.hpp"
 
 
-namespace engine {
+namespace tinyrender {
 
     class Object {
     protected:
@@ -25,7 +25,7 @@ namespace engine {
         virtual void onRemove() ;
 
         virtual void setColor(glm::vec3 c);
-        virtual void setTexture(std::shared_ptr<engine::Texture2D::Texture> texture);
+        virtual void setTexture(std::shared_ptr<tinyrender::Texture2D::Texture> texture);
 
         virtual ~Object() = default;
 
@@ -33,7 +33,7 @@ namespace engine {
 
         bool HIDDEN = false;
 
-        std::shared_ptr<engine::ModelMatrixUniform> modelMatrix() const;
+        std::shared_ptr<tinyrender::ModelMatrixUniform> modelMatrix() const;
         std::shared_ptr<ObjectResources> resources = nullptr;
     };
 

@@ -29,7 +29,7 @@ public:
     void generateMesh();
 
     // Not thread safe
-    std::shared_ptr<engine::AttributeBuffer> gpu(Context *context);
+    std::shared_ptr<tinyrender::AttributeBuffer> gpu(Context *context);
 };
 
 struct AdjacentMesh {

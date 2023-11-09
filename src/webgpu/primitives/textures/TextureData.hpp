@@ -9,7 +9,7 @@
 #include "utilities/mips.hpp"
 
 
-namespace engine::Texture2D {
+namespace tinyrender::Texture2D {
 
     class DataDelegate {
     public:

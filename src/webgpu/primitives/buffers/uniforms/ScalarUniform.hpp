@@ -2,7 +2,7 @@
 
 #include "../Buffer.hpp"
 
-namespace engine {
+namespace tinyrender {
 
     class ScalarUniform : public Buffer {
     protected:

@@ -1,12 +1,12 @@
 #include "WaveSim.hpp"
 
-engine::WaveSim::WaveSim(float width, float length): WIDTH(width), LENGTH(length) {
+tinyrender::WaveSim::WaveSim(float width, float length): WIDTH(width), LENGTH(length) {
     assert(MESH_RES_WIDTH % 2 == 0);
     assert(MESH_RES_LENGTH % 2 == 0);
 }
 
 void 
-engine::WaveSim::onInit(Context *c, Scene *s) {
+tinyrender::WaveSim::onInit(Context *c, Scene *s) {
     Object::onInit(c, s);
 
     this->targetPipeline = Waves;
@@ -15,13 +15,13 @@ engine::WaveSim::onInit(Context *c, Scene *s) {
 
     Polygons p;
     loadPlaneMesh(p, WIDTH, LENGTH, MESH_RES_WIDTH, MESH_RES_LENGTH);
-    this->mesh = std::make_shared<engine::AttributeBuffer>(this->context, p.data, p.vertices);
+    this->mesh = std::make_shared<tinyrender::AttributeBuffer>(this->context, p.data, p.vertices);
     this->resources = std::make_shared<ObjectResources>(this->context, this->scene, this->mesh, ColoredTriangle);
 
     // Init Waves Data and reset Bind Group to point to it
-    this->texture = std::make_shared<engine::Texture2D::WavesDataTexture>(c, DISP_MAP_RES, DISP_MAP_RES);
+    this->texture = std::make_shared<tinyrender::Texture2D::WavesDataTexture>(c, DISP_MAP_RES, DISP_MAP_RES);
     this->resources->texture = this->texture;
-    this->resources->maxDisplacement = std::make_shared<engine::ScalarUniform>(c);
+    this->resources->maxDisplacement = std::make_shared<tinyrender::ScalarUniform>(c);
     this->resources->maxDisplacement->set(0.5);
     this->resources->resetBindGroup(c, s, Waves);
 
@@ -30,7 +30,7 @@ engine::WaveSim::onInit(Context *c, Scene *s) {
 }
 
 void 
-engine::WaveSim::onUpdate(State &state, float dt) {
+tinyrender::WaveSim::onUpdate(State &state, float dt) {
     (void) state;
     //naive->update(dt, displacementData);
     fftw->update(dt, displacementData);
@@ -38,7 +38,7 @@ engine::WaveSim::onUpdate(State &state, float dt) {
 }
 
 void 
-engine::WaveSim::onRemove() {
+tinyrender::WaveSim::onRemove() {
     Object::onRemove();
 
     this->displacementData.clear();
@@ -49,6 +49,6 @@ engine::WaveSim::onRemove() {
 }
 
 void
-engine::WaveSim::setColor(glm::vec3 c) {
+tinyrender::WaveSim::setColor(glm::vec3 c) {
     this->resources->color->set(c);
 }

@@ -11,7 +11,7 @@ using glm::vec4;
 using glm::vec3;
 
 
-namespace engine {
+namespace tinyrender {
 
     class LightingUniform : public Buffer {
     protected:

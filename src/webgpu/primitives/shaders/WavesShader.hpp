@@ -2,7 +2,7 @@
 
 #include "Shader.hpp"
 
-namespace engine {
+namespace tinyrender {
 
     class WavesShader : public Shader {
     protected:

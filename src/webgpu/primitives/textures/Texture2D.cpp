@@ -1,9 +1,9 @@
 #include "Texture2D.hpp"
 
 
-engine::Texture2D::Texture::Texture(Context *context, engine::Texture2D::DataDelegate *data,
-                           engine::Texture2D::CreationDelegate *create, engine::Texture2D::ViewDelegate *view,
-                           engine::Texture2D::SamplerDelegate *samp):
+tinyrender::Texture2D::Texture::Texture(Context *context, tinyrender::Texture2D::DataDelegate *data,
+                           tinyrender::Texture2D::CreationDelegate *create, tinyrender::Texture2D::ViewDelegate *view,
+                           tinyrender::Texture2D::SamplerDelegate *samp):
 _data(data),
 _create(create),
 _view(view),
@@ -25,7 +25,7 @@ _samp(samp)
     sampler = _samp->createSampler(context, mips);
 };
 
-engine::Texture2D::Texture::~Texture() {
+tinyrender::Texture2D::Texture::~Texture() {
     // Delete delegates
     delete _data;
     delete _create;

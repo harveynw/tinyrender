@@ -14,7 +14,7 @@
 
 using namespace wgpu;
 
-namespace engine {
+namespace tinyrender {
 
     enum BufferType {
         VERTEX = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Vertex,

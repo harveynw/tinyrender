@@ -11,7 +11,7 @@
 
 // The geometric objects don't have special logic for onRemove as their memory footprint is small.
 
-namespace engine {
+namespace tinyrender {
 
     class Triangle : public Object {
     protected:

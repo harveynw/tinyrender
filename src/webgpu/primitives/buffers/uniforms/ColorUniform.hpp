@@ -2,7 +2,7 @@
 
 #include "../Buffer.hpp"
 
-namespace engine {
+namespace tinyrender {
 
     class ColorUniform : public Buffer {
     protected:

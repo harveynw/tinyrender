@@ -21,7 +21,7 @@ public:
     Pipeline() = default;
     virtual ~Pipeline() = default;
     virtual void onFrame(wgpu::TextureView&, wgpu::CommandEncoder&,
-                         std::vector<std::shared_ptr<engine::Object>>&) = 0;
+                         std::vector<std::shared_ptr<tinyrender::Object>>&) = 0;
 
     void enableClear(wgpu::Color color) {
         shouldClear = true;

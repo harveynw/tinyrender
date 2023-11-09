@@ -18,7 +18,7 @@ Engine::launch(int width, int height) {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    window = glfwCreateWindow(width, height, "TinyRender", NULL, NULL);
+    window = glfwCreateWindow(width, height, "Engine", NULL, NULL);
     if (!window)
         throw std::runtime_error("Couldn't create GLFW window");
     printf("GLFW window created at %p\n", (void*) window);
@@ -47,10 +47,10 @@ Engine::launch(int width, int height) {
     // TODO: Scene can absorb this complexity
     this->scene = std::make_shared<Scene>();
     this->scene->buildDepthBuffer(this->context);
-    this->scene->lightingUniform = std::make_shared<engine::LightingUniform>(this->context.get());
-    this->scene->texturedShader = std::make_shared<engine::TexturedShader>(this->context.get());
-    this->scene->coloredShader = std::make_shared<engine::ColoredShader>(this->context.get());
-    this->scene->wavesShader = std::make_shared<engine::WavesShader>(this->context.get());
+    this->scene->lightingUniform = std::make_shared<tinyrender::LightingUniform>(this->context.get());
+    this->scene->texturedShader = std::make_shared<tinyrender::TexturedShader>(this->context.get());
+    this->scene->coloredShader = std::make_shared<tinyrender::ColoredShader>(this->context.get());
+    this->scene->wavesShader = std::make_shared<tinyrender::WavesShader>(this->context.get());
     this->scene->buildViewProj(this->context);
 
     this->trianglePipeline = std::make_shared<TrianglePipeline>(this->context.get(), this->scene.get());
@@ -121,7 +121,7 @@ void Engine::onFrame() {
 }
 
 void 
-Engine::addObject(std::shared_ptr<engine::Object> obj) {
+Engine::addObject(std::shared_ptr<tinyrender::Object> obj) {
     obj->onInit(context.get(), scene.get());
     objects.push_back(obj);
 }
@@ -147,7 +147,7 @@ Engine::setCamera(std::shared_ptr<Camera> c) {
 }
 
 void Engine::onResize(int width, int height) {
-    //printf("Engine::onResize to (%i, %i) %p\n", width, height, (void*) this);
+    //printf("tinyrender::onResize to (%i, %i) %p\n", width, height, (void*) this);
 
     // Terminate depth texture
     scene->depthTexture = nullptr;

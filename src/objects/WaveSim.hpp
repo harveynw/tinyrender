@@ -11,7 +11,7 @@
 #include "wavesim/FFTfftw.hpp"
 
 
-namespace engine {
+namespace tinyrender {
 
     class WaveSim : public Object {
     private:
@@ -25,11 +25,11 @@ namespace engine {
         int DISP_MAP_RES = 512; // Resolution of the displacement map (square)
 
         // Grid mesh for drawing the waves
-        std::shared_ptr<engine::AttributeBuffer> mesh = nullptr;
+        std::shared_ptr<tinyrender::AttributeBuffer> mesh = nullptr;
 
         // Displacement of the surface is stored in a 1D vector, and uploaded to a texture on the GPU
         std::vector<uint8_t> displacementData;
-        std::shared_ptr<engine::Texture2D::WavesDataTexture> texture;
+        std::shared_ptr<tinyrender::Texture2D::WavesDataTexture> texture;
 
         // Simulation methods
         std::unique_ptr<NaiveWaveSim> naive;

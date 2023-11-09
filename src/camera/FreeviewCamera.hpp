@@ -41,7 +41,7 @@ public:
     glm::vec3 getPosition() override;
 
     void onFrame(float dt) override;
-    void enableListen(GLFWwindow *window, std::shared_ptr<engine::ViewProjMatrixUniform> vpMatrix) override;
+    void enableListen(GLFWwindow *window, std::shared_ptr<tinyrender::ViewProjMatrixUniform> vpMatrix) override;
 
     void onMouseMove(double xpos, double ypos) override;
     void onMouseButton(GLFWwindow *window, int button, int action, int mods) override;

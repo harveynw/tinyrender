@@ -2,9 +2,9 @@
 
 #include "Buffer.hpp"
 
-namespace engine {
+namespace tinyrender {
 
-    class AttributeBuffer : public engine::Buffer {
+    class AttributeBuffer : public tinyrender::Buffer {
     protected:
         int nDrawCalls; // Typically the number of vertex shader invocations, i.e. the expected number of draw calls
         size_t initialSize;

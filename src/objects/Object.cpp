@@ -3,7 +3,7 @@
 #include <utility>
 
 void
-engine::Object::setColor(glm::vec3 c) {
+tinyrender::Object::setColor(glm::vec3 c) {
     this->resources->color->set(c);
     this->resources->texture = nullptr;
 
@@ -14,7 +14,7 @@ engine::Object::setColor(glm::vec3 c) {
 }
 
 void
-engine::Object::setTexture(std::shared_ptr<engine::Texture2D::Texture> texture) {
+tinyrender::Object::setTexture(std::shared_ptr<tinyrender::Texture2D::Texture> texture) {
     this->resources->texture = std::move(texture);
 
     if(this->targetPipeline != TexturedTriangle) {
@@ -23,17 +23,17 @@ engine::Object::setTexture(std::shared_ptr<engine::Texture2D::Texture> texture) 
     }
 }
 
-std::shared_ptr<engine::ModelMatrixUniform>
-engine::Object::modelMatrix() const {
+std::shared_ptr<tinyrender::ModelMatrixUniform>
+tinyrender::Object::modelMatrix() const {
     return this->resources->modelMatrix;
 }
 
-ObjectPipeline engine::Object::currentTargetPipeline() {
+ObjectPipeline tinyrender::Object::currentTargetPipeline() {
     return targetPipeline;
 }
 
 void 
-engine::Object::onInit(Context *c, Scene *s) {
+tinyrender::Object::onInit(Context *c, Scene *s) {
     this->context = c;
     this->scene = s;
 
@@ -43,7 +43,7 @@ engine::Object::onInit(Context *c, Scene *s) {
     this->isInitialised = true;
 }
 
-void engine::Object::onUpdate(State &state, float dt)
+void tinyrender::Object::onUpdate(State &state, float dt)
 {
     (void) dt;
     (void) state;
@@ -51,7 +51,7 @@ void engine::Object::onUpdate(State &state, float dt)
 }
 
 void 
-engine::Object::onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot) {
+tinyrender::Object::onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot) {
     // Check if set to hidden
     if(HIDDEN)
         return;
@@ -66,7 +66,7 @@ engine::Object::onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot
 }
 
 void 
-engine::Object::onRemove() {
+tinyrender::Object::onRemove() {
     if(!this->isInitialised)
         throw std::runtime_error("Object has not been initialised");
 

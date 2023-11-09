@@ -23,19 +23,19 @@ enum ObjectPipeline {
 struct ObjectResources {
     bool isIndexed = false;
 
-    std::shared_ptr<engine::AttributeBuffer> attributeBuffer = nullptr;
-    std::shared_ptr<engine::IndexBuffer> indexBuffer = nullptr;
-    std::shared_ptr<engine::Texture2D::Texture> texture = nullptr;
-    std::shared_ptr<engine::ModelMatrixUniform> modelMatrix = nullptr;
-    std::shared_ptr<engine::ColorUniform> color = nullptr;
+    std::shared_ptr<tinyrender::AttributeBuffer> attributeBuffer = nullptr;
+    std::shared_ptr<tinyrender::IndexBuffer> indexBuffer = nullptr;
+    std::shared_ptr<tinyrender::Texture2D::Texture> texture = nullptr;
+    std::shared_ptr<tinyrender::ModelMatrixUniform> modelMatrix = nullptr;
+    std::shared_ptr<tinyrender::ColorUniform> color = nullptr;
 
     // WaveSim specific
-    std::shared_ptr<engine::ScalarUniform> maxDisplacement = nullptr;
+    std::shared_ptr<tinyrender::ScalarUniform> maxDisplacement = nullptr;
 
     std::vector<wgpu::BindGroupEntry> bindGroupData;
     wgpu::BindGroup bindGroup = nullptr;
 
-    ObjectResources(Context *context, Scene *scene, std::shared_ptr<engine::AttributeBuffer> attrs, ObjectPipeline target);
+    ObjectResources(Context *context, Scene *scene, std::shared_ptr<tinyrender::AttributeBuffer> attrs, ObjectPipeline target);
     ~ObjectResources();
 
     void resetBindGroup(Context *context, Scene *scene, ObjectPipeline target);

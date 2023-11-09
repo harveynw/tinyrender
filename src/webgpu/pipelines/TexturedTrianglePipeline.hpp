@@ -37,7 +37,7 @@ public:
     TexturedTrianglePipeline(Context *context, Scene *scene);
     ~TexturedTrianglePipeline() override;
     void onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder,
-                 std::vector<std::shared_ptr<engine::Object>> &objects) override;
+                 std::vector<std::shared_ptr<tinyrender::Object>> &objects) override;
 };
 
 #endif

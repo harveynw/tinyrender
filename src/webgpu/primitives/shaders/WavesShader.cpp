@@ -1,7 +1,7 @@
 #include "WavesShader.hpp"
 
 
-engine::WavesShader::WavesShader(Context *context): context(context) {
+tinyrender::WavesShader::WavesShader(Context *context): context(context) {
     // Create shader module
     shaderModule = loadShaderModule("resources/shaders/waves.wgsl", context->device);
     std::cout << "Shader module: " << shaderModule << std::endl;
@@ -41,17 +41,17 @@ engine::WavesShader::WavesShader(Context *context): context(context) {
 }
 
 wgpu::BindGroupLayout
-engine::WavesShader::objectBindGroupLayout() {
+tinyrender::WavesShader::objectBindGroupLayout() {
     return bindGroupLayouts[1];
 }
 
 wgpu::BindGroupLayout
-engine::WavesShader::viewProjBindGroupLayout() {
+tinyrender::WavesShader::viewProjBindGroupLayout() {
     return bindGroupLayouts[0];
 }
 
 void
-engine::WavesShader::setAsTarget(RenderPipelineDescriptor &desc) {
+tinyrender::WavesShader::setAsTarget(RenderPipelineDescriptor &desc) {
     // Attributes
     // Specify that we have one buffer and this is the layout
     desc.vertex.bufferCount = 1;

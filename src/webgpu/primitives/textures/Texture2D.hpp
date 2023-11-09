@@ -21,7 +21,7 @@
  */
 
 
-namespace engine::Texture2D {
+namespace tinyrender::Texture2D {
 
     class Texture {
     protected:
@@ -32,10 +32,10 @@ namespace engine::Texture2D {
         unsigned int mips = 1;
 
         // Delegates for texture
-        engine::Texture2D::DataDelegate *_data;
-        engine::Texture2D::CreationDelegate *_create;
-        engine::Texture2D::ViewDelegate *_view;
-        engine::Texture2D::SamplerDelegate *_samp;
+        tinyrender::Texture2D::DataDelegate *_data;
+        tinyrender::Texture2D::CreationDelegate *_create;
+        tinyrender::Texture2D::ViewDelegate *_view;
+        tinyrender::Texture2D::SamplerDelegate *_samp;
 
     public:
         // Resources
@@ -43,8 +43,8 @@ namespace engine::Texture2D {
         wgpu::TextureView textureView = nullptr;
         wgpu::Sampler sampler = nullptr;
 
-        Texture(Context *context, engine::Texture2D::DataDelegate *data, engine::Texture2D::CreationDelegate *create,
-                  engine::Texture2D::ViewDelegate *view, engine::Texture2D::SamplerDelegate *samp);
+        Texture(Context *context, tinyrender::Texture2D::DataDelegate *data, tinyrender::Texture2D::CreationDelegate *create,
+                  tinyrender::Texture2D::ViewDelegate *view, tinyrender::Texture2D::SamplerDelegate *samp);
         ~Texture();
 
         wgpu::TextureView getView() {

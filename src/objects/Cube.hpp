@@ -48,7 +48,7 @@ f 2/13/5 1/1/5 3/4/5 4/5/5
 f 6/11/6 5/10/6 1/1/6 2/13/6
 )";
 
-namespace engine {
+namespace tinyrender {
 
     class Cube : public Object {
     public:

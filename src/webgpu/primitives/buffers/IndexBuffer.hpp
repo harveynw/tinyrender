@@ -6,7 +6,7 @@
 
 #include "Buffer.hpp"
 
-namespace engine {
+namespace tinyrender {
     class IndexBuffer : public Buffer {
     public:
         IndexBuffer(Context *context, std::vector<uint16_t> indexData);

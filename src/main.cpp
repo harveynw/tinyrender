@@ -33,17 +33,19 @@ int main (int, char**) {
     /*
      * Create the objects
      */
+    glm::vec3 t = glm::vec3(60.0, -35.0, 35.0);
+    auto boat_t = t + glm::vec3(0, 0, 0.5);
     {
-        auto texture = std::make_shared<engine::Texture2D::common::BasicImgRepeatingTexture>(
+        auto texture = std::make_shared<tinyrender::Texture2D::common::BasicImgRepeatingTexture>(
                 engine->getContext().get(), "resources/fourareen2K_albedo.jpg");
-        std::shared_ptr<engine::Object> object = std::make_shared<engine::Mesh>("resources/fourareen.obj");
+        std::shared_ptr<tinyrender::Object> object = std::make_shared<tinyrender::Mesh>("resources/fourareen.obj");
         engine->addObject(object);
 
-        object->modelMatrix()->setTranslation(vec3(0,0,0.5));
+        object->modelMatrix()->setTranslation(boat_t);
         object->setTexture(texture);
     }
     {
-        auto object = std::make_shared<engine::Cube>();
+        auto object = std::make_shared<tinyrender::Cube>();
         engine->addObject(object);
 
         object->modelMatrix()->setScale(0.2f);
@@ -52,7 +54,7 @@ int main (int, char**) {
         engine->objects.push_back(object);
     }
     {
-        auto object = std::make_shared<engine::Pyramid>(vec3(0, 0, 3), 2, 3);
+        auto object = std::make_shared<tinyrender::Pyramid>(vec3(0, 0, 3), 2, 3);
         engine->addObject(object);
 
         object->modelMatrix()->setScale(0.2f);
@@ -62,19 +64,20 @@ int main (int, char**) {
     }
     {
         // Wave Sim
-        auto object = std::make_shared<engine::WaveSim>(50, 50);
+        auto object = std::make_shared<tinyrender::WaveSim>(50, 50);
         engine->addObject(object);
 
         object->HIDDEN = false;
         object->setColor(vec3(0.0, 0.019, 0.301));
+
+        object->modelMatrix()->setTranslation(t);
+        object->modelMatrix()->setScale(1.2f);
     }
-    /*
     {
         // Voxels
-        auto voxels = std::make_shared<engine::Voxels>();
+        auto voxels = std::make_shared<tinyrender::Voxels>();
         engine->addObject(voxels);
     }
-    */
 
     /*
      * Render loop

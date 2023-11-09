@@ -4,7 +4,7 @@
 
 #include "ViewProjMatrixUniform.hpp"
 
-engine::ViewProjMatrixUniform::ViewProjMatrixUniform(Context *context, vec3 lookFrom, vec3 lookAt): Buffer() {
+tinyrender::ViewProjMatrixUniform::ViewProjMatrixUniform(Context *context, vec3 lookFrom, vec3 lookAt): Buffer() {
     this->lookFrom = lookFrom;
     this->lookAt = lookAt;
 
@@ -20,27 +20,27 @@ engine::ViewProjMatrixUniform::ViewProjMatrixUniform(Context *context, vec3 look
 
     // Buffer base class is initialised
     this->context = context;
-    this->type = engine::UNIFORM;
+    this->type = tinyrender::UNIFORM;
     this->size = sizeof(ViewProjectionUniforms);
     this->mapped = false;
     this->initialise(&uniforms);
 }
 
 void
-engine::ViewProjMatrixUniform::updateViewMatrix(glm::mat4x4 viewMatrix) {
+tinyrender::ViewProjMatrixUniform::updateViewMatrix(glm::mat4x4 viewMatrix) {
     uniforms.viewMatrix = viewMatrix;
     context->queue.writeBuffer(underlying, offsetof(ViewProjectionUniforms, viewMatrix),
             &uniforms.viewMatrix, sizeof(ViewProjectionUniforms::viewMatrix));
 }
 
-void engine::ViewProjMatrixUniform::updateCameraPosition(glm::vec3 cameraWorldPosition)
+void tinyrender::ViewProjMatrixUniform::updateCameraPosition(glm::vec3 cameraWorldPosition)
 {
     uniforms.cameraWorldPosition = cameraWorldPosition;
     context->queue.writeBuffer(underlying, offsetof(ViewProjectionUniforms, cameraWorldPosition),
             &uniforms.cameraWorldPosition, sizeof(ViewProjectionUniforms::cameraWorldPosition));
 }
 
-void engine::ViewProjMatrixUniform::refreshProjectionMatrix(Context *context) {
+void tinyrender::ViewProjMatrixUniform::refreshProjectionMatrix(Context *context) {
     float ratio = context->DISPLAY_WIDTH / context->DISPLAY_HEIGHT;
     uniforms.projectionMatrix = glm::perspective(fov, ratio, near, far);
     context->queue.writeBuffer(underlying, offsetof(ViewProjectionUniforms, projectionMatrix),

@@ -22,7 +22,7 @@ context(context), scene(scene)  {
 
 void
 WavesPipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder,
-                                  std::vector<std::shared_ptr<engine::Object>> &objects) {
+                                  std::vector<std::shared_ptr<tinyrender::Object>> &objects) {
     RenderPassDescriptor renderPassDesc;
 
     RenderPassColorAttachment renderPassColorAttachment;

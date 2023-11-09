@@ -1,7 +1,7 @@
 #include "TexturedShader.hpp"
 
 
-engine::TexturedShader::TexturedShader(Context *context): context(context) {
+tinyrender::TexturedShader::TexturedShader(Context *context): context(context) {
     // Create shader module
     shaderModule = loadShaderModule("resources/shaders/basic_mvp_texture.wgsl", context->device);
     std::cout << "Shader module: " << shaderModule << std::endl;
@@ -41,17 +41,17 @@ engine::TexturedShader::TexturedShader(Context *context): context(context) {
 }
 
 wgpu::BindGroupLayout
-engine::TexturedShader::objectBindGroupLayout() {
+tinyrender::TexturedShader::objectBindGroupLayout() {
     return bindGroupLayouts[1];
 }
 
 wgpu::BindGroupLayout
-engine::TexturedShader::viewProjBindGroupLayout() {
+tinyrender::TexturedShader::viewProjBindGroupLayout() {
     return bindGroupLayouts[0];
 }
 
 void
-engine::TexturedShader::setAsTarget(RenderPipelineDescriptor &desc) {
+tinyrender::TexturedShader::setAsTarget(RenderPipelineDescriptor &desc) {
     // Attributes
     // Specify that we have one buffer and this is the layout
     desc.vertex.bufferCount = 1;

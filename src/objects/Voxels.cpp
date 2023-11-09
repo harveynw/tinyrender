@@ -1,16 +1,16 @@
 #include "Voxels.hpp"
 
 
-engine::Voxels::Voxels() {}
+tinyrender::Voxels::Voxels() {}
 
 void 
-engine::Voxels::onInit(Context *c, Scene *s) {
+tinyrender::Voxels::onInit(Context *c, Scene *s) {
     Object::onInit(c, s);
     map = std::make_shared<ChunkMap>(c, s);
 }
 
 void 
-engine::Voxels::onUpdate(State &state, float dt) {
+tinyrender::Voxels::onUpdate(State &state, float dt) {
     (void) dt;
     if(state.frame % TICKS_PER_UPDATE != 0)
         return;
@@ -27,18 +27,18 @@ engine::Voxels::onUpdate(State &state, float dt) {
 }
 
 void 
-engine::Voxels::onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot) {
+tinyrender::Voxels::onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot) {
     // Chunks are drawn individually so we override Object::onDraw
     for(auto &loaded : this->map->all())
         loaded->onDraw(renderPass, vertexBufferSlot, bindGroupSlot);
 }
 
-void engine::Voxels::onRemove() {
+void tinyrender::Voxels::onRemove() {
     Object::onRemove();
 
     map = nullptr;
 }
 
-engine::Voxels::~Voxels() {
+tinyrender::Voxels::~Voxels() {
     return;
 }

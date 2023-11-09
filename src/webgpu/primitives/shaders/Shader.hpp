@@ -12,7 +12,7 @@
  * Instances encapsulate everything tied to a specific shader (bind group layouts etc.) that one or more pipelines can target.
  */
 
-namespace engine {
+namespace tinyrender {
 
     class Shader {
     protected:

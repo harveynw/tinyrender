@@ -1,7 +1,7 @@
 #include "AttributeBuffer.hpp"
 
 
-engine::AttributeBuffer::AttributeBuffer(Context *context, std::vector<float> &data, int nDrawCalls) {
+tinyrender::AttributeBuffer::AttributeBuffer(Context *context, std::vector<float> &data, int nDrawCalls) {
     this->nDrawCalls = nDrawCalls;
     this->cpuBuffer = std::move(data);
     this->initialSize = cpuBuffer.size() * sizeof(float);
@@ -22,7 +22,7 @@ engine::AttributeBuffer::AttributeBuffer(Context *context, std::vector<float> &d
 }
 
 void
-engine::AttributeBuffer::update(std::vector<float> &newData, int newDrawCalls) {
+tinyrender::AttributeBuffer::update(std::vector<float> &newData, int newDrawCalls) {
     if(newData.size() > this->initialSize)
         throw std::runtime_error("Asked to fill buffer with more floats than initially allocated");
 

@@ -67,7 +67,7 @@ TurntableCamera::onKeyEvent(int key, int scancode, int action, int mods) {
 }
 
 void
-TurntableCamera::enableListen(GLFWwindow *window, std::shared_ptr<engine::ViewProjMatrixUniform> vpMatrix) {
+TurntableCamera::enableListen(GLFWwindow *window, std::shared_ptr<tinyrender::ViewProjMatrixUniform> vpMatrix) {
     (void) window;
     this->viewProjectionMatrix = vpMatrix;
 }

@@ -6,7 +6,7 @@
 #include "loaders/Shapes.hpp"
 
 
-namespace engine {
+namespace tinyrender {
     class Voxels : public Object {
         std::shared_ptr<ChunkMap> map; 
 

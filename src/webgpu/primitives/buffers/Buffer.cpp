@@ -5,12 +5,12 @@
 #include "Buffer.hpp"
 
 
-engine::Buffer::Buffer(Context *context, engine::BufferType type, uint64_t size, bool mapped, void *data): context(context),
+tinyrender::Buffer::Buffer(Context *context, tinyrender::BufferType type, uint64_t size, bool mapped, void *data): context(context),
 type(type), size(size), mapped(mapped) {
     initialise(data);
 }
 
-engine::Buffer::~Buffer() {
+tinyrender::Buffer::~Buffer() {
     if(underlying != nullptr) {
         underlying.destroy();
         underlying.release();
@@ -18,7 +18,7 @@ engine::Buffer::~Buffer() {
 }
 
 void
-engine::Buffer::initialise(void *data) {
+tinyrender::Buffer::initialise(void *data) {
     // Create the buffer
     wgpu::BufferDescriptor bufferDesc;
     bufferDesc.size = size;
@@ -30,9 +30,9 @@ engine::Buffer::initialise(void *data) {
     context->queue.writeBuffer(underlying, 0, data, bufferDesc.size);
 }
 
-BindGroupEntry engine::Buffer::generateUniformBindGroupEntry(int bindGroup) {
+BindGroupEntry tinyrender::Buffer::generateUniformBindGroupEntry(int bindGroup) {
     // BindGroups are for uniforms
-    assert(type == engine::UNIFORM);
+    assert(type == tinyrender::UNIFORM);
 
     BindGroupEntry entry;
 

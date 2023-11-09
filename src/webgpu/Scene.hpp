@@ -15,22 +15,22 @@
 
 struct Scene {
     // Depth Buffer, pipelines will require read/write to this.
-    std::shared_ptr<engine::Texture2D::Texture> depthTexture;
+    std::shared_ptr<tinyrender::Texture2D::Texture> depthTexture;
 
     void buildDepthBuffer(const std::shared_ptr<Context>& context) {
-        depthTexture = std::make_shared<engine::Texture2D::common::DefaultDepthTexture>(context.get());
+        depthTexture = std::make_shared<tinyrender::Texture2D::common::DefaultDepthTexture>(context.get());
     }
 
     // Lighting data
-    std::shared_ptr<engine::LightingUniform> lightingUniform;
+    std::shared_ptr<tinyrender::LightingUniform> lightingUniform;
 
     // Shaders
-    std::shared_ptr<engine::TexturedShader> texturedShader;
-    std::shared_ptr<engine::ColoredShader> coloredShader;
-    std::shared_ptr<engine::WavesShader> wavesShader;
+    std::shared_ptr<tinyrender::TexturedShader> texturedShader;
+    std::shared_ptr<tinyrender::ColoredShader> coloredShader;
+    std::shared_ptr<tinyrender::WavesShader> wavesShader;
 
     // Projection * View Matrix
-    std::shared_ptr<engine::ViewProjMatrixUniform> viewProjUniform;
+    std::shared_ptr<tinyrender::ViewProjMatrixUniform> viewProjUniform;
     std::vector<wgpu::BindGroupEntry> viewProjUniformBindGroupData;
     wgpu::BindGroup coloredViewProjBindGroup = nullptr;
     wgpu::BindGroup texturedViewProjBindGroup = nullptr;
@@ -40,7 +40,7 @@ struct Scene {
         if(texturedShader == nullptr || coloredShader == nullptr)
             throw std::runtime_error("Shaders must be initialised first");
 
-        this->viewProjUniform = std::make_shared<engine::ViewProjMatrixUniform>(context.get(), vec3(5.0, -5.0, 5.0), vec3(0, 0, 0));
+        this->viewProjUniform = std::make_shared<tinyrender::ViewProjMatrixUniform>(context.get(), vec3(5.0, -5.0, 5.0), vec3(0, 0, 0));
 
         // Build bind group
         viewProjUniformBindGroupData = std::vector<BindGroupEntry>(2);

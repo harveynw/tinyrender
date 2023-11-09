@@ -23,7 +23,7 @@
 
 
 // Forward declarations
-namespace engine::Texture2D {
+namespace tinyrender::Texture2D {
     class Texture;
 }
 
@@ -37,7 +37,7 @@ public:
     bool isRunning();
     void onFrame();
 
-    void addObject(std::shared_ptr<engine::Object> obj);
+    void addObject(std::shared_ptr<tinyrender::Object> obj);
 
     void onResize(int, int);
     void setCamera(std::shared_ptr<Camera> controller);
@@ -50,7 +50,7 @@ public:
     std::shared_ptr<Camera> camera = nullptr;
 
     // Objects in scene
-    std::vector<std::shared_ptr<engine::Object>> objects;
+    std::vector<std::shared_ptr<tinyrender::Object>> objects;
 protected:
     // GLFW
     GLFWwindow *window;

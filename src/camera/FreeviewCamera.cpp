@@ -109,7 +109,7 @@ void FreeviewCamera::updateMouseState() {
     glfwSetInputMode(glfw_window, GLFW_CURSOR, captureMouse ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 }
 
-void FreeviewCamera::enableListen(GLFWwindow *window, std::shared_ptr<engine::ViewProjMatrixUniform> vpMatrix) {
+void FreeviewCamera::enableListen(GLFWwindow *window, std::shared_ptr<tinyrender::ViewProjMatrixUniform> vpMatrix) {
     this->viewProjectionMatrix = vpMatrix;
     printf("Freeview Camera enabled - WASD, Space - Up, Z - Down, E - Speed, Esc - Uncapture\n");
     glfw_window = window;

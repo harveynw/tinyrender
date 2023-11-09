@@ -3,18 +3,18 @@
 //
 #include "ModelMatrixUniform.hpp"
 
-engine::ModelMatrixUniform::ModelMatrixUniform(Context *context) {
+tinyrender::ModelMatrixUniform::ModelMatrixUniform(Context *context) {
     uniforms.modelMatrix = computeModelMatrix();
 
     // Buffer base class is initialised
     this->context = context;
-    this->type = engine::UNIFORM;
+    this->type = tinyrender::UNIFORM;
     this->size = sizeof(ModelUniform);
     this->mapped = false;
     this->initialise(&uniforms);
 }
 
-mat4x4 engine::ModelMatrixUniform::computeModelMatrix() {
+mat4x4 tinyrender::ModelMatrixUniform::computeModelMatrix() {
     mat4x4 S, T, R;
     S = glm::scale(mat4x4(1.0), vec3(scale));
     T = glm::translate(mat4x4(1.0), translate);
@@ -25,7 +25,7 @@ mat4x4 engine::ModelMatrixUniform::computeModelMatrix() {
     return T * R * S;
 }
 
-void engine::ModelMatrixUniform::updateBuffer() {
+void tinyrender::ModelMatrixUniform::updateBuffer() {
     uniforms.modelMatrix = computeModelMatrix();
     context->queue.writeBuffer(underlying, offsetof(ModelUniform, modelMatrix),
                                        &uniforms.modelMatrix,sizeof(ModelUniform::modelMatrix));

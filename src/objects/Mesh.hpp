@@ -8,7 +8,7 @@
 
 #define STR_SUFFIX(s, suffix) s.substr(s.size()-suffix.size(), suffix.size()) == suffix
 
-namespace engine {
+namespace tinyrender {
 
     class Mesh : public Object {
     protected:

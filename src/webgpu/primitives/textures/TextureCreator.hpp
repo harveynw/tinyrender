@@ -2,7 +2,7 @@
 
 #include <webgpu/webgpu.hpp>
 
-namespace engine::Texture2D {
+namespace tinyrender::Texture2D {
 
     class CreationDelegate {
     public:

@@ -1,10 +1,10 @@
 #include "ObjectResources.hpp"
 
 
-ObjectResources::ObjectResources(Context *context, Scene *scene, std::shared_ptr<engine::AttributeBuffer> attrs, ObjectPipeline target) {
+ObjectResources::ObjectResources(Context *context, Scene *scene, std::shared_ptr<tinyrender::AttributeBuffer> attrs, ObjectPipeline target) {
     this->attributeBuffer = std::move(attrs);
-    this->modelMatrix = std::make_shared<engine::ModelMatrixUniform>(context);
-    this->color = std::make_shared<engine::ColorUniform>(context);
+    this->modelMatrix = std::make_shared<tinyrender::ModelMatrixUniform>(context);
+    this->color = std::make_shared<tinyrender::ColorUniform>(context);
 
     this->resetBindGroup(context, scene, target);
 }
