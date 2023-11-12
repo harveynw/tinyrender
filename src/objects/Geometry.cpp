@@ -1,4 +1,9 @@
-#include "Geometry.hpp"
+#include "objects/Geometry.hpp"
+
+#include "loaders/Polygons.hpp"
+#include "loaders/Shapes.hpp"
+#include "ObjectResources.hpp"
+#include "primitives/buffers/AttributeBuffer.hpp"
 
 
 tinyrender::Triangle::Triangle(glm::vec3 a, glm::vec3 b, glm::vec3 c): a(a), b(b), c(c) {}

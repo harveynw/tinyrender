@@ -9,7 +9,7 @@
 #include <iostream>
 
 #include "Pipeline.hpp"
-#include "../../objects/Object.hpp"
+#include "objects/Object.hpp"
 #include "tiny_obj_loader.h"
 
 using glm::mat4x4;
@@ -23,15 +23,15 @@ protected:
     Scene *scene = nullptr;
 
     // Intermediate objects for setting up the pipeline, persisted here.
-    DepthStencilState depthStencilState = Default;
-    TextureFormat depthTextureFormat = TextureFormat::Undefined;
+    wgpu::DepthStencilState depthStencilState = wgpu::Default;
+    wgpu::TextureFormat depthTextureFormat = wgpu::TextureFormat::Undefined;
     wgpu::RenderPipeline pipeline = nullptr;
     wgpu::PipelineLayout layout = nullptr;
 
     // All necessary to be called pre onFrame(), can be done in any order.
-    void initialiseShader(RenderPipelineDescriptor &desc);
-    static void initialisePipelineOptions(RenderPipelineDescriptor &desc);
-    void initialiseDepthStencil(RenderPipelineDescriptor &desc);
+    void initialiseShader(wgpu::RenderPipelineDescriptor &desc);
+    static void initialisePipelineOptions(wgpu::RenderPipelineDescriptor &desc);
+    void initialiseDepthStencil(wgpu::RenderPipelineDescriptor &desc);
 
 public:
     TexturedTrianglePipeline(Context *context, Scene *scene);

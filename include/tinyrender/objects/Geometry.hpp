@@ -1,13 +1,10 @@
 #pragma once
 
-#include "tiny_obj_loader.h"
 #include <utility>
 #include <string>
 #include <glm/glm.hpp>
 
 #include "Object.hpp"
-#include "loaders/Polygons.hpp"
-#include "loaders/Shapes.hpp"
 
 // The geometric objects don't have special logic for onRemove as their memory footprint is small.
 

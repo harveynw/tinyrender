@@ -1,8 +1,6 @@
-//
-// Created by Harvey Williams on 15/08/2023.
-//
+#include "camera/FreeviewCamera.hpp"
 
-#include "FreeviewCamera.hpp"
+#include "../webgpu/primitives/buffers/uniforms/ViewProjMatrixUniform.hpp"
 
 void
 FreeviewCamera::updateInternalBuffer() {

@@ -8,7 +8,7 @@
 #include <iostream>
 
 #include "Pipeline.hpp"
-#include "../../objects/Object.hpp"
+#include "objects/Object.hpp"
 
 using glm::mat4x4;
 using glm::vec4;

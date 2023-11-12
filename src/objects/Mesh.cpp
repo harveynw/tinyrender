@@ -1,7 +1,9 @@
+#include "objects/Mesh.hpp"
+
 #include "loaders/Obj.hpp"
-
-#include "Mesh.hpp"
-
+#include "tiny_obj_loader.h"
+#include "ObjectResources.hpp"
+#include "primitives/buffers/AttributeBuffer.hpp"
 
 tinyrender::Mesh::Mesh(const std::string& path): path(path) {}
 

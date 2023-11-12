@@ -1,7 +1,9 @@
-#include "Voxels.hpp"
+#include "objects/Voxels.hpp"
 
-
-tinyrender::Voxels::Voxels() {}
+#include "State.hpp"
+#include "voxel/Chunk.hpp"
+#include "loaders/Shapes.hpp"
+#include "ObjectResources.hpp"
 
 void 
 tinyrender::Voxels::onInit(Context *c, Scene *s) {

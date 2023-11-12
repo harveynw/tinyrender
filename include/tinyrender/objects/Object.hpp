@@ -1,12 +1,10 @@
 #pragma once
 
-#include "../webgpu/primitives/buffers/uniforms/ModelMatrixUniform.hpp"
-#include "../webgpu/primitives/buffers/AttributeBuffer.hpp"
-#include "../webgpu/primitives/buffers/IndexBuffer.hpp"
-#include "../webgpu/Scene.hpp"
-#include "../State.hpp"
-#include "ObjectResources.hpp"
+#include <utility>
+#include <memory>
+#include <glm/glm.hpp>
 
+#include "../Fwd.hpp"
 
 namespace tinyrender {
 
@@ -25,7 +23,13 @@ namespace tinyrender {
         virtual void onRemove() ;
 
         virtual void setColor(glm::vec3 c);
-        virtual void setTexture(std::shared_ptr<tinyrender::Texture2D::Texture> texture);
+        virtual void setTexture(std::string path);
+
+        void setScale(float s); 
+        void setTranslation(glm::vec3 t);
+        void setRotationX(float r); 
+        void setRotationY(float r); 
+        void setRotationZ(float r);
 
         virtual ~Object() = default;
 

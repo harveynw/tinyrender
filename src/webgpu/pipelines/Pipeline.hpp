@@ -6,9 +6,11 @@
 #define TINYGAME_PIPELINE_H
 
 #include "tiny_obj_loader.h"
-
 #include <webgpu/webgpu.hpp>
-#include "../../objects/Object.hpp"
+
+#include "objects/Object.hpp"
+#include "Scene.hpp"
+#include "Context.hpp"
 
 
 class Pipeline {

@@ -7,161 +7,46 @@ project(
         LANGUAGES CXX C
 )
 
-# Everything but tests
-file(GLOB SOURCES
-        src/*.hpp
-        src/*.cpp
-        src/objects/*.hpp
-        src/objects/*.cpp
-        src/objects/loaders/*.hpp
-        src/objects/loaders/*.cpp
-        src/objects/wavesim/*.hpp
-        src/objects/wavesim/*.cpp
-        src/objects/voxel/*.hpp
-        src/objects/voxel/*.cpp
-        src/webgpu/*.hpp
-        src/webgpu/*.cpp
-        src/webgpu/pipelines/*.hpp
-        src/webgpu/pipelines/*.cpp
-        src/webgpu/primitives/shaders/*.hpp
-        src/webgpu/primitives/shaders/*.cpp
-        src/webgpu/primitives/buffers/*.hpp
-        src/webgpu/primitives/buffers/*.cpp
-        src/webgpu/primitives/buffers/attributes/*.hpp
-        src/webgpu/primitives/buffers/attributes/*.cpp
-        src/webgpu/primitives/buffers/uniforms/*.hpp
-        src/webgpu/primitives/buffers/uniforms/*.cpp
-        src/webgpu/primitives/textures/*.hpp
-        src/webgpu/primitives/textures/*.cpp
-        src/webgpu/primitives/textures/utilities/*.hpp
-        src/webgpu/primitives/textures/utilities/*.cpp
-        src/camera/*.hpp
-        src/camera/*.cpp
-        )
-list(FILTER SOURCES EXCLUDE REGEX "_test.cpp$")
-list(FILTER SOURCES EXCLUDE REGEX "src/main_old.cpp$")
+# Only do these if this is the main project, and not if it is included through add_subdirectory
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+        # TODO test here
 
-add_executable(App src/main.cpp ${SOURCES})
-set_property(TARGET App PROPERTY CXX_STANDARD 17)
-
-# Make sure to show as many warnings as possible
-set_target_properties(App PROPERTIES
-        CXX_STANDARD 17
-        COMPILE_WARNING_AS_ERROR ON
-        )
-if (MSVC)
-    target_compile_options(App PRIVATE /W4)
-else()
-    target_compile_options(App PRIVATE -Wall -Wextra -pedantic)
+        # TODO Doxygen
+        # find_package(Doxygen)
+        # if(Doxygen_FOUND)
+        # add_subdirectory(docs)
+        # else()
+        # message(STATUS "Doxygen not found, not building docs")
+        # endif()
 endif()
 
-# GLFW for opening a window
-if (NOT EMSCRIPTEN)
-FetchContent_Declare(
-        glfw3
-        URL https://github.com/glfw/glfw/releases/download/3.3.8/glfw-3.3.8.zip
-)
-FetchContent_MakeAvailable(glfw3)
-target_link_libraries(App PRIVATE glfw)
-endif()
+# Includes tinyrender as a target
+add_subdirectory(src)
 
-# WebGPU implementation and headers
-FetchContent_Declare(
-        webgpu
-        GIT_REPOSITORY https://github.com/eliemichel/WebGPU-distribution
-        GIT_TAG        main
-)
-FetchContent_MakeAvailable(webgpu)
-target_link_libraries(App PRIVATE webgpu)
-target_copy_webgpu_binaries(App) # Dynamic library file included with build for distribution
+# Test scenes
+add_subdirectory(examples/TestScene)
 
-# GLFW extension for getting a webgpu surface
-FetchContent_Declare(
-        glfw3webgpu
-        GIT_REPOSITORY https://github.com/eliemichel/glfw3webgpu
-        GIT_TAG        main
-)
-FetchContent_MakeAvailable(glfw3webgpu)
-target_link_libraries(App PRIVATE glfw3webgpu)
-
-# GLM for matrix math
-FetchContent_Declare(
-        glm
-        URL https://github.com/g-truc/glm/archive/refs/tags/0.9.9.8.zip
-)
-FetchContent_MakeAvailable(glm)
-target_link_libraries(App PRIVATE glm::glm)
-
-# STB_Image
-FetchContent_Declare(
-        stb_image
-        URL https://raw.githubusercontent.com/nothings/stb/master/stb_image.h
-        DOWNLOAD_NO_EXTRACT TRUE
-        CONFIGURE_COMMAND ""
-        BUILD_COMMAND ""
-)
-FetchContent_MakeAvailable(stb_image)
-add_library(stb_image_lib INTERFACE)
-target_include_directories(stb_image_lib INTERFACE ${stb_image_SOURCE_DIR})
-target_link_libraries(App PRIVATE stb_image_lib)
-
-# TinyOBJLoader (a single header file)
-FetchContent_Declare(
-        tinyobjloader
-        GIT_REPOSITORY https://github.com/tinyobjloader/tinyobjloader.git
-        GIT_TAG release
-)
-FetchContent_MakeAvailable(tinyobjloader)
-target_link_libraries(App PRIVATE tinyobjloader)
-
-if(NOT EMSCRIPTEN)
-# OpenCV for fft
-find_package(OpenCV)
-target_link_libraries(App PRIVATE ${OpenCV_LIBS})
-endif()
-
-# FFTW 
-FetchContent_Declare(
-        fftw3
-        URL https://www.fftw.org/fftw-3.3.10.tar.gz
-        URL_HASH MD5=8ccbf6a5ea78a16dbc3e1306e234cc5c
-)
-FetchContent_MakeAvailable(fftw3)
-target_include_directories(App PRIVATE ${fftw3_SOURCE_DIR}/api)
-target_link_libraries(App PRIVATE fftw3)
-
-# FastNoiseLite for voxel terrain generation
-FetchContent_Declare(
-        FastNoiseLite
-        URL https://github.com/Auburn/FastNoiseLite/archive/refs/tags/v1.1.0.zip
-)
-FetchContent_MakeAvailable(FastNoiseLite)
-message(STATUS ${fastnoiselite_SOURCE_DIR} " is the folder")
-#add_library(NOISE_LIB STATIC ${fastnoiselite_SOURCE_DIR}/Cpp/FastNoiseLite.h)
-target_include_directories(App PRIVATE ${fastnoiselite_SOURCE_DIR}/Cpp)
-#target_link_libraries(App PRIVATE FastNoiseLite)
-
-if (EMSCRIPTEN)
-    # Add Emscripten-specific link options
-    target_link_options(App PRIVATE
-        -sUSE_GLFW=3 # Use Emscripten-provided GLFW
-        -sUSE_WEBGPU # Handle WebGPU symbols
-        -sASYNCIFY # Required by WebGPU-C++
-        -sALLOW_MEMORY_GROWTH
-        -sINITIAL_MEMORY=3GB
-        -sMAXIMUM_MEMORY=4GB
-        --preload-file "../resources"
-        )
-    # For debugging:
-    # -O0
-    # -g
-    #-sASSERTIONS=2
-        #-fsanitize=address
-    #-sSAFE_HEAP=1
-    #-sSTACK_OVERFLOW_CHECK=1
-
-    set_target_properties(App PROPERTIES SUFFIX ".html")
-endif()
+# if (EMSCRIPTEN)
+#     # Add Emscripten-specific link options
+#     target_link_options(App PRIVATE
+#         -sUSE_GLFW=3 # Use Emscripten-provided GLFW
+#         -sUSE_WEBGPU # Handle WebGPU symbols
+#         -sASYNCIFY # Required by WebGPU-C++
+#         -sALLOW_MEMORY_GROWTH
+#         -sINITIAL_MEMORY=3GB
+#         -sMAXIMUM_MEMORY=4GB
+#         --preload-file "../resources"
+#         )
+#     # For debugging:
+#     # -O0
+#     # -g
+#     #-sASSERTIONS=2
+#         #-fsanitize=address
+#     #-sSAFE_HEAP=1
+#     #-sSTACK_OVERFLOW_CHECK=1
+# 
+#     set_target_properties(App PROPERTIES SUFFIX ".html")
+# endif()
 
 #
 # TESTING

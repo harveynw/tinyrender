@@ -1,10 +1,6 @@
 #pragma once
 
-
 #include "Object.hpp"
-#include "voxel/Chunk.hpp"
-#include "loaders/Shapes.hpp"
-
 
 namespace tinyrender {
     class Voxels : public Object {
@@ -15,7 +11,7 @@ namespace tinyrender {
         using Object::setTexture;
         using Object::modelMatrix;
     public:
-        Voxels();
+        Voxels() = default;
 
         void onInit(Context *c, Scene *s) override;
         void onUpdate(State &state, float dt) override;

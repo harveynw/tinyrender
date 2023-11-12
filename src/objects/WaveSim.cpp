@@ -1,4 +1,13 @@
-#include "WaveSim.hpp"
+#include "objects/WaveSim.hpp"
+
+#include "loaders/Polygons.hpp"
+#include "loaders/Shapes.hpp"
+#include "../webgpu/primitives/textures/WavesDataTexture.hpp"
+#include "ObjectResources.hpp"
+#include "wavesim/naive.hpp"
+#include "wavesim/FFTfftw.hpp"
+#include "objects/WaveSim.hpp"
+
 
 tinyrender::WaveSim::WaveSim(float width, float length): WIDTH(width), LENGTH(length) {
     assert(MESH_RES_WIDTH % 2 == 0);
@@ -51,4 +60,8 @@ tinyrender::WaveSim::onRemove() {
 void
 tinyrender::WaveSim::setColor(glm::vec3 c) {
     this->resources->color->set(c);
+}
+
+tinyrender::WaveSim::~WaveSim()
+{
 }

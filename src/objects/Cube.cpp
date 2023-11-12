@@ -1,7 +1,9 @@
-#include "Cube.hpp"
+#include "objects/Cube.hpp"
 
-tinyrender::Cube::Cube() {
-}
+#include "loaders/Obj.hpp"
+#include "tiny_obj_loader.h"
+#include "primitives/buffers/AttributeBuffer.hpp"
+#include "ObjectResources.hpp"
 
 void 
 tinyrender::Cube::onInit(Context *c, Scene *s) {

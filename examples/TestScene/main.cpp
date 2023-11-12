@@ -3,14 +3,14 @@
 #include <emscripten/html5.h>
 #endif
 
-#include "engine.hpp"
-#include "camera/TurntableCamera.hpp"
-#include "camera/FreeviewCamera.hpp"
-#include "objects/Mesh.hpp"
-#include "objects/Cube.hpp"
-#include "objects/Geometry.hpp"
-#include "objects/WaveSim.hpp"
-#include "objects/Voxels.hpp"
+#include "tinyrender/engine.hpp"
+#include "tinyrender/camera/TurntableCamera.hpp"
+#include "tinyrender/camera/FreeviewCamera.hpp"
+#include "tinyrender/objects/Mesh.hpp"
+#include "tinyrender/objects/Cube.hpp"
+#include "tinyrender/objects/Geometry.hpp"
+#include "tinyrender/objects/WaveSim.hpp"
+#include "tinyrender/objects/Voxels.hpp"
 
 using glm::vec3;
 
@@ -36,20 +36,18 @@ int main (int, char**) {
     glm::vec3 t = glm::vec3(60.0, -35.0, 35.0);
     auto boat_t = t + glm::vec3(0, 0, 0.5);
     {
-        auto texture = std::make_shared<tinyrender::Texture2D::common::BasicImgRepeatingTexture>(
-                engine->getContext().get(), "resources/fourareen2K_albedo.jpg");
         std::shared_ptr<tinyrender::Object> object = std::make_shared<tinyrender::Mesh>("resources/fourareen.obj");
         engine->addObject(object);
 
-        object->modelMatrix()->setTranslation(boat_t);
-        object->setTexture(texture);
+        object->setTranslation(boat_t);
+        object->setTexture("resources/fourareen2K_albedo.jpg");
     }
     {
         auto object = std::make_shared<tinyrender::Cube>();
         engine->addObject(object);
 
-        object->modelMatrix()->setScale(0.2f);
-        object->modelMatrix()->setTranslation(vec3(0,0,0.5));
+        object->setScale(0.2f);
+        object->setTranslation(vec3(0,0,0.5));
         object->setColor(vec3(0.9, 0.9, 1.0));
         engine->objects.push_back(object);
     }
@@ -57,8 +55,8 @@ int main (int, char**) {
         auto object = std::make_shared<tinyrender::Pyramid>(vec3(0, 0, 3), 2, 3);
         engine->addObject(object);
 
-        object->modelMatrix()->setScale(0.2f);
-        object->modelMatrix()->setTranslation(vec3(0.0, 0.0, 5.0));
+        object->setScale(0.2f);
+        object->setTranslation(vec3(0.0, 0.0, 5.0));
         object->setColor(vec3(1.0, 0.0, 1.0));
         engine->objects.push_back(object);
     }
@@ -70,8 +68,8 @@ int main (int, char**) {
         object->HIDDEN = false;
         object->setColor(vec3(0.0, 0.019, 0.301));
 
-        object->modelMatrix()->setTranslation(t);
-        object->modelMatrix()->setScale(1.2f);
+        object->setTranslation(t);
+        object->setScale(1.2f);
     }
     {
         // Voxels

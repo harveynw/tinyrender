@@ -1,15 +1,9 @@
 #pragma once
 
 #include <cmath>
+#include <vector>
 
 #include "Object.hpp"
-#include "loaders/Polygons.hpp"
-#include "loaders/Shapes.hpp"
-#include "../webgpu/primitives/textures/WavesDataTexture.hpp"
-
-#include "wavesim/naive.hpp"
-#include "wavesim/FFTfftw.hpp"
-
 
 namespace tinyrender {
 
@@ -42,6 +36,8 @@ namespace tinyrender {
         void onRemove() override;
 
         void setColor(glm::vec3 c) override;
+
+        ~WaveSim();
     };
 
 }

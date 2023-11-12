@@ -11,7 +11,7 @@
 TexturedTrianglePipeline::TexturedTrianglePipeline(Context *context, Scene *scene):
 context(context), scene(scene)  {
     std::cout << "Creating render pipeline..." << std::endl;
-    RenderPipelineDescriptor desc;
+    wgpu::RenderPipelineDescriptor desc;
 
     initialiseShader(desc);
     initialisePipelineOptions(desc);

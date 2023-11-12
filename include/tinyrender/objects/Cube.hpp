@@ -1,11 +1,9 @@
 #pragma once
 
-#include "tiny_obj_loader.h"
 #include <utility>
 #include <string>
 
 #include "Object.hpp"
-#include "loaders/Obj.hpp"
 
 const std::string defn =
 R"(# Blender v3.4.0 OBJ File: ''
@@ -52,7 +50,7 @@ namespace tinyrender {
 
     class Cube : public Object {
     public:
-        Cube();
+        Cube() = default;
 
         void onInit(Context *c, Scene *s) override;
     };

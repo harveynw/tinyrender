@@ -1,5 +1,6 @@
-#include "TurntableCamera.hpp"
+#include "camera/TurntableCamera.hpp"
 
+#include "../webgpu/primitives/buffers/uniforms/ViewProjMatrixUniform.hpp"
 
 void
 TurntableCamera::updateInternalBuffer() {

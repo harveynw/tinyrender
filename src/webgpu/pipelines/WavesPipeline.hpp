@@ -4,7 +4,7 @@
 #include <iostream>
 
 #include "Pipeline.hpp"
-#include "../../objects/Object.hpp"
+#include "objects/Object.hpp"
 #include "tiny_obj_loader.h"
 
 using glm::mat4x4;

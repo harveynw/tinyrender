@@ -1,10 +1,9 @@
 #pragma once
 
-#include "tiny_obj_loader.h"
 #include <utility>
+#include <string>
 
 #include "Object.hpp"
-#include "loaders/Obj.hpp"
 
 #define STR_SUFFIX(s, suffix) s.substr(s.size()-suffix.size(), suffix.size()) == suffix
 

@@ -1,6 +1,13 @@
-#include "Object.hpp"
+#include "objects/Object.hpp"
 
-#include <utility>
+#include "../webgpu/primitives/buffers/uniforms/ModelMatrixUniform.hpp"
+#include "../webgpu/primitives/buffers/AttributeBuffer.hpp"
+#include "../webgpu/primitives/buffers/IndexBuffer.hpp"
+#include "../webgpu/Scene.hpp"
+#include "../webgpu/primitives/textures/Texture2D.hpp"
+#include "../State.hpp"
+#include "ObjectResources.hpp"
+
 
 void
 tinyrender::Object::setColor(glm::vec3 c) {
@@ -14,8 +21,8 @@ tinyrender::Object::setColor(glm::vec3 c) {
 }
 
 void
-tinyrender::Object::setTexture(std::shared_ptr<tinyrender::Texture2D::Texture> texture) {
-    this->resources->texture = std::move(texture);
+tinyrender::Object::setTexture(std::string path) {
+    this->resources->texture = std::make_shared<tinyrender::Texture2D::common::BasicImgRepeatingTexture>(context, path);
 
     if(this->targetPipeline != TexturedTriangle) {
         this->targetPipeline = TexturedTriangle;
@@ -23,8 +30,34 @@ tinyrender::Object::setTexture(std::shared_ptr<tinyrender::Texture2D::Texture> t
     }
 }
 
+void tinyrender::Object::setScale(float s)
+{
+    this->modelMatrix()->setScale(s);
+}
+
+void tinyrender::Object::setTranslation(glm::vec3 t)
+{
+    this->modelMatrix()->setTranslation(t);
+}
+
+void tinyrender::Object::setRotationX(float r)
+{
+    this->modelMatrix()->setRotationX(r);
+}
+
+void tinyrender::Object::setRotationY(float r)
+{
+    this->modelMatrix()->setRotationY(r);
+}
+
+void tinyrender::Object::setRotationZ(float r)
+{
+    this->modelMatrix()->setRotationZ(r);
+}
+
 std::shared_ptr<tinyrender::ModelMatrixUniform>
-tinyrender::Object::modelMatrix() const {
+tinyrender::Object::modelMatrix() const
+{
     return this->resources->modelMatrix;
 }
 
@@ -32,8 +65,7 @@ ObjectPipeline tinyrender::Object::currentTargetPipeline() {
     return targetPipeline;
 }
 
-void 
-tinyrender::Object::onInit(Context *c, Scene *s) {
+void tinyrender::Object::onInit(Context *c, Scene *s) {
     this->context = c;
     this->scene = s;
 

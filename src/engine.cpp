@@ -4,8 +4,19 @@
 
 #include "engine.hpp"
 
-#include <memory>
+#include <GLFW/glfw3.h>
+#include <webgpu/webgpu.hpp>
+
+#include "State.hpp"
+#include "webgpu/Context.hpp"
+#include "webgpu/pipelines/Pipeline.hpp"
+#include "webgpu/Scene.hpp"
+#include "webgpu/pipelines/TrianglePipeline.hpp"
+#include "webgpu/pipelines/TexturedTrianglePipeline.hpp"
+#include "webgpu/pipelines/WavesPipeline.hpp"
 #include "webgpu/primitives/textures/Texture2D.hpp"
+#include "camera/Camera.hpp"
+#include "objects/Object.hpp"
 
 
 Engine::Engine() {
@@ -18,7 +29,7 @@ Engine::launch(int width, int height) {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-    window = glfwCreateWindow(width, height, "Engine", NULL, NULL);
+    window = glfwCreateWindow(width, height, "TinyRender", NULL, NULL);
     if (!window)
         throw std::runtime_error("Couldn't create GLFW window");
     printf("GLFW window created at %p\n", (void*) window);
@@ -59,18 +70,20 @@ Engine::launch(int width, int height) {
 
     // Important
     this->trianglePipeline->enableClear(Color{1.0, 1.0, 1.0, 1.0});
+
+    this->state = std::make_shared<State>();
 }
 
 void Engine::onFrame() {
     glfwPollEvents();
 
     float dt = 0.01;
-    this->state.time += dt;
-    this->state.frame++;
-    this->state.cameraPosition = camera->getPosition();
+    this->state->time += dt;
+    this->state->frame++;
+    this->state->cameraPosition = camera->getPosition();
 
     for(const auto& obj : objects) {
-        obj->onUpdate(state, dt);
+        obj->onUpdate(*state.get(), dt);
     }
 
     /*
@@ -140,7 +153,7 @@ Engine::~Engine() {
 }
 
 void
-Engine::setCamera(std::shared_ptr<Camera> c) {
+Engine::setCamera(std::shared_ptr<tinyrender::Camera> c) {
     camera = c;
     camera->enableListen(window, this->scene->viewProjUniform);
     camera->onFrame(0);
