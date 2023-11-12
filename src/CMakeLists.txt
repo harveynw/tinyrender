@@ -25,8 +25,9 @@ target_include_directories(tinyrender PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/webgpu
 )
 
-target_include_directories(tinyrender PRIVATE ${CMAKE_SOURCE_DIR}/include/tinyrender)
-target_include_directories(tinyrender PUBLIC ${CMAKE_SOURCE_DIR}/include)
+get_filename_component(TINY_ROOT ../ ABSOLUTE)
+target_include_directories(tinyrender PRIVATE ${TINY_ROOT}/include/tinyrender)
+target_include_directories(tinyrender PUBLIC ${TINY_ROOT}/include)
 
 # Make sure to show as many warnings as possible
 set_target_properties(tinyrender PROPERTIES
