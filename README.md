@@ -1,10 +1,10 @@
 # tinyrender
 
+Minimalist C++ Cross-Platform Rendering Engine built using WebGPU.
+
 [Docs / Usage / Examples](https://harveynw.github.io/tinyrender/) <<< Site (work in progress)
 
-Minimalist C++ WebGPU Rendering Engine.
-
-This might be cool if you just want to draw 3D scenes but don't want to touch graphics APIs nor the bloat of something like Unity.
+This might be cool if you just want to draw 3D scenes but don't want to touch hardcore graphics APIs nor the bloat of fully functional game engines.
 
 ### Current State
 
@@ -14,22 +14,21 @@ This might be cool if you just want to draw 3D scenes but don't want to touch gr
 
 ### Building and running locally
 
-Just creates a test scene with an interactive camera view
+View the [install instructions](https://harveynw.github.io/tinyrender/install.html) for integrating with your CMake project. 
+
+To see a test scene:
 ```zsh
 cmake -S . -B build
 cmake --build build
-build/App
-```
-Working with emscripten:
-```zsh
-emcmake cmake -B build-web
-cmake --build build-web
+./build/examples/TestScene/TestScene
 ```
 
-### TODO
-- More primitives (spheres, tubes, planes)
-- Accelerated voxel rendering
-- Material API
+### Roadmap
+
+- More geometric primitives (spheres, tubes, planes)
+- Finishing Voxel Engine API
+- More material functionality (including BRDFs) 
+- Animation
 
 ### References
 

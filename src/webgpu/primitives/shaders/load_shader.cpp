@@ -13,17 +13,10 @@ loadShaderModule(std::string name, Device device) {
     file.seekg(0);
     file.read(shaderSource.data(), size);
     */
-
     std::string shaderSource;
-    if(name == "basic_mvp_color")
-        shaderSource = basic_mvp_color;
-    if(name == "basic_mvp_texture")
-        shaderSource = basic_mvp_texture;
-    if(name == "voxels")
-        shaderSource = voxels;
-    if(name == "waves")
-        shaderSource = waves;
-    if(shaderSource.empty())
+    if(SHADER_SOURCES.count(name) > 0)
+        shaderSource = SHADER_SOURCES.at(name);
+    else
         throw std::runtime_error("No shader source found");
 
     ShaderModuleWGSLDescriptor shaderCodeDesc{};
