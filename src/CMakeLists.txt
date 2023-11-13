@@ -98,11 +98,11 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(tinyobjloader)
 target_link_libraries(tinyrender PRIVATE tinyobjloader)
 
-if(NOT EMSCRIPTEN)
-# OpenCV for fft
-find_package(OpenCV)
-target_link_libraries(tinyrender PRIVATE ${OpenCV_LIBS})
-endif()
+# if(NOT EMSCRIPTEN)
+# # OpenCV for fft
+# find_package(OpenCV)
+# target_link_libraries(tinyrender PRIVATE ${OpenCV_LIBS})
+# endif()
 
 # FFTW 
 FetchContent_Declare(

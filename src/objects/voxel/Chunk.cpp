@@ -6,7 +6,7 @@ Chunk::onUpdate(glm::ivec2 cameraChunk) {
     bool shouldBeVisible = visible(cameraChunk, this->chunkCoordinate);
 
     // Enter state machine 
-    switch(auto s = this->state.load()) {
+    switch(this->state.load()) {
         case CHUNK_SHOULD_GENERATE: {
             this->state.store(CHUNK_GENERATING_MESH);
             this->refresh = false;

@@ -21,6 +21,9 @@ struct LightingUniforms {
     ambient: f32,
 };
 
+@group(0) @binding(0) var<uniform> uMyUniforms: MyUniforms;
+@group(0) @binding(1) var<uniform> uLighting: LightingUniforms;
+
 @group(1) @binding(0) var<uniform> globalModelMatrix: mat4x4f;
 @group(1) @binding(1) var<uniform> chunkModelMatrix: mat4x4f;
 @group(1) @binding(2) var<uniform> color: vec3f;
