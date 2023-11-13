@@ -1,3 +1,5 @@
+R""(
+
 struct VertexInput {
     @location(0) position: vec3f,
     @location(1) color: vec3f,
@@ -42,3 +44,5 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4f {
 
     return vec4f(baseColor, 1.0);
 }
+
+)""

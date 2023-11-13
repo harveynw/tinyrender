@@ -3,7 +3,7 @@
 
 tinyrender::TexturedShader::TexturedShader(Context *context): context(context) {
     // Create shader module
-    shaderModule = loadShaderModule("resources/shaders/basic_mvp_texture.wgsl", context->device);
+    shaderModule = loadShaderModule("basic_mvp_texture", context->device);
     std::cout << "Shader module: " << shaderModule << std::endl;
 
     // Create bind groups

@@ -3,7 +3,7 @@
 
 tinyrender::ColoredShader::ColoredShader(Context *context): context(context) {
     // Create shader module
-    shaderModule = loadShaderModule("resources/shaders/basic_mvp_color.wgsl", context->device);
+    shaderModule = loadShaderModule("basic_mvp_color", context->device);
     std::cout << "Shader module: " << shaderModule << std::endl;
 
     // Create bind groups

@@ -3,7 +3,7 @@
 
 tinyrender::WavesShader::WavesShader(Context *context): context(context) {
     // Create shader module
-    shaderModule = loadShaderModule("resources/shaders/waves.wgsl", context->device);
+    shaderModule = loadShaderModule("waves", context->device);
     std::cout << "Shader module: " << shaderModule << std::endl;
 
     // Create bind groups

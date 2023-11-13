@@ -1,13 +1,17 @@
+R""(
+
 struct VertexInput {
     @location(0) position: vec3f,
     @location(1) normal: vec3f,
     @location(2) color: vec3f,
+    @location(3) uv: vec2f,
 };
 struct VertexOutput {
     @builtin(position) position: vec4f,
     @location(0) normal: vec3f,
     @location(1) color: vec3f,
-    @location(2) viewDirection: vec3f,
+    @location(2) uv: vec2f,
+    @location(3) viewDirection: vec3f,
 };
 
 struct MyUniforms {
@@ -26,7 +30,8 @@ struct LightingUniforms {
 @group(0) @binding(1) var<uniform> uLighting: LightingUniforms;
 
 @group(1) @binding(0) var<uniform> modelMatrix: mat4x4f;
-@group(1) @binding(1) var<uniform> color: vec3f;
+@group(1) @binding(1) var texture: texture_2d<f32>;
+@group(1) @binding(2) var textureSampler: sampler;
 
 @vertex
 fn vs_main(in: VertexInput) -> VertexOutput {
@@ -39,6 +44,7 @@ fn vs_main(in: VertexInput) -> VertexOutput {
     out.position = uMyUniforms.projectionMatrix * uMyUniforms.viewMatrix * modelMatrix * vec4f(pos, 1.0);
     out.color = in.color;
     out.normal = (modelMatrix * vec4f(in.normal, 0.0)).xyz; // wrt to model matrix but not camera
+    out.uv = in.uv;
     out.viewDirection = uMyUniforms.cameraWorldPosition - worldPosition.xyz;
 
     return out;
@@ -74,8 +80,8 @@ fn specular(normal: vec3f, viewDirection: vec3f) -> f32 {
 fn fs_main(in: VertexOutput) -> @location(0) vec4f {
     let normal = normalize(in.normal);
 
-    // Color passed by attribute buffer
-    let baseColor = in.color;
+    // Sample texture
+    let baseColor = textureSample(texture, textureSampler, in.uv).rgb;
 
     let kd = 0.5; // strength of the diffuse effect
     let ks = 0.8; // strength of the specular effect
@@ -83,3 +89,5 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4f {
 
     return vec4f(color, 1.0);
 }
+
+)""

@@ -1,9 +1,4 @@
-//
-// Created by Harvey Williams on 20/07/2023.
-//
-
-#ifndef TINYGAME_LOAD_SHADER_HPP
-#define TINYGAME_LOAD_SHADER_HPP
+#pragma once
 
 #include <webgpu/webgpu.hpp>
 #include <iostream>
@@ -12,6 +7,21 @@
 
 using namespace wgpu;
 
-ShaderModule loadShaderModule(std::string path, Device device);
+const std::string basic_mvp_color =
+#include "shaders/basic_mvp_color.wgsl"
+;
 
-#endif //TINYGAME_LOAD_SHADER_HPP
+const std::string basic_mvp_texture =
+#include "shaders/basic_mvp_texture.wgsl"
+;
+
+const std::string voxels =
+#include "shaders/voxels.wgsl"
+;
+
+const std::string waves =
+#include "shaders/waves.wgsl"
+;
+
+
+ShaderModule loadShaderModule(std::string name, Device device);

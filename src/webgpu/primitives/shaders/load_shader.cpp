@@ -1,7 +1,8 @@
 #include "load_shader.hpp"
 
 ShaderModule
-loadShaderModule(std::string path, Device device) {
+loadShaderModule(std::string name, Device device) {
+    /*
     std::ifstream file(path);
     if (!file.is_open())
         throw std::runtime_error("Couldn't open shader path " + path);
@@ -11,6 +12,19 @@ loadShaderModule(std::string path, Device device) {
     std::string shaderSource(size, ' ');
     file.seekg(0);
     file.read(shaderSource.data(), size);
+    */
+
+    std::string shaderSource;
+    if(name == "basic_mvp_color")
+        shaderSource = basic_mvp_color;
+    if(name == "basic_mvp_texture")
+        shaderSource = basic_mvp_texture;
+    if(name == "voxels")
+        shaderSource = voxels;
+    if(name == "waves")
+        shaderSource = waves;
+    if(shaderSource.empty())
+        throw std::runtime_error("No shader source found");
 
     ShaderModuleWGSLDescriptor shaderCodeDesc{};
     shaderCodeDesc.chain.next = nullptr;
