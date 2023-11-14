@@ -1,3 +1,4 @@
+# NOTE! If building this on an ARM machine, you will need to pass: docker build --platform linux/amd64, for now.
 FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive 
 
