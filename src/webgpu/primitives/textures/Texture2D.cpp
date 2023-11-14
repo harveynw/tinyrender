@@ -23,7 +23,7 @@ _samp(samp)
 
     // Create the sampler needed
     sampler = _samp->createSampler(context, mips);
-};
+}
 
 tinyrender::Texture2D::Texture::~Texture() {
     // Delete delegates

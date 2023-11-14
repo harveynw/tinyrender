@@ -3,7 +3,6 @@
 void
 downsizeImage(std::vector<uint8_t> &img, int width, int height, std::vector<uint8_t> &dest) {
     // 2x2 averaging convolution with stride of 2
-
     if((int) dest.size() != 4 * width * height)
         throw std::invalid_argument("Destination vector does not match dimensions passed.");
     if((int) img.size() != 4 * (2*width) * (2*height))

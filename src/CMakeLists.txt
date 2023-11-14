@@ -78,16 +78,14 @@ target_link_libraries(tinyrender PUBLIC glm::glm)
 
 # STB_Image
 FetchContent_Declare(
-        stb_image
-        URL https://raw.githubusercontent.com/nothings/stb/master/stb_image.h
-        DOWNLOAD_NO_EXTRACT TRUE
+        stb
+        GIT_REPOSITORY https://github.com/nothings/stb.git
+        GIT_TAG master
         CONFIGURE_COMMAND ""
         BUILD_COMMAND ""
 )
-FetchContent_MakeAvailable(stb_image)
-add_library(stb_image_lib INTERFACE)
-target_include_directories(stb_image_lib INTERFACE ${stb_image_SOURCE_DIR})
-target_link_libraries(tinyrender PRIVATE stb_image_lib)
+FetchContent_MakeAvailable(stb)
+target_include_directories(tinyrender PRIVATE ${stb_SOURCE_DIR})
 
 # TinyOBJLoader (a single header file)
 FetchContent_Declare(
@@ -98,12 +96,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(tinyobjloader)
 target_link_libraries(tinyrender PRIVATE tinyobjloader)
 
-# if(NOT EMSCRIPTEN)
-# # OpenCV for fft
-# find_package(OpenCV)
-# target_link_libraries(tinyrender PRIVATE ${OpenCV_LIBS})
-# endif()
-
 # FFTW 
 FetchContent_Declare(
         fftw3
@@ -112,6 +104,7 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(fftw3)
 target_include_directories(tinyrender PRIVATE ${fftw3_SOURCE_DIR}/api)
+set_property(TARGET fftw3 PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(tinyrender PRIVATE fftw3)
 
 # FastNoiseLite for voxel terrain generation
@@ -120,5 +113,4 @@ FetchContent_Declare(
         URL https://github.com/Auburn/FastNoiseLite/archive/refs/tags/v1.1.0.zip
 )
 FetchContent_MakeAvailable(FastNoiseLite)
-message(STATUS ${fastnoiselite_SOURCE_DIR} " is the folder")
 target_include_directories(tinyrender PRIVATE ${fastnoiselite_SOURCE_DIR}/Cpp)

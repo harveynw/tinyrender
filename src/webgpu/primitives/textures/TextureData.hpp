@@ -3,7 +3,7 @@
 #include <utility>
 #include <webgpu/webgpu.hpp>
 #include <filesystem>
-#include "stb_image.h"
+#include <stb_image.h>
 
 #include "../../Context.hpp"
 #include "utilities/mips.hpp"
