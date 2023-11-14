@@ -47,6 +47,9 @@ FetchContent_Declare(
         URL https://github.com/glfw/glfw/releases/download/3.3.8/glfw-3.3.8.zip
 )
 FetchContent_MakeAvailable(glfw3)
+set(GLFW_BUILD_EXAMPLES OFF)
+set(GLFW_BUILD_TESTS OFF)
+set(GLFW_BUILD_DOCS OFF)
 target_link_libraries(tinyrender PUBLIC glfw)
 endif()
 
