@@ -100,6 +100,7 @@ FetchContent_MakeAvailable(tinyobjloader)
 target_link_libraries(tinyrender PRIVATE tinyobjloader)
 
 # FFTW 
+set(BUILD_TESTS OFF CACHE BOOL "" FORCE)
 FetchContent_Declare(
         fftw3
         URL https://www.fftw.org/fftw-3.3.10.tar.gz
