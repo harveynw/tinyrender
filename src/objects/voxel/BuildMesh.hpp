@@ -7,7 +7,7 @@
 */
 struct VoxelVertexAttribute {
     // Corner position
-    vec3 pos; 
+    vec3 position; 
     // 0x?? Material
     // 0x?? Ambient Occlusion
     // 0x?? Normal Direction

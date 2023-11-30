@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Shader.hpp"
+#include "objects/voxel/BuildMesh.hpp"
+
 
 namespace tinyrender {
 
