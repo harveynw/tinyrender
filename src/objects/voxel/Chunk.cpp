@@ -1,176 +1,133 @@
 #include "Chunk.hpp"
 
+GPU_CHUNK::GPU_CHUNK(Context *c, Scene *s, std::shared_ptr<VoxelMesh> cpu, ivec2 cornerCoordinate, std::shared_ptr<tinyrender::ModelMatrixUniform> globalModelMatrix) {
+    if(cpu->size() == 0)
+        return; // empty chunk
 
-void 
-Chunk::onUpdate(glm::ivec2 cameraChunk) {
-    bool shouldBeVisible = visible(cameraChunk, this->chunkCoordinate);
+    // Flatten
+    auto *data = reinterpret_cast<float *>(cpu->data()); 
+    int n_data = sizeof(VoxelVertexAttribute)/sizeof(float) * cpu->size();
+    auto v = std::vector<float>(data, data + n_data);
 
-    // Enter state machine 
+    buffer = std::make_shared<tinyrender::AttributeBuffer>(c, v, cpu->size());
+    resources = std::make_shared<ObjectResources>(c, s, this->buffer, ColoredTriangle);
+    resources->modelMatrix->setTranslation(glm::vec3(cornerCoordinate, 0.0));
+    resources->globalModelMatrix = globalModelMatrix;
+    resources->resetBindGroup(Voxels);
+}
+
+void GPU_CHUNK::onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot) {
+    if(buffer == nullptr || buffer->getDrawCalls() == 0)
+        return;
+
+    renderPass.setVertexBuffer(vertexBufferSlot, buffer->getUnderlyingBuffer(), 0, buffer->getSize());
+    renderPass.setBindGroup(bindGroupSlot, resources->bindGroup, 0, nullptr);
+    renderPass.draw(buffer->getDrawCalls(), 1, 0, 0);
+}
+
+Chunk::Chunk(Context *c, Scene *s, Chunks &chunks, ivec2 chunkCoordinate, std::shared_ptr<tinyrender::ModelMatrixUniform> globalModelMatrix): c(c), s(s), chunks(chunks) {
+    this->chunkCoordinate = chunkCoordinate;
+    this->cornerCoordinate = glm::ivec2(SIZE_XY, SIZE_XY) * chunkCoordinate;
+    this->globalModelMatrix = globalModelMatrix;
+
+    minecraft(voxels, this->cornerCoordinate);
+}
+
+void Chunk::onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot) {
+    if(gpu != nullptr)
+        gpu->onDraw(renderPass, vertexBufferSlot, bindGroupSlot);
+}
+
+void Chunk::onUpdate(ivec2 cameraChunk) {
+    (void) cameraChunk;
+
+    // State machine is handled here, except for when offloaded to buildMeshAsync()
     switch(this->state.load()) {
-        case CHUNK_SHOULD_GENERATE: {
-            this->state.store(CHUNK_GENERATING_MESH);
-            this->refresh = false;
-            if(this->mesh == nullptr)
-                this->mesh = std::make_unique<Mesh>();
-
-            // First update neighbour data on main thread
-            AdjacentMesh nbs = this->chunkMap->neighbours(this->chunkCoordinate);
-            this->mesh->updateOcculusionData(nbs);
-
-            // Can now generate mesh off main thread.
-            loadingThread = std::thread([&]{
-                this->mesh->generateMesh();
-                this->state.store(CHUNK_MESH_READY);
-            }); 
-            loadingThread.detach();
-            break;
-        }
-        case CHUNK_MESH_READY: {
-            this->syncBuffer();
-            this->state.store(CHUNK_LOADED);
-            break;
-        }
-        case CHUNK_LOADED: {
-            if(!shouldBeVisible) {
-                // Clear
-                this->refresh = false;
-                this->resources = nullptr;
-
-                this->state.store(CHUNK_NO_MESH);
-            } else if(this->refresh) {
-                this->state.store(CHUNK_SHOULD_GENERATE);
+        case CHUNK_INTERNAL_UNLOADED: {
+            if(should_build_mesh) {
+                should_build_mesh = false;
+                this->buildMeshAsync();
+                refreshNeighbours();
             }
             break;
         }
-        case CHUNK_NO_MESH: {
-            if(shouldBeVisible) {
-                this->state.store(CHUNK_SHOULD_GENERATE);
+        case CHUNK_INTERNAL_LOADED: {
+            if(should_unload) {
+                this->mesh = nullptr;
+                this->gpu.reset();
+                this->state.store(CHUNK_INTERNAL_UNLOADED);
+                should_unload = false;
+                refreshNeighbours();
+                break;
             }
-            break;
+            if(should_build_mesh) {
+                should_build_mesh = false;
+                this->buildMeshAsync();
+            }
+            if(this->mesh != nullptr && this->gpu == nullptr) {
+                // Mesh waiting to be uploaded to GPU
+                this->gpu = std::make_unique<GPU_CHUNK>(c, s, mesh, cornerCoordinate, globalModelMatrix);
+            }
         }
-        case CHUNK_GENERATING_MESH:
+        case CHUNK_INTERNAL_GENERATING_MESH: 
         default:
             break;
     }
 }
 
-void 
-Chunk::shouldRefresh() {
-    this->refresh = true;
+void Chunk::refreshNeighbours()
+{
+    auto refresh = [&](ivec2 chunk) {
+        if(chunks.chunkTracked(chunk) && chunks.getChunk(chunk)->isVisible())
+            chunks.getChunk(chunk)->shouldRefreshMesh();
+    };
+    refresh(chunkCoordinate + ivec2(0, 1));
+    refresh(chunkCoordinate + ivec2(0, -1));
+    refresh(chunkCoordinate + ivec2(1, 0));
+    refresh(chunkCoordinate + ivec2(-1, 0));
 }
 
-std::shared_ptr<Mesh> 
-Chunk::getMesh() {
-    return mesh;
+void Chunk::buildMeshAsync()
+{
+    this->state.store(CHUNK_INTERNAL_GENERATING_MESH);
+    //auto neighbourData = extractBoundaries(chunks, chunkCoordinate); // Extract on main thread 
+    //neighbourData.print();
+
+    auto t = std::thread([&]{ //,neighbourData]{
+        //this->mesh = buildMeshNaive(this->voxels); 
+        //this->mesh = buildMeshCullBoundaries(this->voxels, neighbourData);
+        this->mesh = buildMeshGridSearch(this->voxels);
+        this->state.store(CHUNK_INTERNAL_LOADED);
+    }); 
+    t.detach();
 }
 
-void 
-Chunk::syncBuffer() {
-    if(this->state.load() != CHUNK_MESH_READY || this->mesh == nullptr)
-        throw std::runtime_error("Not in state to update GPU buffer");
-    
-    buffer = mesh->gpu(this->c);
-    resources = std::make_shared<ObjectResources>(this->c, this->s, this->buffer, ColoredTriangle);
-    resources->modelMatrix->setTranslation(glm::vec3(this->cornerCoordinate, 0.0));
-}
-
-
-Chunk::Chunk(Context *context, Scene *scene, ChunkMap *chunkMap, glm::ivec2 chunkCoordinate): c(context), s(scene), chunkMap(chunkMap) {
-    this->chunkCoordinate = chunkCoordinate;
-    this->cornerCoordinate = glm::ivec2(SIZE_XY, SIZE_XY) * chunkCoordinate;
-
-    this->mesh = std::make_unique<Mesh>();
-    minecraft(this->mesh->voxels, this->cornerCoordinate);
-}
-
-void
-Chunk::onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot) {
-    if(this->resources == nullptr || this->resources->attributeBuffer->getDrawCalls() == 0)
-        return;
-
-    renderPass.setVertexBuffer(vertexBufferSlot, this->resources->attributeBuffer->getUnderlyingBuffer(), 0, this->resources->attributeBuffer->getSize());
-    renderPass.setBindGroup(bindGroupSlot, this->resources->bindGroup, 0, nullptr);
-    renderPass.draw(this->resources->attributeBuffer->getDrawCalls(), 1, 0, 0);
-}
-
-void 
-ChunkMap::updateNeighbours(glm::ivec2 chunkCoordinate) {
-    // Update 'map' with up to date pointers, propagate a shouldRefresh()
-    std::string key = serializeChunkCoord(chunkCoordinate);
-    std::shared_ptr<Chunk> chunk = nullptr;
-    if(chunks.count(key) > 0)
-        chunk = chunks[key];
-
-    AdjacentMesh *adj = &map[key];
-
-    // Update and refresh the neighbours
-    for(DIRECTION d : directions) {
-        auto c = serializeChunkCoord(chunkCoordinate + chunkDirection(d));
-        if(map.count(c) > 0) {
-            adj->neighbours[d] = map[c].chunk->getMesh();
-            map[c].neighbours[opposite(d)] = chunk ? chunk->getMesh() : nullptr;
+void Chunk::setVisibility(const char state) {
+    switch(state) {
+        case CHUNK_VISIBLE: {
+            if(this->state.load() == CHUNK_INTERNAL_UNLOADED)
+                this->should_build_mesh = true;
+            return;
+        }
+        case CHUNK_HIDDEN: {
+            if(this->state.load() != CHUNK_INTERNAL_UNLOADED)
+                this->should_unload = true;
+            return;
         }
     }
+    throw std::runtime_error("Invalid state passed to chunk visibility setting");
 }
 
-ChunkMap::ChunkMap(Context *context, Scene *scene) : context(context), scene(scene) {}
-
-std::shared_ptr<Chunk> 
-ChunkMap::ensureLoaded(glm::ivec2 chunkCoordinate) {
-    auto key = serializeChunkCoord(chunkCoordinate);
-    if(chunks.count(key) > 0)
-        return chunks[key];
-
-    chunks.insert({key, std::make_shared<Chunk>(this->context, this->scene, this, chunkCoordinate)});
-    chunksSequential.push_back(chunks[key]);
-
-    std::shared_ptr<Chunk> chunk = chunks[key];
-
-    map.insert({key, AdjacentMesh(chunk)});
-    updateNeighbours(chunkCoordinate);
-    refreshNeighbours(chunkCoordinate);
-
-    return chunk;
+bool Chunk::isVisible() {
+    // Visible / intention to be visible
+    return this->state.load() != CHUNK_INTERNAL_UNLOADED || should_build_mesh;
 }
 
-std::shared_ptr<Chunk> 
-ChunkMap::chunkAt(glm::ivec2 chunkCoordinate) {
-    auto key = serializeChunkCoord(chunkCoordinate);
-    if(chunks.count(key) == 0)
-        throw std::runtime_error("Chunk not found");
-
-    return chunks[key];
+void Chunk::set(ivec3 voxel, char value) {
+    this->voxels[idx(voxel)] = value;
+    this->should_build_mesh = true;
 }
 
-void 
-ChunkMap::refreshNeighbours(glm::ivec2 chunkCoordinate) {
-    // Call shouldRefresh() on neighbouring chunks
-    std::string key = serializeChunkCoord(chunkCoordinate);
-    
-    auto west = serializeChunkCoord(chunkCoordinate - glm::ivec2(1, 0));
-    if(map.count(west) > 0)
-        map[west].chunk->shouldRefresh(); 
-
-    auto east = serializeChunkCoord(chunkCoordinate + glm::ivec2(1, 0));
-    if(map.count(east) > 0)
-        map[east].chunk->shouldRefresh();
-
-    auto north = serializeChunkCoord(chunkCoordinate + glm::ivec2(0, 1));
-    if(map.count(north) > 0) 
-        map[north].chunk->shouldRefresh();
-
-    auto south = serializeChunkCoord(chunkCoordinate - glm::ivec2(0, 1));
-    if(map.count(south) > 0)
-        map[south].chunk->shouldRefresh();
+void Chunk::shouldRefreshMesh() {
+    this->should_build_mesh = true;
 }
-
-AdjacentMesh 
-ChunkMap::neighbours(glm::ivec2 chunkCoordinate) {
-    return this->map[serializeChunkCoord(chunkCoordinate)];
-}
-
-std::vector<std::shared_ptr<Chunk>> 
-ChunkMap::all() {
-    return this->chunksSequential;
-}
-

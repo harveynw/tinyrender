@@ -1,10 +1,6 @@
-//
-// Created by Harvey Williams on 09/08/2023.
-//
-
 #include "ViewProjMatrixUniform.hpp"
 
-tinyrender::ViewProjMatrixUniform::ViewProjMatrixUniform(Context *context, vec3 lookFrom, vec3 lookAt): Buffer() {
+tinyrender::ViewProjMatrixUniform::ViewProjMatrixUniform(Context *context, vec3 lookFrom, vec3 lookAt) {
     this->lookFrom = lookFrom;
     this->lookAt = lookAt;
 

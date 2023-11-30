@@ -1,6 +1,3 @@
-//
-// Created by Harvey Williams on 17/08/2023.
-//
 #include "ModelMatrixUniform.hpp"
 
 tinyrender::ModelMatrixUniform::ModelMatrixUniform(Context *context) {

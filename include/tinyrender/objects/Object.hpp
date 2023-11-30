@@ -5,6 +5,7 @@
 #include <glm/glm.hpp>
 
 #include "../Fwd.hpp"
+#include "../Transform.hpp"
 
 namespace tinyrender {
 
@@ -13,8 +14,6 @@ namespace tinyrender {
         Context *context;
         Scene *scene;
 
-        ObjectPipeline targetPipeline = ColoredTriangle;
-        
         bool isInitialised = false;
     public:
         virtual void onInit(Context *c, Scene *s);
@@ -33,11 +32,11 @@ namespace tinyrender {
 
         virtual ~Object() = default;
 
-        ObjectPipeline currentTargetPipeline();
+        virtual ObjectPipeline currentTargetPipeline();
 
         bool HIDDEN = false;
 
-        std::shared_ptr<tinyrender::ModelMatrixUniform> modelMatrix() const;
+        virtual std::shared_ptr<tinyrender::ModelMatrixUniform> modelMatrix() const;
         std::shared_ptr<ObjectResources> resources = nullptr;
     };
 

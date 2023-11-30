@@ -1,12 +1,11 @@
 #include "ObjectResources.hpp"
 
 
-ObjectResources::ObjectResources(Context *context, Scene *scene, std::shared_ptr<tinyrender::AttributeBuffer> attrs, ObjectPipeline target) {
-    this->attributeBuffer = std::move(attrs);
+ObjectResources::ObjectResources(Context *context, Scene *scene, std::shared_ptr<tinyrender::AttributeBuffer> attrs, ObjectPipeline target): context(context), scene(scene), attributeBuffer(attrs) {
     this->modelMatrix = std::make_shared<tinyrender::ModelMatrixUniform>(context);
     this->color = std::make_shared<tinyrender::ColorUniform>(context);
 
-    this->resetBindGroup(context, scene, target);
+    this->resetBindGroup(target);
 }
 
 ObjectResources::~ObjectResources() {
@@ -14,57 +13,63 @@ ObjectResources::~ObjectResources() {
         bindGroup.release();
 }
 
-void
-ObjectResources::resetBindGroup(Context *context, Scene *scene, ObjectPipeline target) {
+void ObjectResources::resetBindGroup(ObjectPipeline target) {
+    /*
+    * To expose uniforms to the shader program in WebGPU, you have to instantiate a 'BindGroup' which is bound to
+    * a particular shader program. This method refreshes the bindGroup property to be created against the correct
+    * shader, avoiding any errors. Note the order uniforms are passed into the BindGroupDescriptor must 1-1 match
+    * the shader program.
+    */
+    this->targetPipeline = target;
     if(bindGroup != nullptr) {
         bindGroup.release();
     }
 
+    std::vector<std::shared_ptr<tinyrender::Uniform>> uniforms;
     switch(target) {
-        case ColoredTriangle: {
-            bindGroupData = std::vector<BindGroupEntry>(2);
-            bindGroupData[0] = this->modelMatrix->generateUniformBindGroupEntry(0);
-            bindGroupData[1] = this->color->generateUniformBindGroupEntry(1);
-
-            BindGroupDescriptor bindGroupDesc;
-            bindGroupDesc.layout = scene->coloredShader->objectBindGroupLayout(); // Point to WGPUBindGroupLayout
-            bindGroupDesc.entryCount = (uint32_t)bindGroupData.size();
-            bindGroupDesc.entries = bindGroupData.data();
-            bindGroup = context->device.createBindGroup(bindGroupDesc);
+        case TexturedTriangle:
+            uniforms = { 
+                modelMatrix,
+                std::make_shared<TextureUniform>(texture),
+                std::make_shared<TextureSamplerUniform>(texture) 
+            };
             break;
-        }
-        case TexturedTriangle: {
-            bindGroupData = std::vector<BindGroupEntry>(3);
-            bindGroupData[0] = this->modelMatrix->generateUniformBindGroupEntry(0);
-            bindGroupData[1].binding = 1;
-            bindGroupData[1].textureView = this->texture->getView();
-            bindGroupData[2].binding = 2;
-            bindGroupData[2].sampler = this->texture->getSampler();
-
-            BindGroupDescriptor bindGroupDesc;
-            bindGroupDesc.layout = scene->texturedShader->objectBindGroupLayout();
-            bindGroupDesc.entryCount = (uint32_t)bindGroupData.size();
-            bindGroupDesc.entries = bindGroupData.data();
-            bindGroup = context->device.createBindGroup(bindGroupDesc);
+        case ColoredTriangle:
+            uniforms = {
+                modelMatrix, 
+                color 
+            };
             break;
-        }
-        case Waves: {
-            bindGroupData = std::vector<BindGroupEntry>(5);
-            bindGroupData[0] = this->modelMatrix->generateUniformBindGroupEntry(0);
-            bindGroupData[1].binding = 1;
-            bindGroupData[1].textureView =  this->texture->getView();
-            bindGroupData[2].binding = 2;
-            bindGroupData[2].sampler = this->texture->getSampler();
-            bindGroupData[3] = this->maxDisplacement->generateUniformBindGroupEntry(3);
-            bindGroupData[4] = this->color->generateUniformBindGroupEntry(4);
-
-            BindGroupDescriptor bindGroupDesc;
-            bindGroupDesc.layout = scene->wavesShader->objectBindGroupLayout();
-            bindGroupDesc.entryCount = (uint32_t)bindGroupData.size();
-            bindGroupDesc.entries = bindGroupData.data();
-            bindGroup = context->device.createBindGroup(bindGroupDesc);
+        case Waves:
+            uniforms = {
+                modelMatrix,
+                std::make_shared<TextureUniform>(texture),
+                std::make_shared<TextureSamplerUniform>(texture),
+                maxDisplacement,
+                color
+            };
             break;
-        }
+        case Voxels:
+            uniforms = {
+                globalModelMatrix,
+                modelMatrix
+            };
+            break;
     }
+
+    // Object class must have correctly populated the uniforms
+    for(auto &unif : uniforms)
+        assert(unif != nullptr);
+    
+    int n = uniforms.size();
+    bindGroupData = std::vector<BindGroupEntry>(n);
+    for(int i = 0; i < n; i++)
+        bindGroupData[i] = uniforms[i]->generateUniformBindGroupEntry(i);
+    
+    BindGroupDescriptor bindGroupDesc;
+    bindGroupDesc.layout = scene->shaders[target]->objectBindGroupLayout();
+    bindGroupDesc.entryCount = (uint32_t)bindGroupData.size();
+    bindGroupDesc.entries = bindGroupData.data();
+    bindGroup = context->device.createBindGroup(bindGroupDesc);
 }
 

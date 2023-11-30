@@ -123,3 +123,28 @@ wavesUniformLayout(Context *context) {
     bindGroupLayoutDesc.entries = entries.data();
     return context->device.createBindGroupLayout(bindGroupLayoutDesc);
 }
+
+wgpu::BindGroupLayout
+voxelUniformLayout(Context *context) {
+    std::vector<wgpu::BindGroupLayoutEntry> entries(2, wgpu::Default);
+    wgpu::BindGroupLayoutDescriptor bindGroupLayoutDesc{};
+
+    /*
+     * Voxels: Chunk model matrix + Overall voxel object model matrix
+     */
+    wgpu::BindGroupLayoutEntry &voxelsModelBindingLayout = entries[0];
+    voxelsModelBindingLayout.binding = 0;
+    voxelsModelBindingLayout.visibility = wgpu::ShaderStage::Vertex;
+    voxelsModelBindingLayout.buffer.type = wgpu::BufferBindingType::Uniform;
+    voxelsModelBindingLayout.buffer.minBindingSize = sizeof(ModelUniform);
+
+    wgpu::BindGroupLayoutEntry &chunkModelBindingLayout = entries[1];
+    chunkModelBindingLayout.binding = 1;
+    chunkModelBindingLayout.visibility = wgpu::ShaderStage::Vertex;
+    chunkModelBindingLayout.buffer.type = wgpu::BufferBindingType::Uniform;
+    chunkModelBindingLayout.buffer.minBindingSize = sizeof(ModelUniform);
+
+    bindGroupLayoutDesc.entryCount = (uint32_t) entries.size();
+    bindGroupLayoutDesc.entries = entries.data();
+    return context->device.createBindGroupLayout(bindGroupLayoutDesc);
+}

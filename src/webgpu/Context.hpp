@@ -4,7 +4,7 @@
 #include <GLFW/glfw3.h>
 #include "glfw3webgpu.h"
 
-#include "primitives/buffers/uniforms/UniformStructs.hpp"
+#include "primitives/uniforms/UniformStructs.hpp"
 
 /*
  * Context

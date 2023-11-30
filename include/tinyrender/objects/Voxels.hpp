@@ -4,12 +4,13 @@
 
 namespace tinyrender {
     class Voxels : public Object {
-        std::shared_ptr<ChunkMap> map; 
+        std::shared_ptr<Chunks> chunks; 
 
         // Handles its own coloring 
         using Object::setColor;
         using Object::setTexture;
-        using Object::modelMatrix;
+
+        std::shared_ptr<tinyrender::ModelMatrixUniform> globalModelMatrix;
     public:
         Voxels() = default;
 
@@ -17,6 +18,10 @@ namespace tinyrender {
         void onUpdate(State &state, float dt) override;
         void onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot) override;
         void onRemove() override;
+
+        ObjectPipeline currentTargetPipeline() override;
+
+        std::shared_ptr<tinyrender::ModelMatrixUniform> modelMatrix() const override;
 
         ~Voxels();
     };

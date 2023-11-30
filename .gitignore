@@ -1,7 +1,14 @@
 .vscode/
+
 build/
 build-web/
+build-xcode/
+
+misc/
+examples/misc
+
 doxygen/
+
 resources/untracked/
 
 .DS_Store

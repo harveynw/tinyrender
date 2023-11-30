@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../Buffer.hpp"
+#include "BufferUniform.hpp"
 
 namespace tinyrender {
 
-    class ScalarUniform : public Buffer {
+    class ScalarUniform : public BufferUniform {
     protected:
         ScalarUniforms uniform{};
     public:

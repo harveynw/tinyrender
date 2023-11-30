@@ -14,7 +14,7 @@ context(context), scene(scene)  {
     initialisePipelineOptions(desc);
     initialiseDepthStencil(desc);
 
-    desc.layout = scene->wavesShader->pipelineLayout();
+    desc.layout = scene->shaders[Waves]->pipelineLayout();
 
     pipeline = context->device.createRenderPipeline(desc);
     std::cout << "Render pipeline: " << pipeline << std::endl;
@@ -66,7 +66,8 @@ WavesPipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &com
     renderPass.setPipeline(pipeline);
 
     // Set the first bind group, won't change between objects
-    renderPass.setBindGroup(0, this->scene->wavesViewProjBindGroup, 0, nullptr);
+    auto &bg = scene->bindGroups.at(Waves);
+    renderPass.setBindGroup(0, bg, 0, nullptr);
 
     for(auto & object : objects) {
         if(object->currentTargetPipeline() == Waves)
@@ -84,24 +85,14 @@ WavesPipeline::~WavesPipeline() {
 
 void
 WavesPipeline::initialiseShader(RenderPipelineDescriptor &desc) {
-    this->scene->wavesShader->setAsTarget(desc);
+    this->scene->shaders[Waves]->setAsTarget(desc);
 }
 
 void
 WavesPipeline::initialisePipelineOptions(RenderPipelineDescriptor &desc) {
-    // Primitive assembly and rasterization
-    // Each sequence of 3 vertices is considered as a triangle
     desc.primitive.topology = PrimitiveTopology::TriangleList;
-    // We'll see later how to specify the order in which vertices should be
-    // connected. When not specified, vertices are considered sequentially.
     desc.primitive.stripIndexFormat = IndexFormat::Undefined;
-    // The face orientation is defined by assuming that when looking
-    // from the front of the face, its corner vertices are enumerated
-    // in the counter-clockwise (CCW) order.
     desc.primitive.frontFace = FrontFace::CCW;
-    // But the face orientation does not matter much because we do not
-    // cull (i.e. "hide") the faces pointing away from us (which is often
-    // used for optimization).
     desc.primitive.cullMode = CullMode::None;
 
     // Multi-sampling

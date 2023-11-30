@@ -1,10 +1,10 @@
 #pragma once
 
-#include "../Buffer.hpp"
+#include "BufferUniform.hpp"
 
 namespace tinyrender {
 
-    class ColorUniform : public Buffer {
+    class ColorUniform : public BufferUniform {
     protected:
         ColorUniforms uniform{};
     public:

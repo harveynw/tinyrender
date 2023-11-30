@@ -1,14 +1,9 @@
-//
-// Created by Harvey Williams on 09/08/2023.
-//
-
-#ifndef TINYGAME_UNIFORMMVPBUFFER_H
-#define TINYGAME_UNIFORMMVPBUFFER_H
+#pragma once
 
 #include "glm/glm.hpp"
 #include "glm/ext.hpp"
 
-#include "../Buffer.hpp"
+#include "BufferUniform.hpp"
 #include "UniformStructs.hpp"
 
 using glm::mat4x4;
@@ -17,7 +12,7 @@ using glm::vec3;
 
 namespace tinyrender {
 
-    class ViewProjMatrixUniform : public Buffer {
+    class ViewProjMatrixUniform : public BufferUniform {
     protected:
         ViewProjectionUniforms uniforms{};
 
@@ -38,5 +33,3 @@ namespace tinyrender {
     };
 
 }
-
-#endif //TINYGAME_UNIFORMMVPBUFFER_H

@@ -7,15 +7,23 @@
 #include "Fwd.hpp"
 #include "../webgpu/primitives/buffers/AttributeBuffer.hpp"
 #include "../webgpu/primitives/buffers/IndexBuffer.hpp"
-#include "../webgpu/primitives/buffers/uniforms/ModelMatrixUniform.hpp"
-#include "../webgpu/primitives/buffers/uniforms/ColorUniform.hpp"
-#include "../webgpu/primitives/buffers/uniforms/ScalarUniform.hpp"
+#include "../webgpu/primitives/uniforms/ModelMatrixUniform.hpp"
+#include "../webgpu/primitives/uniforms/ColorUniform.hpp"
+#include "../webgpu/primitives/uniforms/ScalarUniform.hpp"
+#include "../webgpu/primitives/uniforms/TextureUniforms.hpp"
 #include "../webgpu/primitives/textures/Texture2D.hpp"
 #include "../webgpu/Scene.hpp"
 
+using tinyrender::TextureUniform;
+using tinyrender::TextureSamplerUniform;
 
 // All the WebGPU resources owned by the object
 struct ObjectResources {
+    Context *context;
+    Scene *scene;
+
+    ObjectPipeline targetPipeline;
+
     bool isIndexed = false;
 
     std::shared_ptr<tinyrender::AttributeBuffer> attributeBuffer = nullptr;
@@ -27,11 +35,13 @@ struct ObjectResources {
     // WaveSim specific
     std::shared_ptr<tinyrender::ScalarUniform> maxDisplacement = nullptr;
 
-    std::vector<wgpu::BindGroupEntry> bindGroupData;
-    wgpu::BindGroup bindGroup = nullptr;
+    // Voxel specific
+    std::shared_ptr<tinyrender::ModelMatrixUniform> globalModelMatrix = nullptr;
 
     ObjectResources(Context *context, Scene *scene, std::shared_ptr<tinyrender::AttributeBuffer> attrs, ObjectPipeline target);
     ~ObjectResources();
 
-    void resetBindGroup(Context *context, Scene *scene, ObjectPipeline target);
+    std::vector<wgpu::BindGroupEntry> bindGroupData;
+    wgpu::BindGroup bindGroup = nullptr;
+    void resetBindGroup(ObjectPipeline);
 };

@@ -5,15 +5,14 @@
 #include <glm/glm.hpp>
 #include <memory>
 #include <vector>
+#include <map>
 
 #include "Fwd.hpp"
 
-/*
 #ifdef __EMSCRIPTEN__
 #include <emscripten/html5.h>
 #include <emscripten/emscripten.h>
 #endif
-*/
 
 class Engine {
 public:
@@ -54,9 +53,7 @@ protected:
     std::shared_ptr<Scene> scene = nullptr;
 
     // Pipeline objects
-    std::shared_ptr<TrianglePipeline> trianglePipeline = nullptr;
-    std::shared_ptr<TexturedTrianglePipeline> texturedTrianglePipeline = nullptr;
-    std::shared_ptr<WavesPipeline> wavesPipeline = nullptr;
+    std::map<ObjectPipeline, std::unique_ptr<Pipeline>> pipelines;
 };
 
 void onWindowResize(GLFWwindow* window, int, int);
@@ -65,9 +62,7 @@ void onWindowMouseButton(GLFWwindow* window, int button, int action, int mods);
 void onWindowScroll(GLFWwindow* window, double xoffset, double yoffset);
 void onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods);
 
-/*
 #ifdef __EMSCRIPTEN__
 __attribute__((unused))
 static EM_BOOL EmscriptenWindowResizedCallback(int eventType, const void *event, void *userData);
 #endif
-*/

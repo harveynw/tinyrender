@@ -1,9 +1,4 @@
-//
-// Created by Harvey Williams on 08/08/2023.
-//
-
-#ifndef TINYGAME_TEXTUREDTRIANGLEPIPELINE_H
-#define TINYGAME_TEXTUREDTRIANGLEPIPELINE_H
+#pragma once
 
 #include <filesystem>
 #include <iostream>
@@ -39,5 +34,3 @@ public:
     void onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder,
                  std::vector<std::shared_ptr<tinyrender::Object>> &objects) override;
 };
-
-#endif

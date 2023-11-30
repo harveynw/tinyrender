@@ -1,9 +1,8 @@
-#include "TrianglePipeline.hpp"
+#include "VoxelPipeline.hpp"
 
 
-TrianglePipeline::TrianglePipeline(Context *context, Scene *scene):
-    context(context), scene(scene) {
-
+VoxelPipeline::VoxelPipeline(Context *context, Scene *scene):
+context(context), scene(scene)  {
     std::cout << "Creating render pipeline..." << std::endl;
     RenderPipelineDescriptor desc;
 
@@ -11,15 +10,15 @@ TrianglePipeline::TrianglePipeline(Context *context, Scene *scene):
     initialisePipelineOptions(desc);
     initialiseDepthStencil(desc);
 
-    desc.layout = scene->shaders[ColoredTriangle]->pipelineLayout();
+    desc.layout = scene->shaders[Voxels]->pipelineLayout();
 
     pipeline = context->device.createRenderPipeline(desc);
     std::cout << "Render pipeline: " << pipeline << std::endl;
 }
 
 void
-TrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder,
-                          std::vector<std::shared_ptr<tinyrender::Object>> &objects) {
+VoxelPipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder,
+                                  std::vector<std::shared_ptr<tinyrender::Object>> &objects) {
     RenderPassDescriptor renderPassDesc;
 
     RenderPassColorAttachment renderPassColorAttachment;
@@ -63,29 +62,30 @@ TrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &
     renderPass.setPipeline(pipeline);
 
     // Set the first bind group, won't change between objects
-    auto &bg = scene->bindGroups.at(ColoredTriangle);
+    auto &bg = scene->bindGroups.at(Voxels);
     renderPass.setBindGroup(0, bg, 0, nullptr);
 
     for(auto & object : objects) {
-        if(object->currentTargetPipeline() == ColoredTriangle)
+        if(object->currentTargetPipeline() == Voxels)
             object->onDraw(renderPass, 0, 1);
-    }
+    } 
 
     renderPass.end();
 }
 
-TrianglePipeline::~TrianglePipeline() {
+VoxelPipeline::~VoxelPipeline() {
+    // TODO: Bug, you would think layout.release() would be required but crashes
     //layout.release();
     pipeline.release();
 }
 
 void
-TrianglePipeline::initialiseShader(RenderPipelineDescriptor &desc) {
-    this->scene->shaders[ColoredTriangle]->setAsTarget(desc);
+VoxelPipeline::initialiseShader(RenderPipelineDescriptor &desc) {
+    scene->shaders[Voxels]->setAsTarget(desc);
 }
 
 void
-TrianglePipeline::initialisePipelineOptions(RenderPipelineDescriptor &desc) {
+VoxelPipeline::initialisePipelineOptions(RenderPipelineDescriptor &desc) {
     desc.primitive.topology = PrimitiveTopology::TriangleList;
     desc.primitive.stripIndexFormat = IndexFormat::Undefined;
     desc.primitive.frontFace = FrontFace::CCW;
@@ -101,7 +101,7 @@ TrianglePipeline::initialisePipelineOptions(RenderPipelineDescriptor &desc) {
 }
 
 void
-TrianglePipeline::initialiseDepthStencil(RenderPipelineDescriptor &desc) {
+VoxelPipeline::initialiseDepthStencil(RenderPipelineDescriptor &desc) {
     // We setup a depth buffer state for the render pipeline
     // Keep a fragment only if its depth is lower than the previously blended one
     depthStencilState.depthCompare = CompareFunction::Less;

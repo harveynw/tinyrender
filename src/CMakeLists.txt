@@ -7,6 +7,7 @@ file(GLOB SOURCE_LIST
     webgpu/*.cpp
     webgpu/pipelines/*.cpp
     webgpu/primitives/shaders/*.cpp
+    webgpu/primitives/uniforms/*.cpp
     webgpu/primitives/buffers/*.cpp
     webgpu/primitives/buffers/attributes/*.cpp
     webgpu/primitives/buffers/uniforms/*.cpp
@@ -17,7 +18,7 @@ file(GLOB SOURCE_LIST
 list(FILTER SOURCE_LIST EXCLUDE REGEX "_test.cpp$")
 
 # Declare tinyrender library to link to
-add_library(tinyrender SHARED ${SOURCE_LIST})
+add_library(tinyrender STATIC ${SOURCE_LIST})
 target_include_directories(tinyrender PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/camera
@@ -54,6 +55,7 @@ target_link_libraries(tinyrender PUBLIC glfw)
 endif()
 
 # WebGPU implementation and headers
+set(WEBGPU_BACKEND "WGPU" CACHE STRING "" FORCE)
 FetchContent_Declare(
         webgpu
         GIT_REPOSITORY https://github.com/eliemichel/WebGPU-distribution

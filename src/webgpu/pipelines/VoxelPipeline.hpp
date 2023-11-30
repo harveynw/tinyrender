@@ -5,17 +5,17 @@
 
 #include "Pipeline.hpp"
 #include "objects/Object.hpp"
+#include "tiny_obj_loader.h"
 
 using glm::mat4x4;
 using glm::vec4;
 using glm::vec3;
 
 
-class TrianglePipeline : public Pipeline {
+class VoxelPipeline : public Pipeline {
 protected:
     Context *context = nullptr;
     Scene *scene = nullptr;
-
 
     // Intermediate objects for setting up the pipeline, persisted here.
     DepthStencilState depthStencilState = Default;
@@ -29,8 +29,8 @@ protected:
     void initialiseDepthStencil(RenderPipelineDescriptor &desc);
 
 public:
-    TrianglePipeline(Context *context, Scene *scene);
-    ~TrianglePipeline() override;
+    VoxelPipeline(Context *context, Scene *scene);
+    ~VoxelPipeline() override;
     void onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder,
                  std::vector<std::shared_ptr<tinyrender::Object>> &objects) override;
 };

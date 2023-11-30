@@ -29,23 +29,3 @@ tinyrender::Buffer::initialise(void *data) {
     // Write data via the queue
     context->queue.writeBuffer(underlying, 0, data, bufferDesc.size);
 }
-
-BindGroupEntry tinyrender::Buffer::generateUniformBindGroupEntry(int bindGroup) {
-    // BindGroups are for uniforms
-    assert(type == tinyrender::UNIFORM);
-
-    BindGroupEntry entry;
-
-    // Create a binding
-    // The index of the binding (the entries in bindGroupDesc can be in any order)
-    entry.binding = bindGroup;
-    // The buffer it is actually bound to
-    entry.buffer = underlying;
-    // We can specify an offset within the buffer, so that a single buffer can hold
-    // multiple uniform blocks.
-    entry.offset = 0;
-    // And we specify again the size of the buffer.
-    entry.size = getSize();
-
-    return entry;
-}

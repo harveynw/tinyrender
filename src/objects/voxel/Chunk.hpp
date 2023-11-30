@@ -1,76 +1,68 @@
 #pragma once
 
-#include <stack>
-#include <atomic>
+#include <array>
 #include <thread>
 
-#include "ChunkGeometry.hpp"
 #include "VoxelData.hpp"
-#include "Mesh.hpp"
+#include "ChunkGeometry.hpp"
+#include "Chunks.hpp"
+#include "BuildMesh.hpp"
 #include "../ObjectResources.hpp"
 #include "../loaders/Polygons.hpp"
-#include "../loaders/Shapes.hpp"
 #include "../../webgpu/primitives/buffers/AttributeBuffer.hpp"
-#include "../../webgpu/Context.hpp"
-#include "../../webgpu/Scene.hpp"
 
-// TODO
-// Lighting map 
 
-const char CHUNK_NO_MESH = 0x00;
-const char CHUNK_SHOULD_GENERATE = 0x01;
-const char CHUNK_GENERATING_MESH = 0x02;
-const char CHUNK_MESH_READY = 0x03; 
-const char CHUNK_LOADED = 0x04;
+namespace {
+    const char CHUNK_INTERNAL_UNLOADED = 0x00;
+    const char CHUNK_INTERNAL_LOADED = 0x01;
+    const char CHUNK_INTERNAL_GENERATING_MESH = 0x02;
 
-class ChunkMap;
+    struct GPU_CHUNK {
+        // Buffer containing mesh to draw chunk
+        std::shared_ptr<tinyrender::AttributeBuffer> buffer = nullptr;
+        // Uniforms
+        std::shared_ptr<ObjectResources> resources = nullptr;
+
+        GPU_CHUNK(Context *c, Scene *s, std::shared_ptr<VoxelMesh> cpu, ivec2 cornerCoordinate, std::shared_ptr<tinyrender::ModelMatrixUniform> globalModelMatrix);
+
+        void onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot);
+    };
+}
+
+const char CHUNK_VISIBLE = 0x00;
+const char CHUNK_HIDDEN = 0x01;
 
 class Chunk {
-    protected:
-        Context *c;
-        Scene *s;
-        ChunkMap *chunkMap;
-
-        glm::ivec2 cornerCoordinate;
-
-        // Chunk maintains a state machine. onUpdate keeps this machine moving on the main thread
-        bool refresh = false; 
-        std::atomic_char state = CHUNK_NO_MESH; // Internal state
-        std::thread loadingThread;
-
-        // Uploads mesh to the GPU
-        std::shared_ptr<Mesh> mesh = nullptr;
-        std::shared_ptr<tinyrender::AttributeBuffer> buffer = nullptr;
-        std::shared_ptr<ObjectResources> resources = nullptr;
-        void syncBuffer();
-    public:
-        glm::ivec2 chunkCoordinate;
-
-        Chunk(Context *c, Scene *s, ChunkMap *chunkMap, glm::ivec2 chunkCoordinate);
-        void onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot);
-        void onUpdate(glm::ivec2 cameraChunk);
-        void shouldRefresh();
-
-        std::shared_ptr<Mesh> getMesh();
-};
-
-class ChunkMap {
 protected:
-    Context *context;
-    Scene *scene;
+    Context *c;
+    Scene *s;
+    Chunks &chunks;
+    
+    // Internal state machine
+    bool should_build_mesh = false;
+    bool should_unload = false;
+    std::atomic<char> state = CHUNK_INTERNAL_UNLOADED;
 
-    std::map<std::string, AdjacentMesh> map;
-    std::map<std::string, std::shared_ptr<Chunk>> chunks; 
-    std::vector<std::shared_ptr<Chunk>> chunksSequential;
-    void updateNeighbours(glm::ivec2 chunkCoordinate);
+    std::shared_ptr<VoxelMesh> mesh = nullptr;
+    std::shared_ptr<tinyrender::ModelMatrixUniform> globalModelMatrix = nullptr;
+    std::unique_ptr<GPU_CHUNK> gpu = nullptr;
+
+    void refreshNeighbours();
+    void buildMeshAsync();
 public:
-    ChunkMap(Context *context, Scene *scene);
+    ivec2 chunkCoordinate; // {i, j} in chunk space
+    ivec2 cornerCoordinate; // {x, y} in world space of corner
 
-    std::shared_ptr<Chunk> ensureLoaded(glm::ivec2 chunkCoordinate);
-    std::shared_ptr<Chunk> chunkAt(glm::ivec2 chunkCoordinate);
-    void refreshNeighbours(glm::ivec2 chunkCoordinate);
-    void unloadNeighbours(glm::ivec2 chunkCoordinate);
-    AdjacentMesh neighbours(glm::ivec2 chunkCoordinate);
-    std::vector<std::shared_ptr<Chunk>> all();
+    Chunk(Context *c, Scene *s, Chunks &chunks, ivec2 chunkCoordinate, std::shared_ptr<tinyrender::ModelMatrixUniform> globalModelMatrix);
+    
+    void onUpdate(ivec2 cameraChunk);
+    void onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot);
+    
+    array<char, N_VOXELS> voxels;
+
+    void setVisibility(const char state);
+    bool isVisible();
+
+    void set(ivec3 voxel, char value);
+    void shouldRefreshMesh();
 };
-

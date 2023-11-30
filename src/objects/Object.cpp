@@ -1,6 +1,6 @@
 #include "objects/Object.hpp"
 
-#include "../webgpu/primitives/buffers/uniforms/ModelMatrixUniform.hpp"
+#include "../webgpu/primitives/uniforms/ModelMatrixUniform.hpp"
 #include "../webgpu/primitives/buffers/AttributeBuffer.hpp"
 #include "../webgpu/primitives/buffers/IndexBuffer.hpp"
 #include "../webgpu/Scene.hpp"
@@ -11,23 +11,19 @@
 
 void
 tinyrender::Object::setColor(glm::vec3 c) {
-    this->resources->color->set(c);
-    this->resources->texture = nullptr;
+    resources->color->set(c);
+    resources->texture = nullptr;
 
-    if(this->targetPipeline != ColoredTriangle) {
-        this->targetPipeline = ColoredTriangle;
-        this->resources->resetBindGroup(this->context, this->scene, this->targetPipeline);
-    }
+    if(resources->targetPipeline != ColoredTriangle)
+        resources->resetBindGroup(ColoredTriangle);
 }
 
 void
 tinyrender::Object::setTexture(std::string path) {
-    this->resources->texture = std::make_shared<tinyrender::Texture2D::common::BasicImgRepeatingTexture>(context, path);
+    resources->texture = std::make_shared<tinyrender::Texture2D::common::BasicImgRepeatingTexture>(context, path);
 
-    if(this->targetPipeline != TexturedTriangle) {
-        this->targetPipeline = TexturedTriangle;
-        this->resources->resetBindGroup(this->context, this->scene, this->targetPipeline);
-    }
+    if(resources->targetPipeline != TexturedTriangle)
+        resources->resetBindGroup(TexturedTriangle);
 }
 
 void tinyrender::Object::setScale(float s)
@@ -62,7 +58,7 @@ tinyrender::Object::modelMatrix() const
 }
 
 ObjectPipeline tinyrender::Object::currentTargetPipeline() {
-    return targetPipeline;
+    return resources->targetPipeline;
 }
 
 void tinyrender::Object::onInit(Context *c, Scene *s) {

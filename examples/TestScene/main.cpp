@@ -3,7 +3,7 @@
 #include <emscripten/html5.h>
 #endif
 
-#include "tinyrender/engine.hpp"
+#include "tinyrender/Engine.hpp"
 #include "tinyrender/camera/TurntableCamera.hpp"
 #include "tinyrender/camera/FreeviewCamera.hpp"
 #include "tinyrender/objects/Mesh.hpp"

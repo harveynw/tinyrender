@@ -2,7 +2,7 @@ R""(
 
 struct VertexInput {
     @location(0) position: vec3f,
-    @location(1) color: vec3f,
+    @location(1) data: f32,
 };
 struct VertexOutput {
     @builtin(position) position: vec4f,
@@ -26,7 +26,6 @@ struct LightingUniforms {
 
 @group(1) @binding(0) var<uniform> globalModelMatrix: mat4x4f;
 @group(1) @binding(1) var<uniform> chunkModelMatrix: mat4x4f;
-@group(1) @binding(2) var<uniform> color: vec3f;
 
 @vertex
 fn vs_main(in: VertexInput) -> VertexOutput {
@@ -35,7 +34,7 @@ fn vs_main(in: VertexInput) -> VertexOutput {
     // Forward to fragment shader
     var out: VertexOutput;
     out.position = uMyUniforms.projectionMatrix * uMyUniforms.viewMatrix * world;
-    out.color = in.color;
+    out.color = vec3f(0.0, 0.0, 1.0);
 
     return out;
 }
@@ -47,5 +46,4 @@ fn fs_main(in: VertexOutput) -> @location(0) vec4f {
 
     return vec4f(baseColor, 1.0);
 }
-
 )""

@@ -19,7 +19,7 @@ namespace tinyrender {
         }
         ~Transform() = default;  
 
-        Transform(const Transform &transform): t(transform.t); // copy constructor
+        Transform(const Transform &transform): t(transform.t) {}; // copy constructor
         Transform(Transform &&other) noexcept: t(std::exchange(other.t, glm::mat4(1.0f))) {}; // move constructor
         Transform& operator=(const Transform &other) { // copy assignment
             return *this = Transform(other);

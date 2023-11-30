@@ -24,17 +24,16 @@ struct Scene;
 
 struct ObjectResources;
 
-class TrianglePipeline;
-class TexturedTrianglePipeline;
-class WavesPipeline;
 
 // Object specific
+class Pipeline;
 enum ObjectPipeline : short {
     TexturedTriangle,
     ColoredTriangle,
     Waves,
+    Voxels
 };
-class ChunkMap;
+class Chunks;
 class FFTfftw;
 class NaiveWaveSim;
 

@@ -38,8 +38,6 @@ namespace tinyrender {
 
         uint64_t getSize() { return size; };
         void initialise(void*);
-
-        wgpu::BindGroupEntry generateUniformBindGroupEntry(int bindGroup);
     };
 
 }

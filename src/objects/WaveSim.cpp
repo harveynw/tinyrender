@@ -18,8 +18,6 @@ void
 tinyrender::WaveSim::onInit(Context *c, Scene *s) {
     Object::onInit(c, s);
 
-    this->targetPipeline = Waves;
-
     this->displacementData = std::vector<uint8_t>(4 * DISP_MAP_RES * DISP_MAP_RES);
 
     Polygons p;
@@ -32,7 +30,7 @@ tinyrender::WaveSim::onInit(Context *c, Scene *s) {
     this->resources->texture = this->texture;
     this->resources->maxDisplacement = std::make_shared<tinyrender::ScalarUniform>(c);
     this->resources->maxDisplacement->set(0.5);
-    this->resources->resetBindGroup(c, s, Waves);
+    this->resources->resetBindGroup(Waves);
 
     naive = std::make_unique<NaiveWaveSim>(DISP_MAP_RES);
     fftw = std::make_unique<FFTfftw>(DISP_MAP_RES);
