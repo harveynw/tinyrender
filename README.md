@@ -9,7 +9,7 @@ Minimalist C++ Cross-Platform Rendering Engine built using WebGPU.
 <hr>
 
 
-(reword) This might be cool if you just want to draw 3D scenes but don't want to touch hardcore graphics APIs nor the bloat of fully functional game engines.
+tinyrender is for when you just want to draw 3D scenes, but don't want to touch hardcore graphics APIs nor the bloat of fully functional game engines.
 
 ### Current State
 
