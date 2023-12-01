@@ -46,7 +46,8 @@ minecraft(std::array<char, N_VOXELS> &voxels, glm::ivec2 cornerXY) {
         auto c = coord(i);
 
         if(c.z <= elevation[c.x][c.y])
-            voxels[i] = 0x01;
+            //voxels[i] = 0xff;
+            voxels[i] = (char) c.z;
         else
             voxels[i] = 0x00;
     }

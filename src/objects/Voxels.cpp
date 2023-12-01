@@ -12,13 +12,6 @@ tinyrender::Voxels::onInit(Context *c, Scene *s) {
     globalModelMatrix = std::make_shared<tinyrender::ModelMatrixUniform>(c);
 
     chunks = std::make_shared<Chunks>(c, s, globalModelMatrix);
-
-    // Temporary, load some chunks
-    for(int i = -2; i <= 2; i++) {
-        for(int j = -2; j <= 2; j++) {
-            chunks->getChunk(glm::ivec2(i, j))->setVisibility(CHUNK_VISIBLE);
-        }
-    }
 }
 
 void 

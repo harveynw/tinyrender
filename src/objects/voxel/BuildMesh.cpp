@@ -1,4 +1,6 @@
 #include "BuildMesh.hpp"
+
+#include <cstring>
 #include "Chunk.hpp"
 
 namespace {
@@ -7,6 +9,20 @@ namespace {
         ivec3 to; // Always inside chunk
         char voxel; // Voxel value that face is on
     };
+
+    VoxelVertexAttribute buildAttribute(vec3 position, char material, char ao, char normal) {
+        std::array<char, 4> data;
+        data[0] = material;
+        data[1] = ao;
+        data[2] = normal;
+        data[3] = 0x00;
+
+        VoxelVertexAttribute attr;
+        attr.position = position;
+        memcpy(&attr.data, data.begin(), 4);
+
+        return attr;
+    }
 
     std::shared_ptr<VoxelMesh> facesToPolygons(std::vector<Face> &faces) {
         auto mesh = std::make_shared<VoxelMesh>();
@@ -38,10 +54,13 @@ namespace {
             }
 
             // Generate attributes
-            mesh->push_back({a, 0.0f});
-            mesh->push_back({b, 0.0f});
-            mesh->push_back({c, 0.0f});
-            mesh->push_back({d, 0.0f});
+            mesh->push_back(buildAttribute(a, f.voxel, 0x00, 0x00));
+            mesh->push_back(buildAttribute(b, f.voxel, 0x00, 0x00));
+            mesh->push_back(buildAttribute(c, f.voxel, 0x00, 0x00));
+
+            mesh->push_back(buildAttribute(a, f.voxel, 0x00, 0x00));
+            mesh->push_back(buildAttribute(d, f.voxel, 0x00, 0x00));
+            mesh->push_back(buildAttribute(c, f.voxel, 0x00, 0x00));
         }
 
         return mesh;

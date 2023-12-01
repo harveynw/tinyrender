@@ -40,8 +40,6 @@ Engine::launch(int width, int height) {
 
     // Create webgpu resources
     this->context = buildNewContext(window, width, height);
-
-    // TODO: Scene can absorb this complexity
     this->scene = std::make_shared<Scene>(this->context);
 
     pipelines[ColoredTriangle] = std::make_unique<TrianglePipeline>(this->context.get(), this->scene.get());

@@ -27,6 +27,16 @@ struct LightingUniforms {
 @group(1) @binding(0) var<uniform> globalModelMatrix: mat4x4f;
 @group(1) @binding(1) var<uniform> chunkModelMatrix: mat4x4f;
 
+fn unifToColor(u: f32) -> vec3f {
+    let t: f32 = u * 3.14 * 10.0f;
+
+    let r: f32 = (sin(t) + 1.0f)/2.0f;
+    let g: f32 = (cos(t) + 1.0f)/2.0f;
+    let b: f32 = (sin(t) + 1.0f)/2.0f;
+
+    return vec3f(r, g, b);
+}
+
 @vertex
 fn vs_main(in: VertexInput) -> VertexOutput {
     let world: vec4f = globalModelMatrix * chunkModelMatrix * vec4f(in.position, 1.0);
@@ -34,16 +44,17 @@ fn vs_main(in: VertexInput) -> VertexOutput {
     // Forward to fragment shader
     var out: VertexOutput;
     out.position = uMyUniforms.projectionMatrix * uMyUniforms.viewMatrix * world;
-    out.color = vec3f(0.0, 0.0, 1.0);
+    
+    // Decide color of voxel
+    let data: vec4<f32> = unpack4x8unorm(bitcast<u32>(in.data));
+    out.color = unifToColor(data.x); //vec3f(0.0f, 0.0f, data.x);
 
     return out;
 }
 
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4f {
-    // Color passed by attribute buffer
     let baseColor = in.color;
-
     return vec4f(baseColor, 1.0);
 }
 )""

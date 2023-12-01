@@ -10,7 +10,6 @@ if (EMSCRIPTEN)
         -g
         -O0
         -fsanitize=address
-
         -sUSE_GLFW=3 # Use Emscripten-provided GLFW
         -sUSE_WEBGPU # Handle WebGPU symbols
         -sASYNCIFY # Required by WebGPU-C++

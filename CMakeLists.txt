@@ -26,32 +26,9 @@ add_subdirectory(src)
 # Test scenes
 add_subdirectory(examples/TestScene)
 
-# if (EMSCRIPTEN)
-#     # Add Emscripten-specific link options
-#     target_link_options(App PRIVATE
-#         -sUSE_GLFW=3 # Use Emscripten-provided GLFW
-#         -sUSE_WEBGPU # Handle WebGPU symbols
-#         -sASYNCIFY # Required by WebGPU-C++
-#         -sALLOW_MEMORY_GROWTH
-#         -sINITIAL_MEMORY=3GB
-#         -sMAXIMUM_MEMORY=4GB
-#         --preload-file "../resources"
-#         )
-#     # For debugging:
-#     # -O0
-#     # -g
-#     #-sASSERTIONS=2
-#         #-fsanitize=address
-#     #-sSAFE_HEAP=1
-#     #-sSTACK_OVERFLOW_CHECK=1
-# 
-#     set_target_properties(App PROPERTIES SUFFIX ".html")
-# endif()
-
 #
 # TESTING
 #
-
 # Get Google Test
 #FetchContent_Declare(
 #        googletest

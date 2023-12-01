@@ -1,10 +1,15 @@
-# tinyrender
+<h1 align="center">tinyrender</h1>
+<p align="center">
+<a href="https://harveynw.github.io/tinyrender/">Docs / Usage / Examples</a>
 
 Minimalist C++ Cross-Platform Rendering Engine built using WebGPU.
+</p>
 
-[Docs / Usage / Examples](https://harveynw.github.io/tinyrender/) <<< Site (work in progress)
 
-This might be cool if you just want to draw 3D scenes but don't want to touch hardcore graphics APIs nor the bloat of fully functional game engines.
+<hr>
+
+
+(reword) This might be cool if you just want to draw 3D scenes but don't want to touch hardcore graphics APIs nor the bloat of fully functional game engines.
 
 ### Current State
 
