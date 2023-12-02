@@ -90,13 +90,14 @@ void Chunk::refreshNeighbours()
 void Chunk::buildMeshAsync()
 {
     this->state.store(CHUNK_INTERNAL_GENERATING_MESH);
-    //auto neighbourData = extractBoundaries(chunks, chunkCoordinate); // Extract on main thread 
+    auto neighbourData = extractBoundaries(chunks, chunkCoordinate); // Extract on main thread 
     //neighbourData.print();
 
-    auto t = std::thread([&]{ //,neighbourData]{
+    auto t = std::thread([&, neighbourData]{
         //this->mesh = buildMeshNaive(this->voxels); 
         //this->mesh = buildMeshCullBoundaries(this->voxels, neighbourData);
-        this->mesh = buildMeshGridSearch(this->voxels);
+        //this->mesh = buildMeshGridSearch(this->voxels);
+        this->mesh = buildMeshGridSearchBoundaries(this->voxels, neighbourData);
         this->state.store(CHUNK_INTERNAL_LOADED);
     }); 
     t.detach();

@@ -8,9 +8,43 @@ namespace {
         ivec3 from; // May be from outside chunk
         ivec3 to; // Always inside chunk
         char voxel; // Voxel value that face is on
+
+        // Voxels around face for AO calculation
+        array<bool, 4> occlusion = { false, false, false, false }; 
     };
 
+    void populateOcclusionData(array<char, N_VOXELS> &voxels, vector<Face> &faces) {
+        // Populates Face.voxel for each entry in faces
+        for(auto &f: faces) {
+            if(!inBounds(f.from))
+                continue; // No occlusion possible
+
+            ivec3 direction = f.to - f.from;
+            ivec3 plane = ivec3(1, 1, 1) - glm::abs(direction);
+
+            if(plane.x && plane.y) {
+                f.occlusion[0] = voxels[idx(f.from + ivec3(0, -1, 0))];
+                f.occlusion[1] = voxels[idx(f.from + ivec3(-1, 0, 0))];
+                f.occlusion[2] = voxels[idx(f.from + ivec3(0, 1, 0))];
+                f.occlusion[3] = voxels[idx(f.from + ivec3(1, 0, 0))];
+            }
+            if(plane.y && plane.z) {
+                f.occlusion[0] = voxels[idx(f.from + ivec3(0, 0, -1))];
+                f.occlusion[1] = voxels[idx(f.from + ivec3(0, -1, 0))];
+                f.occlusion[2] = voxels[idx(f.from + ivec3(0, 0, 1))];
+                f.occlusion[3] = voxels[idx(f.from + ivec3(0, 1, 0))];
+            }
+            if(plane.x && plane.z) {
+                f.occlusion[0] = voxels[idx(f.from + ivec3(0, 0, -1))];
+                f.occlusion[1] = voxels[idx(f.from + ivec3(-1, 0, 0))];
+                f.occlusion[2] = voxels[idx(f.from + ivec3(0, 0, 1))];
+                f.occlusion[3] = voxels[idx(f.from + ivec3(1, 0, 0))];
+            }
+        }
+    }
+
     VoxelVertexAttribute buildAttribute(vec3 position, char material, char ao, char normal) {
+        // Packs information into a VoxelVertexAttribute data structure
         std::array<char, 4> data;
         data[0] = material;
         data[1] = ao;
@@ -25,6 +59,7 @@ namespace {
     }
 
     std::shared_ptr<VoxelMesh> facesToPolygons(std::vector<Face> &faces) {
+        // Builds a mesh, a collection of VoxelVertexAttribute's, from multiple faces
         auto mesh = std::make_shared<VoxelMesh>();
         mesh->reserve(4 * faces.size());
 
@@ -42,25 +77,25 @@ namespace {
             }
             if(plane.y && plane.z) {
                 a = midpoint + vec3(0.0, -0.5, -0.5);
-                b = midpoint + vec3(0.0, 0.5, -0.5);
+                b = midpoint + vec3(0.0, -0.5, 0.5);
                 c = midpoint + vec3(0.0, 0.5, 0.5);
-                d = midpoint + vec3(0.0, -0.5, 0.5);
+                d = midpoint + vec3(0.0, 0.5, -0.5);
             }
             if(plane.x && plane.z) {
                 a = midpoint + vec3(-0.5, 0.0, -0.5);
-                b = midpoint + vec3(0.5, 0.0, -0.5);
+                b = midpoint + vec3(-0.5, 0.0, 0.5);
                 c = midpoint + vec3(0.5, 0.0, 0.5);
-                d = midpoint + vec3(-0.5, 0.0, 0.5);
+                d = midpoint + vec3(0.5, 0.0, -0.5);
             }
 
-            // Generate attributes
-            mesh->push_back(buildAttribute(a, f.voxel, 0x00, 0x00));
-            mesh->push_back(buildAttribute(b, f.voxel, 0x00, 0x00));
-            mesh->push_back(buildAttribute(c, f.voxel, 0x00, 0x00));
+            // Generate attributes (2 polygons)
+            mesh->push_back(buildAttribute(a, f.voxel, f.occlusion[0] + f.occlusion[1], 0x00));
+            mesh->push_back(buildAttribute(b, f.voxel, f.occlusion[1] + f.occlusion[2], 0x00));
+            mesh->push_back(buildAttribute(c, f.voxel, f.occlusion[2] + f.occlusion[3], 0x00));
 
-            mesh->push_back(buildAttribute(a, f.voxel, 0x00, 0x00));
-            mesh->push_back(buildAttribute(d, f.voxel, 0x00, 0x00));
-            mesh->push_back(buildAttribute(c, f.voxel, 0x00, 0x00));
+            mesh->push_back(buildAttribute(a, f.voxel, f.occlusion[0] + f.occlusion[1], 0x00));
+            mesh->push_back(buildAttribute(d, f.voxel, f.occlusion[0] + f.occlusion[3], 0x00));
+            mesh->push_back(buildAttribute(c, f.voxel, f.occlusion[2] + f.occlusion[3], 0x00));
         }
 
         return mesh;
@@ -88,7 +123,8 @@ namespace {
                     continue;
 
                 if(!inBounds(c_dash) || voxels[idx(c_dash)] == 0x00) {
-                    s.push(c_dash); // Air to search from
+                    // Air to search from
+                    s.push(c_dash); 
                 } else {
                     // Face found
                     f.push_back({c, c_dash, voxels[idx(c_dash)]}); 
@@ -97,6 +133,36 @@ namespace {
         }
 
         return f;
+    }
+
+    vector<Face>
+    gridSearchVisibility(array<char, N_VOXELS> &chunk) {
+        vector<Face> faces;
+        for(int x = -1; x <= SIZE_XY; x++) {
+            for(int y = -1; y <= SIZE_XY; y++) {
+                for(int z = -1; z <= SIZE_Z; z++) {
+                    auto p = ivec3(x, y, z);
+                    if(inBounds(p) && !isTransparent(p, chunk))
+                        continue;
+                    
+                    std::vector<glm::ivec3> directions = 
+                    {
+                        p + ivec3(1, 0, 0),
+                        p + ivec3(-1, 0, 0),
+                        p + ivec3(0, 1, 0),
+                        p + ivec3(0, -1, 0),
+                        p + ivec3(0, 0, 1),
+                        p + ivec3(0, 0, -1)
+                    };
+
+                    for(auto &d : directions) {
+                        if(inBounds(d) && !isTransparent(d, chunk))
+                            faces.push_back({p, d, chunk[idx(d)]});
+                    }
+                }
+            }
+        }
+        return faces;
     }
 
     bool boundaryOcclusion(Face face, NeighbourData &neighbourData) {
@@ -109,6 +175,17 @@ namespace {
         if(face.from.y == SIZE_XY)
             return neighbourData.north[SIZE_XY * face.to.z + face.to.x];
         return false;
+    }
+
+    vector<Face> 
+    pruneFaces(vector<Face> &faces, NeighbourData &neighbourData) {
+        vector<Face> pruned;
+        for(auto &face : faces) {
+            if(onBoundary(face.to) && boundaryOcclusion(face, neighbourData))
+                continue;
+            pruned.push_back(face);
+        }
+        return pruned;
     }
 }
 
@@ -148,53 +225,42 @@ std::shared_ptr<VoxelMesh> buildMeshCullBoundaries(array<char, N_VOXELS> chunk, 
     // Generate list of vertices by DFS
     auto start = ivec3(-1, -1, 0);
     auto faces = DFS_visibility(start, chunk);
+    auto pruned = pruneFaces(faces, neighbourData);
 
-    // Generate attribute date
-    vector<Face> pruned;
-    for(auto &face : faces) {
-        if(onBoundary(face.to) && boundaryOcclusion(face, neighbourData))
-            continue;
-        pruned.push_back(face);
-    }
+    // Ambient Occlusion
+    populateOcclusionData(chunk, pruned);
 
     return facesToPolygons(pruned);
 }
 
-std::shared_ptr<VoxelMesh> buildMeshNaive(array<char, N_VOXELS> chunk)
+std::shared_ptr<VoxelMesh> buildMesh(array<char, N_VOXELS> chunk)
 {
     // Generate list of vertices by DFS
     auto start = ivec3(-1, -1, 0);
     auto faces = DFS_visibility(start, chunk);
+
+    // Ambient Occlusion
+    populateOcclusionData(chunk, faces);
 
     return facesToPolygons(faces);
 }
 
 std::shared_ptr<VoxelMesh> buildMeshGridSearch(array<char, N_VOXELS> chunk)
 {
-    vector<Face> faces;
-    for(int x = -1; x <= SIZE_XY; x++) {
-        for(int y = -1; y <= SIZE_XY; y++) {
-            for(int z = -1; z <= SIZE_Z; z++) {
-                auto p = ivec3(x, y, z);
-                if(inBounds(p) && !isTransparent(p, chunk))
-                    continue;
-                
-                std::vector<glm::ivec3> directions = 
-                {
-                    p + ivec3(1, 0, 0),
-                    p + ivec3(-1, 0, 0),
-                    p + ivec3(0, 1, 0),
-                    p + ivec3(0, -1, 0),
-                    p + ivec3(0, 0, 1),
-                    p + ivec3(0, 0, -1)
-                };
+    auto faces = gridSearchVisibility(chunk);
+    
+    // Ambient Occlusion
+    populateOcclusionData(chunk, faces);
 
-                for(auto &d : directions) {
-                    if(inBounds(d) && !isTransparent(d, chunk))
-                        faces.push_back({p, d, chunk[idx(d)]});
-                }
-            }
-        }
-    }
     return facesToPolygons(faces);
+}
+
+std::shared_ptr<VoxelMesh> buildMeshGridSearchBoundaries(array<char, N_VOXELS> chunk, NeighbourData neighbourData) {
+    auto faces = gridSearchVisibility(chunk);
+    auto pruned = pruneFaces(faces, neighbourData);
+    
+    // Ambient Occlusion
+    populateOcclusionData(chunk, pruned);
+
+    return facesToPolygons(pruned);
 }

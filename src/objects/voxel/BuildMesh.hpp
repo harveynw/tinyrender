@@ -53,5 +53,6 @@ NeighbourData extractBoundaries(Chunks &chunks, ivec2 chunkCoordinate);
 * Thread safe mesh building functions
 */
 std::shared_ptr<VoxelMesh> buildMeshCullBoundaries(array<char, N_VOXELS> chunk, NeighbourData neighbourData);
-std::shared_ptr<VoxelMesh> buildMeshNaive(array<char, N_VOXELS> chunk);
+std::shared_ptr<VoxelMesh> buildMesh(array<char, N_VOXELS> chunk);
 std::shared_ptr<VoxelMesh> buildMeshGridSearch(array<char, N_VOXELS> chunk);
+std::shared_ptr<VoxelMesh> buildMeshGridSearchBoundaries(array<char, N_VOXELS> chunk, NeighbourData neighbourData);

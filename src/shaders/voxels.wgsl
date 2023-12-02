@@ -7,6 +7,7 @@ struct VertexInput {
 struct VertexOutput {
     @builtin(position) position: vec4f,
     @location(0) color: vec3f,
+    @location(1) ambientOcclusion: f32,
 };
 
 struct MyUniforms {
@@ -45,16 +46,21 @@ fn vs_main(in: VertexInput) -> VertexOutput {
     var out: VertexOutput;
     out.position = uMyUniforms.projectionMatrix * uMyUniforms.viewMatrix * world;
     
-    // Decide color of voxel
     let data: vec4<f32> = unpack4x8unorm(bitcast<u32>(in.data));
+
+    // Decide color of voxel
     out.color = unifToColor(data.x); //vec3f(0.0f, 0.0f, data.x);
+
+    // Ambient occlusion value [0, 1]
+    out.ambientOcclusion = data.y * 256.0f/2.0f;
 
     return out;
 }
 
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4f {
-    let baseColor = in.color;
+    let baseColor = in.color - in.ambientOcclusion;
+    //let baseColor = vec3f(in.ambientOcclusion);
     return vec4f(baseColor, 1.0);
 }
 )""
