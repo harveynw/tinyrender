@@ -17,6 +17,11 @@ file(GLOB SOURCE_LIST
 )
 list(FILTER SOURCE_LIST EXCLUDE REGEX "_test.cpp$")
 
+# if(EMSCRIPTEN)
+#         string(APPEND CMAKE_C_FLAGS " -pthread")
+#         string(APPEND CMAKE_CXX_FLAGS " -pthread")
+# endif()
+
 # Declare tinyrender library to link to
 add_library(tinyrender STATIC ${SOURCE_LIST})
 target_include_directories(tinyrender PRIVATE

@@ -16,22 +16,12 @@ using std::array;
 
 // Chunk engine config
 const uint64_t TICKS_PER_UPDATE = 10; // How many ticks to check whether to load chunks
-const int VISIBILITY_DISTANCE = 10; // How many chunks around the camera to keep loaded
+const int VISIBILITY_DISTANCE = 1; // How many chunks around the camera to keep loaded
 
 // Chunk dimensions
 #define SIZE_XY 16
 #define SIZE_Z 100
 #define N_VOXELS (SIZE_XY * SIZE_XY * SIZE_Z)
-
-// For adjacent chunks 
-typedef int DIRECTION;
-const DIRECTION WEST = 0;
-const DIRECTION EAST = 1;
-const DIRECTION NORTH = 2;
-const DIRECTION SOUTH = 3;
-const vector<DIRECTION> directions = {NORTH, SOUTH, EAST, WEST};
-DIRECTION opposite(DIRECTION d);
-ivec2 chunkDirection(DIRECTION d);
 
 // Array utilty methods
 int idx(ivec3 c);
