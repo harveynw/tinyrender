@@ -61,7 +61,7 @@ namespace {
     std::shared_ptr<VoxelMesh> facesToPolygons(std::vector<Face> &faces) {
         // Builds a mesh, a collection of VoxelVertexAttribute's, from multiple faces
         auto mesh = std::make_shared<VoxelMesh>();
-        mesh->reserve(4 * faces.size());
+        mesh->reserve(6 * faces.size());
 
         for(auto &f : faces) {
             auto midpoint = (vec3(f.to) + vec3(f.from)) * 0.5f;

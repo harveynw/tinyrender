@@ -16,7 +16,12 @@ if (EMSCRIPTEN)
         #-pthread
         #-USE_PTHREADS
         #-sPROXY_TO_PTHREAD
+
+        -sASSERTIONS=2
         -fsanitize=address
+        -sSTACK_OVERFLOW_CHECK=2
+        -sSTACK_SIZE=104857600
+
         -sUSE_GLFW=3 # Use Emscripten-provided GLFW
         -sUSE_WEBGPU # Handle WebGPU symbols
         #-sWASM_WORKERS
