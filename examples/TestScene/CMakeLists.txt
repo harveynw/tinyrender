@@ -12,17 +12,17 @@ if (EMSCRIPTEN)
 
     # TODO: Was building then suddenly not running at all, maybe http server or combination of flags below not code.
     target_link_options(TestScene PRIVATE
-        -g
-        -O0
-        #-O3
+        #-g
+        #-O0
+        -O3
         -pthread
         -USE_PTHREADS
 
         #-sPROXY_TO_PTHREAD -- BAD! we need to be on the browser thread so we can do GLFW/WebGPU stuff
 
-        -sASSERTIONS=2
-        -fsanitize=address
-        -sSTACK_OVERFLOW_CHECK=2
+        #-sASSERTIONS=2
+        #-fsanitize=address
+        #-sSTACK_OVERFLOW_CHECK=2
 
         -sPTHREAD_POOL_SIZE=32
 
