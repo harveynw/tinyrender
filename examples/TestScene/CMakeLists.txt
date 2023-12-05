@@ -7,21 +7,26 @@ target_copy_webgpu_binaries(TestScene)  # Must include!
 
 if (EMSCRIPTEN)
     # Add Emscripten-specific link options
-    # string(APPEND CMAKE_C_FLAGS " -pthread")
-    # string(APPEND CMAKE_CXX_FLAGS " -pthread")
+    string(APPEND CMAKE_C_FLAGS " -pthread")
+    string(APPEND CMAKE_CXX_FLAGS " -pthread")
 
+    # TODO: Was building then suddenly not running at all, maybe http server or combination of flags below not code.
     target_link_options(TestScene PRIVATE
         -g
         -O0
-        #-pthread
-        #-USE_PTHREADS
-        #-sPROXY_TO_PTHREAD
+        #-O3
+        -pthread
+        -USE_PTHREADS
+
+        #-sPROXY_TO_PTHREAD -- BAD! we need to be on the browser thread so we can do GLFW/WebGPU stuff
 
         -sASSERTIONS=2
         -fsanitize=address
         -sSTACK_OVERFLOW_CHECK=2
-        -sSTACK_SIZE=104857600
 
+        -sPTHREAD_POOL_SIZE=32
+
+        -sSTACK_SIZE=100MB
         -sUSE_GLFW=3 # Use Emscripten-provided GLFW
         -sUSE_WEBGPU # Handle WebGPU symbols
         #-sWASM_WORKERS

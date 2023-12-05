@@ -1,10 +1,12 @@
 #pragma once
 
 #include <array>
-
+/*
 #ifndef __EMSCRIPTEN__
 #include <thread>
 #endif
+*/
+#include <thread>
 
 #include "VoxelData.hpp"
 #include "ChunkGeometry.hpp"

@@ -1,8 +1,5 @@
 #include "Chunk.hpp"
 
-#ifdef __EMSCRIPTEN__
-#include <emscripten/wasm_worker.h>
-#endif
 
 GPU_CHUNK::GPU_CHUNK(Context *c, Scene *s, std::shared_ptr<VoxelMesh> cpu, ivec2 cornerCoordinate, std::shared_ptr<tinyrender::ModelMatrixUniform> globalModelMatrix) {
     if(cpu->size() == 0)
@@ -102,8 +99,20 @@ void Chunk::refreshNeighbours()
 #ifdef __EMSCRIPTEN__
 // Emscripten provides a C-API for web workers, which requires a C-style function ptr
 #include <map>
+#include <emscripten/wasm_worker.h>
 
 namespace {
+    struct EM_Lock {
+        emscripten_lock_t *lock;
+        EM_Lock(emscripten_lock_t &lock) {
+            this->lock = &lock;
+            emscripten_lock_waitinf_acquire(this->lock);
+        }
+        ~EM_Lock() {
+            emscripten_lock_release(this->lock);
+        }
+    };
+
     struct BuildMeshJob {
         // Input
         std::array<char, N_VOXELS> voxels;
@@ -119,18 +128,18 @@ namespace {
             state->store(CHUNK_INTERNAL_LOADED);
         }
     };
-    std::mutex job_mutex;
+    emscripten_lock_t jobs_lock = EMSCRIPTEN_LOCK_T_STATIC_INITIALIZER;
     std::map<int, BuildMeshJob> jobs;
 
     void executeBuildMeshJob(int i) {
         BuildMeshJob job;
         {
-            const std::lock_guard<std::mutex> lock(job_mutex);
+            auto lock = EM_Lock(jobs_lock);
             job = jobs.at(i);
         }
         job.execute();
         {
-            const std::lock_guard<std::mutex> lock(job_mutex);
+            auto lock = EM_Lock(jobs_lock);
             jobs.erase(i);
         }
     }
@@ -139,7 +148,7 @@ namespace {
         // Pass job into thread safe/"worker" safe data structure
         int idx;
         {
-            const std::lock_guard<std::mutex> lock(job_mutex);
+            auto lock = EM_Lock(jobs_lock);
             for(int i = 0; true; i++) {
                 if(jobs.count(i) == 0) {
                     idx = i; 
@@ -163,10 +172,12 @@ void Chunk::buildMeshAsync()
     this->state.store(CHUNK_INTERNAL_GENERATING_MESH);
     auto neighbourData = extractBoundaries(chunks, chunkCoordinate); // Extract on main thread 
 
+    /*
     auto func = [&, neighbourData]{
         this->mesh = buildMeshGridSearchBoundaries(this->voxels, neighbourData);
         this->state.store(CHUNK_INTERNAL_LOADED);
     };
+    */
 
     //this->mesh = buildMeshNaive(this->voxels); 
     //this->mesh = buildMeshCullBoundaries(this->voxels, neighbourData);
@@ -176,22 +187,20 @@ void Chunk::buildMeshAsync()
     // Build the mesh in a new thread/webworker
     /*
     #ifdef __EMSCRIPTEN__
-    BuildMeshJob job = {this->voxels, neighbourData, &this->mesh, &this->state};
-    buildMeshAsyncEmscripten(job);
+        BuildMeshJob job = {this->voxels, neighbourData, &this->mesh, &this->state};
+        buildMeshAsyncEmscripten(job);
     #else
-    #ifdef __EMSCRIPTEN__
-        #ifndef __EMSCRIPTEN_PTHREADS__
-            #error Need pthreads
-        #endif
+    */
+        auto func = [&, neighbourData]{
+            this->mesh = buildMeshGridSearchBoundaries(this->voxels, neighbourData);
+            this->state.store(CHUNK_INTERNAL_LOADED);
+        };
+        //func();
+        auto thread = std::thread(func);
+        thread.detach();
+        /*
     #endif
     */
-    #ifdef __EMSCRIPTEN__
-    func();
-    #else
-    func();
-    //auto thread = std::thread(func);
-    //thread.detach();
-    #endif
 }
 
 void Chunk::setVisibility(const char state) {
