@@ -16,7 +16,7 @@ using std::array;
 
 // Chunk engine config
 const uint64_t TICKS_PER_UPDATE = 10; // How many ticks to check whether to load chunks
-const int VISIBILITY_DISTANCE = 1; // How many chunks around the camera to keep loaded
+const int VISIBILITY_DISTANCE = 5; // How many chunks around the camera to keep loaded
 
 // Chunk dimensions
 #define SIZE_XY 16

@@ -52,7 +52,7 @@ fn vs_main(in: VertexInput) -> VertexOutput {
     out.color = unifToColor(data.x); //vec3f(0.0f, 0.0f, data.x);
 
     // Ambient occlusion value [0, 1]
-    out.ambientOcclusion = data.y * 256.0f/2.0f;
+    out.ambientOcclusion = 1.0f - data.y * 256.0f/3.0f;
 
     return out;
 }

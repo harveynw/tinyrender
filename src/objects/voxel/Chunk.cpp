@@ -48,7 +48,6 @@ void Chunk::onUpdate(ivec2 cameraChunk) {
     switch(this->state.load()) {
         case CHUNK_INTERNAL_UNLOADED: {
             if(should_build_mesh) {
-                printf("%p: UNLOADED -> should_build_mesh\n", (void*) this);
                 should_build_mesh = false;
                 this->buildMeshAsync();
             }
@@ -56,7 +55,6 @@ void Chunk::onUpdate(ivec2 cameraChunk) {
         }
         case CHUNK_INTERNAL_LOADED: {
             if(should_unload) {
-                printf("%p: LOADED -> should_unload\n", (void*) this);
                 this->mesh = nullptr;
                 this->gpu.reset();
                 this->state.store(CHUNK_INTERNAL_UNLOADED);
@@ -65,14 +63,12 @@ void Chunk::onUpdate(ivec2 cameraChunk) {
                 break;
             }
             if(should_build_mesh) {
-                printf("%p: LOADED -> should_build_mesh\n", (void*) this);
                 should_build_mesh = false;
                 this->gpu.reset();
                 this->buildMeshAsync();
             }
             if(this->mesh != nullptr && this->gpu == nullptr) {
                 // Mesh waiting to be uploaded to GPU 
-                printf("%p: LOADED -> mesh found, setting this->gpu \n", (void*) this);
                 this->gpu = std::make_unique<GPU_CHUNK>(c, s, mesh, cornerCoordinate, globalModelMatrix);
             }
             break;
@@ -97,7 +93,7 @@ void Chunk::refreshNeighbours()
 
 void Chunk::buildMeshAsync()
 {
-    printf("%p: buildMeshAsync()\n", (void*) this);
+    printf("DEBUG: Chunk at %p has called buildMeshAsync()\n", (void*) this);
     this->state.store(CHUNK_INTERNAL_GENERATING_MESH);
     auto neighbourData = extractBoundaries(chunks, chunkCoordinate); // Extract on main thread 
 

@@ -9,19 +9,40 @@ namespace {
         ivec3 to; // Always inside chunk
         char voxel; // Voxel value that face is on
 
-        // Voxels around face for AO calculation
-        array<bool, 4> occlusion = { false, false, false, false }; 
+        // Ambient Occlusion Values
+        array<char, 4> ao = { 0x00, 0x00, 0x00, 0x00 }; 
     };
 
-    void populateOcclusionData(array<char, N_VOXELS> &voxels, vector<Face> &faces) {
-        // Populates Face.voxel for each entry in faces
+    void populateAOData(array<char, N_VOXELS> &voxels, vector<Face> &faces) {
+        // Ambient Occlusion Algorithm. Populates Face.occlusion for each entry in faces
+        // Source: https://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/
+
+        auto calculateAO = [](char &ao, bool side1, bool side2, bool corner) {
+            if(side1 && side2)
+                ao = 0x00;
+            else
+                ao = 3 - (side1 + side2 + corner);
+        };
+
         for(auto &f: faces) {
             if(!inBounds(f.from))
                 continue; // No occlusion possible
-
+            
+            // Compute subspace parallel to face
             ivec3 direction = f.to - f.from;
             ivec3 plane = ivec3(1, 1, 1) - glm::abs(direction);
 
+            // Subspace decomposed into vectors
+            auto ax1 = ivec3(0, plane.x && plane.y, plane.z);
+            auto ax2 = ivec3(plane.x, plane.y && plane.z, 0);
+
+            // We rely on implicit char -> bool for the voxel value
+            calculateAO(f.ao[0], voxels[idx(f.from - ax1)], voxels[idx(f.from - ax2)], voxels[idx(f.from - ax1 - ax2)]);
+            calculateAO(f.ao[1], voxels[idx(f.from - ax2)], voxels[idx(f.from + ax1)], voxels[idx(f.from - ax2 + ax1)]);
+            calculateAO(f.ao[2], voxels[idx(f.from + ax1)], voxels[idx(f.from + ax2)], voxels[idx(f.from + ax1 + ax2)]);
+            calculateAO(f.ao[3], voxels[idx(f.from + ax2)], voxels[idx(f.from - ax1)], voxels[idx(f.from + ax2 - ax1)]);
+
+            /*
             if(plane.x && plane.y) {
                 f.occlusion[0] = voxels[idx(f.from + ivec3(0, -1, 0))];
                 f.occlusion[1] = voxels[idx(f.from + ivec3(-1, 0, 0))];
@@ -40,6 +61,7 @@ namespace {
                 f.occlusion[2] = voxels[idx(f.from + ivec3(0, 0, 1))];
                 f.occlusion[3] = voxels[idx(f.from + ivec3(1, 0, 0))];
             }
+            */
         }
     }
 
@@ -68,6 +90,10 @@ namespace {
             auto plane = ivec3(1, 1, 1) - glm::abs(f.to - f.from);
 
             // Find corners
+            // B ---- C
+            //  |    |
+            //  |    |
+            // A ---- D
             vec3 a, b, c, d;
             if(plane.x && plane.y) {
                 a = midpoint + vec3(-0.5, -0.5, 0.0);
@@ -89,13 +115,13 @@ namespace {
             }
 
             // Generate attributes (2 polygons)
-            mesh->push_back(buildAttribute(a, f.voxel, f.occlusion[0] + f.occlusion[1], 0x00));
-            mesh->push_back(buildAttribute(b, f.voxel, f.occlusion[1] + f.occlusion[2], 0x00));
-            mesh->push_back(buildAttribute(c, f.voxel, f.occlusion[2] + f.occlusion[3], 0x00));
+            mesh->push_back(buildAttribute(a, f.voxel, f.ao[0], 0x00));
+            mesh->push_back(buildAttribute(b, f.voxel, f.ao[1], 0x00));
+            mesh->push_back(buildAttribute(c, f.voxel, f.ao[2], 0x00));
 
-            mesh->push_back(buildAttribute(a, f.voxel, f.occlusion[0] + f.occlusion[1], 0x00));
-            mesh->push_back(buildAttribute(d, f.voxel, f.occlusion[0] + f.occlusion[3], 0x00));
-            mesh->push_back(buildAttribute(c, f.voxel, f.occlusion[2] + f.occlusion[3], 0x00));
+            mesh->push_back(buildAttribute(a, f.voxel, f.ao[0], 0x00));
+            mesh->push_back(buildAttribute(d, f.voxel, f.ao[3], 0x00));
+            mesh->push_back(buildAttribute(c, f.voxel, f.ao[2], 0x00));
         }
 
         return mesh;
@@ -228,7 +254,7 @@ std::shared_ptr<VoxelMesh> buildMeshCullBoundaries(array<char, N_VOXELS> chunk, 
     auto pruned = pruneFaces(faces, neighbourData);
 
     // Ambient Occlusion
-    populateOcclusionData(chunk, pruned);
+    populateAOData(chunk, pruned);
 
     return facesToPolygons(pruned);
 }
@@ -240,7 +266,7 @@ std::shared_ptr<VoxelMesh> buildMesh(array<char, N_VOXELS> chunk)
     auto faces = DFS_visibility(start, chunk);
 
     // Ambient Occlusion
-    populateOcclusionData(chunk, faces);
+    populateAOData(chunk, faces);
 
     return facesToPolygons(faces);
 }
@@ -250,7 +276,7 @@ std::shared_ptr<VoxelMesh> buildMeshGridSearch(array<char, N_VOXELS> chunk)
     auto faces = gridSearchVisibility(chunk);
     
     // Ambient Occlusion
-    populateOcclusionData(chunk, faces);
+    populateAOData(chunk, faces);
 
     return facesToPolygons(faces);
 }
@@ -260,7 +286,7 @@ std::shared_ptr<VoxelMesh> buildMeshGridSearchBoundaries(array<char, N_VOXELS> c
     auto pruned = pruneFaces(faces, neighbourData);
     
     // Ambient Occlusion
-    populateOcclusionData(chunk, pruned);
+    populateAOData(chunk, pruned);
 
     return facesToPolygons(pruned);
 }
