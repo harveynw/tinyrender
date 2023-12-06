@@ -17,30 +17,16 @@ struct VoxelVertexAttribute {
 typedef vector<VoxelVertexAttribute> VoxelMesh;
 
 struct NeighbourData {
-    // 2D slices of neighbouring voxels that determine whether there is occlusion or not
-    array<bool, SIZE_XY * SIZE_Z> north;
-    array<bool, SIZE_XY * SIZE_Z> south;
-    array<bool, SIZE_XY * SIZE_Z> east;
-    array<bool, SIZE_XY * SIZE_Z> west;
+    // Capture at specific time of voxels neighbouring a chunk
+    array<char, SIZE_XY * SIZE_Z> north;
+    array<char, SIZE_XY * SIZE_Z> south;
+    array<char, SIZE_XY * SIZE_Z> east;
+    array<char, SIZE_XY * SIZE_Z> west;
 
-    void print() {
-        int n = 0;
-        int s = 0;
-        int e = 0;
-        int w = 0;
-        float den = SIZE_XY * SIZE_Z;
-        for(int i = 0; i < SIZE_XY * SIZE_Z; i++) {
-            if(north[i])
-                n++;
-            if(south[i])
-                s++;
-            if(east[i])
-                e++;
-            if(west[i])
-                w++;
-        }
-        printf("Neighbour data: %f, %f, %f, %f\n", (float) n/den, (float) s/den, (float) e/den, (float) w/den);
-    };
+    array<char, SIZE_Z> cornerSW;
+    array<char, SIZE_Z> cornerNW;
+    array<char, SIZE_Z> cornerNE;
+    array<char, SIZE_Z> cornerSE;
 };
 
 /*
@@ -48,11 +34,8 @@ struct NeighbourData {
 */
 NeighbourData extractBoundaries(Chunks &chunks, ivec2 chunkCoordinate);
 
-
 /*
 * Thread safe mesh building functions
 */
-std::shared_ptr<VoxelMesh> buildMeshCullBoundaries(array<char, N_VOXELS> chunk, NeighbourData neighbourData);
-std::shared_ptr<VoxelMesh> buildMesh(array<char, N_VOXELS> chunk);
-std::shared_ptr<VoxelMesh> buildMeshGridSearch(array<char, N_VOXELS> chunk);
-std::shared_ptr<VoxelMesh> buildMeshGridSearchBoundaries(array<char, N_VOXELS> chunk, NeighbourData neighbourData);
+std::shared_ptr<VoxelMesh> buildMeshDFS(array<char, N_VOXELS> chunk, NeighbourData neighbourData);
+std::shared_ptr<VoxelMesh> buildMeshGridSearch(array<char, N_VOXELS> chunk, NeighbourData neighbourData);

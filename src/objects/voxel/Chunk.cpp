@@ -97,15 +97,11 @@ void Chunk::buildMeshAsync()
     printf("DEBUG: Chunk at %p has called buildMeshAsync()\n", (void*) this);
     this->state.store(CHUNK_INTERNAL_GENERATING_MESH);
     auto neighbourData = extractBoundaries(chunks, chunkCoordinate); // Extract on main thread 
-
-    //this->mesh = buildMeshNaive(this->voxels); 
-    //this->mesh = buildMeshCullBoundaries(this->voxels, neighbourData);
-    //this->mesh = buildMeshGridSearch(this->voxels);
     //neighbourData.print();
 
     // Build the mesh in a new thread/webworker
     auto func = [&, neighbourData]{
-        this->mesh = buildMeshGridSearchBoundaries(this->voxels, neighbourData);
+        this->mesh = buildMeshGridSearch(this->voxels, neighbourData);
         this->state.store(CHUNK_INTERNAL_LOADED);
     };
     auto thread = std::thread(func);

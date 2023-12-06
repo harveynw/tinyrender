@@ -24,7 +24,7 @@ if (EMSCRIPTEN)
         #-fsanitize=address
         #-sSTACK_OVERFLOW_CHECK=2
 
-        -sPTHREAD_POOL_SIZE=32
+        -sPTHREAD_POOL_SIZE=64
 
         -sSTACK_SIZE=100MB
         -sUSE_GLFW=3 # Use Emscripten-provided GLFW

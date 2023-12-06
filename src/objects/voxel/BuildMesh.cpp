@@ -13,7 +13,53 @@ namespace {
         array<char, 4> ao = { 0x00, 0x00, 0x00, 0x00 }; 
     };
 
-    void populateAOData(array<char, N_VOXELS> &voxels, vector<Face> &faces) {
+    char voxelLookup(ivec3 coord, array<char, N_VOXELS> &voxels, NeighbourData &neighbourData) {
+        // Gives you the voxel value at coord, including for 1 voxel width layer around the chunk
+
+        // Easiest case, inside chunk
+        if(inBounds(coord))
+            return voxels[idx(coord)];
+        
+        // Above and below chunks treated as air
+        if(coord.z < 0 || coord.z > SIZE_Z-1)
+            return 0x00;
+
+        // Check corners
+        if(coord.x < 0 && coord.y < 0)
+            return neighbourData.cornerSW[coord.z];
+        if(coord.x < 0 && coord.y == SIZE_XY)
+            return neighbourData.cornerNW[coord.z];
+        if(coord.x == SIZE_XY && coord.y == SIZE_XY)
+            return neighbourData.cornerNE[coord.z];
+        if(coord.x == SIZE_XY && coord.y < 0)
+            return neighbourData.cornerSE[coord.z];
+        
+        // Check side walls
+        if(coord.x < 0)
+            return neighbourData.west[SIZE_XY * coord.z + coord.y];
+        if(coord.x == SIZE_XY)
+            return neighbourData.east[SIZE_XY * coord.z + coord.y];
+        if(coord.y < 0)
+            return neighbourData.south[SIZE_XY * coord.z + coord.x];
+        if(coord.y == SIZE_XY)
+            return neighbourData.north[SIZE_XY * coord.z + coord.x];
+        
+        throw std::runtime_error("Coordinate invalid");
+    }
+
+    bool boundaryOcclusion(Face face, NeighbourData &neighbourData) {
+        if(face.from.x < 0)
+            return neighbourData.west[SIZE_XY * face.to.z + face.to.y];
+        if(face.from.x == SIZE_XY)
+            return neighbourData.east[SIZE_XY * face.to.z + face.to.y];
+        if(face.from.y < 0)
+            return neighbourData.south[SIZE_XY * face.to.z + face.to.x];
+        if(face.from.y == SIZE_XY)
+            return neighbourData.north[SIZE_XY * face.to.z + face.to.x];
+        return false;
+    }
+
+    void populateAOData(array<char, N_VOXELS> &voxels, vector<Face> &faces, NeighbourData &neighbourData) {
         // Ambient Occlusion Algorithm. Populates Face.ao for each element in faces
         // Source: https://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/
         auto calculateAO = [](char &ao, bool side1, bool side2, bool corner) {
@@ -23,10 +69,10 @@ namespace {
                 ao = 3 - (side1 + side2 + corner);
         };
 
+        // Convenience capture 
+        auto voxel = [&voxels, &neighbourData](ivec3 coord) { return voxelLookup(coord, voxels, neighbourData); };
+
         for(auto &f: faces) {
-            if(!inBounds(f.from))
-                continue; // No occlusion possible
-            
             // Compute subspace parallel to face
             ivec3 direction = f.to - f.from;
             ivec3 plane = ivec3(1, 1, 1) - glm::abs(direction);
@@ -36,10 +82,10 @@ namespace {
             auto ax2 = ivec3(plane.x, plane.y && plane.z, 0);
 
             // We rely on implicit char -> bool for the voxel value
-            calculateAO(f.ao[0], voxels[idx(f.from - ax1)], voxels[idx(f.from - ax2)], voxels[idx(f.from - ax1 - ax2)]);
-            calculateAO(f.ao[1], voxels[idx(f.from - ax2)], voxels[idx(f.from + ax1)], voxels[idx(f.from - ax2 + ax1)]);
-            calculateAO(f.ao[2], voxels[idx(f.from + ax1)], voxels[idx(f.from + ax2)], voxels[idx(f.from + ax1 + ax2)]);
-            calculateAO(f.ao[3], voxels[idx(f.from + ax2)], voxels[idx(f.from - ax1)], voxels[idx(f.from + ax2 - ax1)]);
+            calculateAO(f.ao[0], voxel(f.from - ax1), voxel(f.from - ax2), voxel(f.from - ax1 - ax2));
+            calculateAO(f.ao[1], voxel(f.from - ax2), voxel(f.from + ax1), voxel(f.from - ax2 + ax1));
+            calculateAO(f.ao[2], voxel(f.from + ax1), voxel(f.from + ax2), voxel(f.from + ax1 + ax2));
+            calculateAO(f.ao[3], voxel(f.from + ax2), voxel(f.from - ax1), voxel(f.from + ax2 - ax1));
         }
     }
 
@@ -169,18 +215,6 @@ namespace {
         return faces;
     }
 
-    bool boundaryOcclusion(Face face, NeighbourData &neighbourData) {
-        if(face.from.x < 0)
-            return neighbourData.west[SIZE_XY * face.to.z + face.to.y];
-        if(face.from.x == SIZE_XY)
-            return neighbourData.east[SIZE_XY * face.to.z + face.to.y];
-        if(face.from.y < 0)
-            return neighbourData.south[SIZE_XY * face.to.z + face.to.x];
-        if(face.from.y == SIZE_XY)
-            return neighbourData.north[SIZE_XY * face.to.z + face.to.x];
-        return false;
-    }
-
     vector<Face> 
     pruneFaces(vector<Face> &faces, NeighbourData &neighbourData) {
         vector<Face> pruned;
@@ -195,15 +229,16 @@ namespace {
 
 NeighbourData extractBoundaries(Chunks &chunks, ivec2 chunkCoordinate)
 {
+    // Populates NeighbourData for chunk at _chunkCoordinate_ at the instant the function is called
     NeighbourData data{};
 
-    auto update = [](array<bool, SIZE_XY * SIZE_Z> &slice, array<char, N_VOXELS> &neighbourChunk, bool xzPlane, int plane) {
+    auto takePlane = [](array<char, SIZE_XY * SIZE_Z> &slice, array<char, N_VOXELS> &neighbourChunk, bool xzPlane, int plane) {
         // xzPlane defines whether scanning across X-Z or Y-Z plane defined by: 
         // x|y = plane in neighbourChunk
         for(int minor = 0; minor < SIZE_XY; minor++) {
             for(int z = 0; z < SIZE_Z; z++) {
                 auto p = ivec3(xzPlane ? minor : plane, xzPlane ? plane : minor, z);
-                slice[SIZE_XY * z + minor] = !isTransparent(p, neighbourChunk);
+                slice[SIZE_XY * z + minor] = neighbourChunk[idx(p)];
             }
         }
     };
@@ -213,18 +248,38 @@ NeighbourData extractBoundaries(Chunks &chunks, ivec2 chunkCoordinate)
     auto w = chunkCoordinate + ivec2(-1, 0);
 
     if(chunks.chunkDisplayed(n) )
-        update(data.north, chunks.getChunk(n)->voxels, true, 0);
+        takePlane(data.north, chunks.getChunk(n)->voxels, true, 0);
     if(chunks.chunkDisplayed(s))
-        update(data.south, chunks.getChunk(s)->voxels, true, SIZE_XY-1);
+        takePlane(data.south, chunks.getChunk(s)->voxels, true, SIZE_XY-1);
     if(chunks.chunkDisplayed(e) )
-        update(data.east, chunks.getChunk(e)->voxels, false, 0);
+        takePlane(data.east, chunks.getChunk(e)->voxels, false, 0);
     if(chunks.chunkDisplayed(w))
-        update(data.west, chunks.getChunk(w)->voxels, false, SIZE_XY-1);
+        takePlane(data.west, chunks.getChunk(w)->voxels, false, SIZE_XY-1);
+
+    auto takeCorner = [](array<char, SIZE_Z> &corner, array<char, N_VOXELS> &neighbourChunk, ivec2 xy) {
+        // Populates _corner_ with column of voxels at _xy_ from _neighbourChunk_
+        for(int z = 0; z < SIZE_Z; z++)
+            corner[z] = neighbourChunk[idx(ivec3(xy.x, xy.y, z))];
+    };
+
+    auto sw = chunkCoordinate + ivec2(-1, -1);
+    auto nw = chunkCoordinate + ivec2(-1, 1);
+    auto ne = chunkCoordinate + ivec2(1, 1);
+    auto se = chunkCoordinate + ivec2(1, -1);
+
+    if(chunks.chunkDisplayed(sw) )
+        takeCorner(data.cornerSW, chunks.getChunk(sw)->voxels, ivec2(SIZE_XY-1, SIZE_XY-1));
+    if(chunks.chunkDisplayed(nw) )
+        takeCorner(data.cornerNW, chunks.getChunk(nw)->voxels, ivec2(SIZE_XY-1, 0));
+    if(chunks.chunkDisplayed(ne) )
+        takeCorner(data.cornerNE, chunks.getChunk(ne)->voxels, ivec2(0, 0));
+    if(chunks.chunkDisplayed(se) )
+        takeCorner(data.cornerSE, chunks.getChunk(se)->voxels, ivec2(0, SIZE_XY-1));
 
     return data;
 }
 
-std::shared_ptr<VoxelMesh> buildMeshCullBoundaries(array<char, N_VOXELS> chunk, NeighbourData neighbourData)
+std::shared_ptr<VoxelMesh> buildMeshDFS(array<char, N_VOXELS> chunk, NeighbourData neighbourData)
 {
     // Generate list of vertices by DFS
     auto start = ivec3(-1, -1, 0);
@@ -232,39 +287,18 @@ std::shared_ptr<VoxelMesh> buildMeshCullBoundaries(array<char, N_VOXELS> chunk, 
     auto pruned = pruneFaces(faces, neighbourData);
 
     // Ambient Occlusion
-    populateAOData(chunk, pruned);
+    populateAOData(chunk, pruned, neighbourData);
 
     return facesToPolygons(pruned);
 }
 
-std::shared_ptr<VoxelMesh> buildMesh(array<char, N_VOXELS> chunk)
-{
-    // Generate list of vertices by DFS
-    auto start = ivec3(-1, -1, 0);
-    auto faces = DFS_visibility(start, chunk);
-
-    // Ambient Occlusion
-    populateAOData(chunk, faces);
-
-    return facesToPolygons(faces);
-}
-
-std::shared_ptr<VoxelMesh> buildMeshGridSearch(array<char, N_VOXELS> chunk)
-{
-    auto faces = gridSearchVisibility(chunk);
-    
-    // Ambient Occlusion
-    populateAOData(chunk, faces);
-
-    return facesToPolygons(faces);
-}
-
-std::shared_ptr<VoxelMesh> buildMeshGridSearchBoundaries(array<char, N_VOXELS> chunk, NeighbourData neighbourData) {
+std::shared_ptr<VoxelMesh> buildMeshGridSearch(array<char, N_VOXELS> chunk, NeighbourData neighbourData) {
+    // Generate list of vertices by grid search
     auto faces = gridSearchVisibility(chunk);
     auto pruned = pruneFaces(faces, neighbourData);
     
     // Ambient Occlusion
-    populateAOData(chunk, pruned);
+    populateAOData(chunk, pruned, neighbourData);
 
     return facesToPolygons(pruned);
 }
