@@ -6,7 +6,7 @@
 * This is the layout of each vertex attribute piped to the Shader on the GPU
 */
 struct VoxelVertexAttribute {
-    // Corner position
+    // Corner vertex position
     vec3 position; 
     // 0x?? Material
     // 0x?? Ambient Occlusion

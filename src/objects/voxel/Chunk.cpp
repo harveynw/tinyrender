@@ -59,6 +59,7 @@ void Chunk::onUpdate(ivec2 cameraChunk) {
                 this->gpu.reset();
                 this->state.store(CHUNK_INTERNAL_UNLOADED);
                 should_unload = false;
+                should_build_mesh = false;
                 refreshNeighbours();
                 break;
             }

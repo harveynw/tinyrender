@@ -14,9 +14,8 @@ namespace {
     };
 
     void populateAOData(array<char, N_VOXELS> &voxels, vector<Face> &faces) {
-        // Ambient Occlusion Algorithm. Populates Face.occlusion for each entry in faces
+        // Ambient Occlusion Algorithm. Populates Face.ao for each element in faces
         // Source: https://0fps.net/2013/07/03/ambient-occlusion-for-minecraft-like-worlds/
-
         auto calculateAO = [](char &ao, bool side1, bool side2, bool corner) {
             if(side1 && side2)
                 ao = 0x00;
@@ -41,27 +40,6 @@ namespace {
             calculateAO(f.ao[1], voxels[idx(f.from - ax2)], voxels[idx(f.from + ax1)], voxels[idx(f.from - ax2 + ax1)]);
             calculateAO(f.ao[2], voxels[idx(f.from + ax1)], voxels[idx(f.from + ax2)], voxels[idx(f.from + ax1 + ax2)]);
             calculateAO(f.ao[3], voxels[idx(f.from + ax2)], voxels[idx(f.from - ax1)], voxels[idx(f.from + ax2 - ax1)]);
-
-            /*
-            if(plane.x && plane.y) {
-                f.occlusion[0] = voxels[idx(f.from + ivec3(0, -1, 0))];
-                f.occlusion[1] = voxels[idx(f.from + ivec3(-1, 0, 0))];
-                f.occlusion[2] = voxels[idx(f.from + ivec3(0, 1, 0))];
-                f.occlusion[3] = voxels[idx(f.from + ivec3(1, 0, 0))];
-            }
-            if(plane.y && plane.z) {
-                f.occlusion[0] = voxels[idx(f.from + ivec3(0, 0, -1))];
-                f.occlusion[1] = voxels[idx(f.from + ivec3(0, -1, 0))];
-                f.occlusion[2] = voxels[idx(f.from + ivec3(0, 0, 1))];
-                f.occlusion[3] = voxels[idx(f.from + ivec3(0, 1, 0))];
-            }
-            if(plane.x && plane.z) {
-                f.occlusion[0] = voxels[idx(f.from + ivec3(0, 0, -1))];
-                f.occlusion[1] = voxels[idx(f.from + ivec3(-1, 0, 0))];
-                f.occlusion[2] = voxels[idx(f.from + ivec3(0, 0, 1))];
-                f.occlusion[3] = voxels[idx(f.from + ivec3(1, 0, 0))];
-            }
-            */
         }
     }
 
