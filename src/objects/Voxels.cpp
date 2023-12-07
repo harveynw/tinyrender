@@ -32,7 +32,7 @@ tinyrender::Voxels::onUpdate(State &state, float dt) {
         auto chunk = loaded.second;
         if(!visible(cameraChunk, chunk->chunkCoordinate))
             chunk->setVisibility(CHUNK_HIDDEN);
-        chunk->onUpdate(cameraChunk);
+        chunk->onUpdate();
     }
 }
 

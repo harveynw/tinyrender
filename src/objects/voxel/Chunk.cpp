@@ -32,8 +32,6 @@ Chunk::Chunk(Context *c, Scene *s, Chunks &chunks, ivec2 chunkCoordinate, std::s
     this->globalModelMatrix = globalModelMatrix;
 
     minecraft(voxels, this->cornerCoordinate);
-
-    refreshNeighbours();
 }
 
 void Chunk::onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot) {
@@ -41,17 +39,20 @@ void Chunk::onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, in
         gpu->onDraw(renderPass, vertexBufferSlot, bindGroupSlot);
 }
 
-void Chunk::onUpdate(ivec2 cameraChunk) {
-    (void) cameraChunk;
-
+void Chunk::onUpdate() {
     // State machine is handled here, except for when offloaded to buildMeshAsync()
     switch(this->state.load()) {
         case CHUNK_INTERNAL_UNLOADED: {
             if(should_build_mesh) {
                 should_build_mesh = false;
-                this->buildMeshAsync();
+                buildMeshAsync();
             }
             break;
+        }
+        case CHUNK_INTERNAL_MESH_READY: {
+            // Upload mesh to GPU and fall through to LOADED state
+            this->gpu = std::make_unique<GPU_CHUNK>(c, s, mesh, cornerCoordinate, globalModelMatrix);
+            this->state.store(CHUNK_INTERNAL_LOADED);
         }
         case CHUNK_INTERNAL_LOADED: {
             if(should_unload) {
@@ -60,17 +61,11 @@ void Chunk::onUpdate(ivec2 cameraChunk) {
                 this->state.store(CHUNK_INTERNAL_UNLOADED);
                 should_unload = false;
                 should_build_mesh = false;
-                refreshNeighbours();
                 break;
             }
             if(should_build_mesh) {
                 should_build_mesh = false;
-                this->gpu.reset();
-                this->buildMeshAsync();
-            }
-            if(this->mesh != nullptr && this->gpu == nullptr) {
-                // Mesh waiting to be uploaded to GPU 
-                this->gpu = std::make_unique<GPU_CHUNK>(c, s, mesh, cornerCoordinate, globalModelMatrix);
+                buildMeshAsync();
             }
             break;
         }
@@ -94,15 +89,13 @@ void Chunk::refreshNeighbours()
 
 void Chunk::buildMeshAsync()
 {
-    printf("DEBUG: Chunk at %p has called buildMeshAsync()\n", (void*) this);
     this->state.store(CHUNK_INTERNAL_GENERATING_MESH);
     auto neighbourData = extractBoundaries(chunks, chunkCoordinate); // Extract on main thread 
-    //neighbourData.print();
 
-    // Build the mesh in a new thread/webworker
+    // Build the mesh in a new thread
     auto func = [&, neighbourData]{
         this->mesh = buildMeshGridSearch(this->voxels, neighbourData);
-        this->state.store(CHUNK_INTERNAL_LOADED);
+        this->state.store(CHUNK_INTERNAL_MESH_READY);
     };
     auto thread = std::thread(func);
     thread.detach();
@@ -111,13 +104,17 @@ void Chunk::buildMeshAsync()
 void Chunk::setVisibility(const char state) {
     switch(state) {
         case CHUNK_VISIBLE: {
-            if(this->state.load() == CHUNK_INTERNAL_UNLOADED)
+            if(this->state.load() == CHUNK_INTERNAL_UNLOADED) {
                 this->should_build_mesh = true;
+                refreshNeighbours();
+            }
             return;
         }
         case CHUNK_HIDDEN: {
-            if(this->state.load() != CHUNK_INTERNAL_UNLOADED)
+            if(this->state.load() != CHUNK_INTERNAL_UNLOADED) {
                 this->should_unload = true;
+                refreshNeighbours();
+            }
             return;
         }
     }
@@ -126,7 +123,7 @@ void Chunk::setVisibility(const char state) {
 
 bool Chunk::isVisible() {
     // Visible / intention to be visible
-    return this->state.load() != CHUNK_INTERNAL_UNLOADED || should_build_mesh;
+    return (this->state.load() != CHUNK_INTERNAL_UNLOADED || should_build_mesh) && !should_unload;
 }
 
 void Chunk::set(ivec3 voxel, char value) {
