@@ -58,8 +58,10 @@ void ObjectResources::resetBindGroup(ObjectPipeline target) {
     }
 
     // Object class must have correctly populated the uniforms
-    for(auto &unif : uniforms)
+    for(auto &unif : uniforms) {
+        (void) unif;
         assert(unif != nullptr);
+    }
     
     int n = uniforms.size();
     bindGroupData = std::vector<BindGroupEntry>(n);

@@ -1,24 +1,5 @@
 #include "ChunkGeometry.hpp"
 
-DIRECTION 
-opposite(DIRECTION d) {
-    switch(d) {
-        case NORTH:
-            return SOUTH;
-        case SOUTH:
-            return NORTH;
-        case WEST:
-            return EAST;
-        case EAST:
-            return WEST;
-    }
-    throw std::runtime_error("Unrecognised direction");
-}
-
-ivec2 
-chunkDirection(DIRECTION d) {
-    return ivec2(d == EAST ? 1 : (d == WEST ? -1 : 0), d == NORTH ? 1 : (d == SOUTH ? -1 : 0));
-}
 
 int idx(ivec3 c)
 {

@@ -1,5 +1,6 @@
 #include "Chunk.hpp"
 
+
 GPU_CHUNK::GPU_CHUNK(Context *c, Scene *s, std::shared_ptr<VoxelMesh> cpu, ivec2 cornerCoordinate, std::shared_ptr<tinyrender::ModelMatrixUniform> globalModelMatrix) {
     if(cpu->size() == 0)
         return; // empty chunk
@@ -38,18 +39,20 @@ void Chunk::onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, in
         gpu->onDraw(renderPass, vertexBufferSlot, bindGroupSlot);
 }
 
-void Chunk::onUpdate(ivec2 cameraChunk) {
-    (void) cameraChunk;
-
+void Chunk::onUpdate() {
     // State machine is handled here, except for when offloaded to buildMeshAsync()
     switch(this->state.load()) {
         case CHUNK_INTERNAL_UNLOADED: {
             if(should_build_mesh) {
                 should_build_mesh = false;
-                this->buildMeshAsync();
-                refreshNeighbours();
+                buildMeshAsync();
             }
             break;
+        }
+        case CHUNK_INTERNAL_MESH_READY: {
+            // Upload mesh to GPU and fall through to LOADED state
+            this->gpu = std::make_unique<GPU_CHUNK>(c, s, mesh, cornerCoordinate, globalModelMatrix);
+            this->state.store(CHUNK_INTERNAL_LOADED);
         }
         case CHUNK_INTERNAL_LOADED: {
             if(should_unload) {
@@ -57,17 +60,14 @@ void Chunk::onUpdate(ivec2 cameraChunk) {
                 this->gpu.reset();
                 this->state.store(CHUNK_INTERNAL_UNLOADED);
                 should_unload = false;
-                refreshNeighbours();
+                should_build_mesh = false;
                 break;
             }
             if(should_build_mesh) {
                 should_build_mesh = false;
-                this->buildMeshAsync();
+                buildMeshAsync();
             }
-            if(this->mesh != nullptr && this->gpu == nullptr) {
-                // Mesh waiting to be uploaded to GPU
-                this->gpu = std::make_unique<GPU_CHUNK>(c, s, mesh, cornerCoordinate, globalModelMatrix);
-            }
+            break;
         }
         case CHUNK_INTERNAL_GENERATING_MESH: 
         default:
@@ -90,28 +90,31 @@ void Chunk::refreshNeighbours()
 void Chunk::buildMeshAsync()
 {
     this->state.store(CHUNK_INTERNAL_GENERATING_MESH);
-    //auto neighbourData = extractBoundaries(chunks, chunkCoordinate); // Extract on main thread 
-    //neighbourData.print();
+    auto neighbourData = extractBoundaries(chunks, chunkCoordinate); // Extract on main thread 
 
-    auto t = std::thread([&]{ //,neighbourData]{
-        //this->mesh = buildMeshNaive(this->voxels); 
-        //this->mesh = buildMeshCullBoundaries(this->voxels, neighbourData);
-        this->mesh = buildMeshGridSearch(this->voxels);
-        this->state.store(CHUNK_INTERNAL_LOADED);
-    }); 
-    t.detach();
+    // Build the mesh in a new thread
+    auto func = [&, neighbourData]{
+        this->mesh = buildMeshGridSearch(this->voxels, neighbourData);
+        this->state.store(CHUNK_INTERNAL_MESH_READY);
+    };
+    auto thread = std::thread(func);
+    thread.detach();
 }
 
 void Chunk::setVisibility(const char state) {
     switch(state) {
         case CHUNK_VISIBLE: {
-            if(this->state.load() == CHUNK_INTERNAL_UNLOADED)
+            if(this->state.load() == CHUNK_INTERNAL_UNLOADED) {
                 this->should_build_mesh = true;
+                refreshNeighbours();
+            }
             return;
         }
         case CHUNK_HIDDEN: {
-            if(this->state.load() != CHUNK_INTERNAL_UNLOADED)
+            if(this->state.load() != CHUNK_INTERNAL_UNLOADED) {
                 this->should_unload = true;
+                refreshNeighbours();
+            }
             return;
         }
     }
@@ -120,7 +123,7 @@ void Chunk::setVisibility(const char state) {
 
 bool Chunk::isVisible() {
     // Visible / intention to be visible
-    return this->state.load() != CHUNK_INTERNAL_UNLOADED || should_build_mesh;
+    return (this->state.load() != CHUNK_INTERNAL_UNLOADED || should_build_mesh) && !should_unload;
 }
 
 void Chunk::set(ivec3 voxel, char value) {

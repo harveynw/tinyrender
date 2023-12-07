@@ -3,8 +3,6 @@
 #include <emscripten/html5.h>
 #endif
 
-#include <thread>
-
 #include "tinyrender/Engine.hpp"
 #include "tinyrender/camera/TurntableCamera.hpp"
 #include "tinyrender/camera/FreeviewCamera.hpp"
@@ -17,10 +15,6 @@
 using glm::vec3;
 
 int main (int, char**) {
-    auto threadTest = std::thread([]{
-        printf("Testing thread");
-    });
-    threadTest.detach();
     /*
      * Init engine
      */

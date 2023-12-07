@@ -13,9 +13,11 @@
 
 
 namespace {
+    // TODO Diagram
     const char CHUNK_INTERNAL_UNLOADED = 0x00;
     const char CHUNK_INTERNAL_LOADED = 0x01;
     const char CHUNK_INTERNAL_GENERATING_MESH = 0x02;
+    const char CHUNK_INTERNAL_MESH_READY = 0x03;
 
     struct GPU_CHUNK {
         // Buffer containing mesh to draw chunk
@@ -38,9 +40,9 @@ protected:
     Scene *s;
     Chunks &chunks;
     
-    // Internal state machine
-    bool should_build_mesh = false;
-    bool should_unload = false;
+    // Internal state machine (+ signals)
+    bool should_build_mesh = false; // Used as a signal to go from UNLOADED->LOADED as well as refreshing the mesh in LOADED state
+    bool should_unload = false; // When LOADED state -> UNLOADED state
     std::atomic<char> state = CHUNK_INTERNAL_UNLOADED;
 
     std::shared_ptr<VoxelMesh> mesh = nullptr;
@@ -55,7 +57,7 @@ public:
 
     Chunk(Context *c, Scene *s, Chunks &chunks, ivec2 chunkCoordinate, std::shared_ptr<tinyrender::ModelMatrixUniform> globalModelMatrix);
     
-    void onUpdate(ivec2 cameraChunk);
+    void onUpdate();
     void onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot);
     
     array<char, N_VOXELS> voxels;

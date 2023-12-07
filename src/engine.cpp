@@ -1,4 +1,3 @@
-
 #include <GLFW/glfw3.h>
 #include <webgpu/webgpu.hpp>
 
@@ -196,7 +195,6 @@ onWindowScroll(GLFWwindow* window, double xoffset, double yoffset) {
 void
 onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods) {
     auto engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
-    printf("Got key event %i\n", scancode);
     if (engine != nullptr && engine->camera != nullptr) engine->camera->onKeyEvent(key, scancode, action, mods);
 }
 

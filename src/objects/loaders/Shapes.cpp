@@ -64,8 +64,7 @@ namespace {
             }
 
             auto *data = reinterpret_cast<float *>(v.data()); // Flatten
-            int n_data = sizeof(UVTriangleVertexAttributes)/sizeof(float) * v.size();
-
+            int n_data = (int) sizeof(UVTriangleVertexAttributes)/sizeof(float) * (int) v.size();
             p.data = std::vector<float>(data, data + n_data);
             p.vertices = v.size();
         }

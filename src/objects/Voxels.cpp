@@ -18,6 +18,9 @@ void
 tinyrender::Voxels::onUpdate(State &state, float dt) {
     (void) dt;
 
+    if(state.frame % TICKS_PER_UPDATE != 0)
+        return;
+
     int x = (int) (state.cameraPosition.x / (float) SIZE_XY);
     int y = (int) (state.cameraPosition.y / (float) SIZE_XY);
     auto cameraChunk = glm::ivec2(x, y);
@@ -29,7 +32,7 @@ tinyrender::Voxels::onUpdate(State &state, float dt) {
         auto chunk = loaded.second;
         if(!visible(cameraChunk, chunk->chunkCoordinate))
             chunk->setVisibility(CHUNK_HIDDEN);
-        chunk->onUpdate(cameraChunk);
+        chunk->onUpdate();
     }
 }
 
