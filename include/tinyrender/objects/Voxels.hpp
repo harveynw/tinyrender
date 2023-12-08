@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Object.hpp"
+#include "voxel/Chunk.hpp"
+
 
 namespace tinyrender {
     class Voxels : public Object {
@@ -22,6 +24,12 @@ namespace tinyrender {
         ObjectPipeline currentTargetPipeline() override;
 
         std::shared_ptr<tinyrender::ModelMatrixUniform> modelMatrix() const override;
+
+        // Pass through methods for chunks
+        std::shared_ptr<Chunk> getChunk(ivec2 chunkCoordinate);
+        bool chunkTracked(ivec2 coord); // Instance of chunk exists
+        bool chunkDisplayed(ivec2 coord); // Chunk is being rendered
+        std::vector<std::shared_ptr<Chunk>> visibleChunks();
 
         ~Voxels();
     };

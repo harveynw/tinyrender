@@ -1,5 +1,35 @@
-#include "Chunk.hpp"
+#include "objects/voxel/Chunk.hpp"
 
+#include <array>
+#include <thread>
+
+#include "VoxelData.hpp"
+#include "Chunks.hpp"
+#include "BuildMesh.hpp"
+#include "../ObjectResources.hpp"
+#include "../loaders/Polygons.hpp"
+#include "../../webgpu/primitives/buffers/AttributeBuffer.hpp"
+
+
+//        -----<----------------<----------------<----------------
+//       |                             ----------<---------<----  |
+//       |                            |                         | |
+// UNLOADED (Not visible) -> GENERATING_MESH -> MESH_READY -> LOADED (Visible) 
+const char CHUNK_INTERNAL_UNLOADED = 0x00;
+const char CHUNK_INTERNAL_LOADED = 0x01;
+const char CHUNK_INTERNAL_GENERATING_MESH = 0x02;
+const char CHUNK_INTERNAL_MESH_READY = 0x03;
+
+struct GPU_CHUNK {
+    // Buffer containing mesh to draw chunk
+    std::shared_ptr<tinyrender::AttributeBuffer> buffer = nullptr;
+    // Uniforms
+    std::shared_ptr<ObjectResources> resources = nullptr;
+
+    GPU_CHUNK(Context *c, Scene *s, std::shared_ptr<VoxelMesh> cpu, ivec2 cornerCoordinate, std::shared_ptr<tinyrender::ModelMatrixUniform> globalModelMatrix);
+
+    void onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot);
+};
 
 GPU_CHUNK::GPU_CHUNK(Context *c, Scene *s, std::shared_ptr<VoxelMesh> cpu, ivec2 cornerCoordinate, std::shared_ptr<tinyrender::ModelMatrixUniform> globalModelMatrix) {
     if(cpu->size() == 0)
@@ -26,12 +56,11 @@ void GPU_CHUNK::onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot
     renderPass.draw(buffer->getDrawCalls(), 1, 0, 0);
 }
 
+
 Chunk::Chunk(Context *c, Scene *s, Chunks &chunks, ivec2 chunkCoordinate, std::shared_ptr<tinyrender::ModelMatrixUniform> globalModelMatrix): c(c), s(s), chunks(chunks) {
     this->chunkCoordinate = chunkCoordinate;
     this->cornerCoordinate = glm::ivec2(SIZE_XY, SIZE_XY) * chunkCoordinate;
     this->globalModelMatrix = globalModelMatrix;
-
-    minecraft(voxels, this->cornerCoordinate);
 }
 
 void Chunk::onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot) {
@@ -132,5 +161,8 @@ void Chunk::set(ivec3 voxel, char value) {
 }
 
 void Chunk::shouldRefreshMesh() {
-    this->should_build_mesh = true;
+    if(this->state.load() != CHUNK_INTERNAL_UNLOADED)
+        this->should_build_mesh = true;
 }
+
+Chunk::~Chunk() = default;

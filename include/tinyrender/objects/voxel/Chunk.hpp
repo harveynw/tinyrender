@@ -1,38 +1,16 @@
 #pragma once
 
-#include <array>
-#include <thread>
-
-#include "VoxelData.hpp"
+#include "../../Fwd.hpp"
 #include "ChunkGeometry.hpp"
-#include "Chunks.hpp"
-#include "BuildMesh.hpp"
-#include "../ObjectResources.hpp"
-#include "../loaders/Polygons.hpp"
-#include "../../webgpu/primitives/buffers/AttributeBuffer.hpp"
-
-
-namespace {
-    // TODO Diagram
-    const char CHUNK_INTERNAL_UNLOADED = 0x00;
-    const char CHUNK_INTERNAL_LOADED = 0x01;
-    const char CHUNK_INTERNAL_GENERATING_MESH = 0x02;
-    const char CHUNK_INTERNAL_MESH_READY = 0x03;
-
-    struct GPU_CHUNK {
-        // Buffer containing mesh to draw chunk
-        std::shared_ptr<tinyrender::AttributeBuffer> buffer = nullptr;
-        // Uniforms
-        std::shared_ptr<ObjectResources> resources = nullptr;
-
-        GPU_CHUNK(Context *c, Scene *s, std::shared_ptr<VoxelMesh> cpu, ivec2 cornerCoordinate, std::shared_ptr<tinyrender::ModelMatrixUniform> globalModelMatrix);
-
-        void onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot);
-    };
-}
 
 const char CHUNK_VISIBLE = 0x00;
 const char CHUNK_HIDDEN = 0x01;
+
+// Forward declare
+struct GPU_CHUNK;
+struct VoxelVertexAttribute;
+typedef vector<VoxelVertexAttribute> VoxelMesh;
+
 
 class Chunk {
 protected:
@@ -43,11 +21,11 @@ protected:
     // Internal state machine (+ signals)
     bool should_build_mesh = false; // Used as a signal to go from UNLOADED->LOADED as well as refreshing the mesh in LOADED state
     bool should_unload = false; // When LOADED state -> UNLOADED state
-    std::atomic<char> state = CHUNK_INTERNAL_UNLOADED;
+    std::atomic<char> state = 0x00; // Start unloaded
 
     std::shared_ptr<VoxelMesh> mesh = nullptr;
     std::shared_ptr<tinyrender::ModelMatrixUniform> globalModelMatrix = nullptr;
-    std::unique_ptr<GPU_CHUNK> gpu = nullptr;
+    std::unique_ptr<GPU_CHUNK> gpu;
 
     void refreshNeighbours();
     void buildMeshAsync();
@@ -67,4 +45,6 @@ public:
 
     void set(ivec3 voxel, char value);
     void shouldRefreshMesh();
+
+    ~Chunk();
 };

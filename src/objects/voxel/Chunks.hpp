@@ -5,13 +5,13 @@
 #include <memory>
 #include <glm/glm.hpp>
 
-#include "ChunkGeometry.hpp"
+#include "objects/voxel/Chunk.hpp"
+#include "objects/voxel/ChunkGeometry.hpp"
 #include "../../webgpu/Context.hpp"
 #include "../../webgpu/Scene.hpp"
 #include "../../webgpu/primitives/uniforms/ModelMatrixUniform.hpp"
 
-// Fwd declare chunk
-class Chunk;
+// TODO Merge voxels and chunks into one class, then make Chunk.hpp a friend of Voxels.hpp
 
 class Chunks {
 protected:
@@ -27,4 +27,5 @@ public:
 
     bool chunkTracked(ivec2 coord); // Instance of chunk exists
     bool chunkDisplayed(ivec2 coord); // Chunk is being rendered
+    std::vector<std::shared_ptr<Chunk>> visibleChunks();
 };

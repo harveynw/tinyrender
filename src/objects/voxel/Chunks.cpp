@@ -1,5 +1,5 @@
 #include "Chunks.hpp"
-#include "Chunk.hpp"
+#include "objects/voxel/Chunk.hpp"
 
 std::shared_ptr<Chunk> Chunks::getChunk(ivec2 chunkCoordinate)
 {
@@ -20,4 +20,14 @@ bool Chunks::chunkTracked(ivec2 coord)
 bool Chunks::chunkDisplayed(ivec2 coord)
 {
     return chunkTracked(coord) && getChunk(coord)->isVisible();
+}
+
+std::vector<std::shared_ptr<Chunk>> Chunks::visibleChunks()
+{
+    std::vector<std::shared_ptr<Chunk>> visible;
+    for(auto &entry : map) {
+        if(entry.second->isVisible())
+            visible.push_back(entry.second);
+    }
+    return visible;
 }

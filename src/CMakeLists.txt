@@ -28,6 +28,7 @@ target_include_directories(tinyrender PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/camera
         ${CMAKE_CURRENT_SOURCE_DIR}/objects
+        ${CMAKE_CURRENT_SOURCE_DIR}/objects/voxel
         ${CMAKE_CURRENT_SOURCE_DIR}/webgpu
 )
 
@@ -117,11 +118,3 @@ FetchContent_MakeAvailable(fftw3)
 target_include_directories(tinyrender PRIVATE ${fftw3_SOURCE_DIR}/api)
 set_property(TARGET fftw3 PROPERTY POSITION_INDEPENDENT_CODE ON)
 target_link_libraries(tinyrender PRIVATE fftw3)
-
-# FastNoiseLite for voxel terrain generation
-FetchContent_Declare(
-        FastNoiseLite
-        URL https://github.com/Auburn/FastNoiseLite/archive/refs/tags/v1.1.0.zip
-)
-FetchContent_MakeAvailable(FastNoiseLite)
-target_include_directories(tinyrender PRIVATE ${fastnoiselite_SOURCE_DIR}/Cpp)

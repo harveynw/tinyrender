@@ -1,7 +1,10 @@
 #include "BuildMesh.hpp"
 
 #include <cstring>
-#include "Chunk.hpp"
+#include <stack>
+
+#include "objects/voxel/Chunk.hpp"
+
 
 namespace {
     struct Face {
