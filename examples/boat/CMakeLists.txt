@@ -1,17 +1,15 @@
+add_executable(boat main.cpp)
+target_compile_features(boat PRIVATE cxx_std_17)
 
-add_executable(TestScene main.cpp)
-target_compile_features(TestScene PRIVATE cxx_std_17)
-
-target_link_libraries(TestScene PUBLIC tinyrender)
-target_copy_webgpu_binaries(TestScene)  # Must include!
+target_link_libraries(boat PUBLIC tinyrender)
+target_copy_webgpu_binaries(boat)  # Must include!
 
 if (EMSCRIPTEN)
     # Add Emscripten-specific link options
     string(APPEND CMAKE_C_FLAGS " -pthread")
     string(APPEND CMAKE_CXX_FLAGS " -pthread")
 
-    # TODO: Was building then suddenly not running at all, maybe http server or combination of flags below not code.
-    target_link_options(TestScene PRIVATE
+    target_link_options(boat PRIVATE
         #-g
         #-O0
         -O3
@@ -44,6 +42,6 @@ if (EMSCRIPTEN)
     #-sSAFE_HEAP=1
     #-sSTACK_OVERFLOW_CHECK=1
 
-    set_target_properties(TestScene PROPERTIES SUFFIX ".html")
+    set_target_properties(boat PROPERTIES SUFFIX ".html")
 endif()
 
