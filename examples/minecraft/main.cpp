@@ -112,6 +112,7 @@ int main (int, char**) {
      */
     voxel = std::make_shared<tinyrender::Voxels>();
     engine->addObject(voxel);
+    voxel->setColors(tinyrender::VOXEL_COL_RAINBOW_2);
 
     /*
      * Render loop

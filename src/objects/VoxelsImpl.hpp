@@ -41,6 +41,7 @@ public:
     bool chunkTracked(ivec2 coord); // Instance of chunk exists
     bool chunkDisplayed(ivec2 coord); // Chunk is being rendered
     std::vector<std::shared_ptr<tinyrender::Chunk>> visibleChunks();
+    void setColors(char colorScheme);
 
     ~VoxelsImpl();
 };

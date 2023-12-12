@@ -96,6 +96,54 @@ std::vector<std::shared_ptr<tinyrender::Chunk>> VoxelsImpl::visibleChunks()
     return visible;
 }
 
+void 
+VoxelsImpl::setColors(char colorScheme) {
+    std::array<uint8_t, 4*256> colors;
+    switch(colorScheme) {
+        case tinyrender::VOXEL_COL_GRAYSCALE: {
+            for(int i = 0; i < 256; i++) {
+                auto it = colors.begin() + 4*i;
+                *it = i; *(it+1) = i; *(it+2) = i; *(it+3) = 255;
+            }
+            break;
+        }
+        case tinyrender::VOXEL_COL_RAINBOW_1: {
+            for(int i = 0; i < 256; i++) {
+                auto it = colors.begin() + 4*i;
+                double g = (1.0-i/255.0)/0.25;
+                int x = static_cast<int>(std::floor(g));
+                int y = static_cast<int>(std::floor(255 * (g - x)));
+                if(x == 0) {
+                    *it = 255; *(it+1) = y; *(it+2) = 0; *(it+3) = 255;
+                } else if(x == 1) {
+                    *it = 255-y; *(it+1) = 255; *(it+2) = 0; *(it+3) = 255;
+                } else if(x == 2) {
+                    *it = 0; *(it+1) = 255; *(it+2) = y; *(it+3) = 255;
+                } else if(x == 3) {
+                    *it = 0; *(it+1) = 255-y; *(it+2) = 255; *(it+3) = 255;
+                } else {
+                    *it = 0; *(it+1) = 0; *(it+2) = 255; *(it+3) = 255;
+                }
+            }
+            break;
+        }
+        case tinyrender::VOXEL_COL_RAINBOW_2: {
+            for(int i = 0; i < 256; i++) {
+                float t = i/255.0f * 31.4f;
+                auto it = colors.begin() + 4*i;
+                *it = 255 * (sin(t) + 1.0f)/2.0f;
+                *(it+1) = 255 * (cos(t) + 1.0f)/2.0f;
+                *(it+2) = 255 * (sin(t) + 1.0f)/2.0f;
+                *(it+3) = 255;
+            }
+            break;
+        }
+        default:
+            throw std::runtime_error("Invalid color scheme");
+    }
+    voxelColors->update(colors);
+}
+
 tinyrender::Voxels::Voxels() {
     obj = std::make_unique<VoxelsImpl>();
 }
@@ -120,4 +168,9 @@ tinyrender::Voxels::chunkDisplayed(ivec2 coord) {
 std::vector<std::shared_ptr<tinyrender::Chunk>> 
 tinyrender::Voxels::visibleChunks() {
     return static_cast<VoxelsImpl*>(obj.get())->visibleChunks();
+}
+
+void
+tinyrender::Voxels::setColors(char colorScheme) {
+    static_cast<VoxelsImpl*>(obj.get())->setColors(colorScheme);
 }
