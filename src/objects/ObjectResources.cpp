@@ -52,7 +52,9 @@ void ObjectResources::resetBindGroup(ObjectPipeline target) {
         case Voxels:
             uniforms = {
                 globalModelMatrix,
-                modelMatrix
+                modelMatrix,
+                std::make_shared<TextureUniform>(voxelColors),
+                std::make_shared<TextureSamplerUniform>(voxelColors)
             };
             break;
     }

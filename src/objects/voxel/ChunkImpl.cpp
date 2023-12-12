@@ -15,24 +15,25 @@ struct GPU_CHUNK {
     // Uniforms
     std::shared_ptr<ObjectResources> resources = nullptr;
 
-    GPU_CHUNK(Context *c, Scene *s, std::shared_ptr<VoxelMesh> cpu, ivec2 cornerCoordinate, std::shared_ptr<ModelMatrixUniform> globalModelMatrix);
+    GPU_CHUNK(ChunkImpl &chunk);
 
     void onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot);
 };
 
-GPU_CHUNK::GPU_CHUNK(Context *c, Scene *s, std::shared_ptr<VoxelMesh> cpu, ivec2 cornerCoordinate, std::shared_ptr<ModelMatrixUniform> globalModelMatrix) {
-    if(cpu->size() == 0)
+GPU_CHUNK::GPU_CHUNK(ChunkImpl &chunk) {
+    if(chunk.mesh->size() == 0)
         return; // empty chunk
 
     // Flatten
-    auto *data = reinterpret_cast<float *>(cpu->data()); 
-    int n_data = sizeof(VoxelVertexAttribute)/sizeof(float) * cpu->size();
+    auto *data = reinterpret_cast<float *>(chunk.mesh->data()); 
+    int n_data = sizeof(VoxelVertexAttribute)/sizeof(float) * chunk.mesh->size();
     auto v = std::vector<float>(data, data + n_data);
 
-    buffer = std::make_shared<AttributeBuffer>(c, v, cpu->size());
-    resources = std::make_shared<ObjectResources>(c, s, this->buffer, ColoredTriangle);
-    resources->modelMatrix->setTranslation(glm::vec3(cornerCoordinate, 0.0));
-    resources->globalModelMatrix = globalModelMatrix;
+    buffer = std::make_shared<AttributeBuffer>(chunk.context, v, chunk.mesh->size());
+    resources = std::make_shared<ObjectResources>(chunk.context, chunk.scene, this->buffer, ColoredTriangle);
+    resources->modelMatrix->setTranslation(glm::vec3(chunk.cornerCoordinate, 0.0));
+    resources->globalModelMatrix = chunk.v.modelMatrix();
+    resources->voxelColors = chunk.v.colorTexture();
     resources->resetBindGroup(Voxels);
 }
 
@@ -46,10 +47,9 @@ void GPU_CHUNK::onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot
 }
 
 
-ChunkImpl::ChunkImpl(Context *c, Scene *s, VoxelsImpl &v, ivec2 chunkCoordinate, std::shared_ptr<ModelMatrixUniform> globalModelMatrix): c(c), s(s), v(v) {
+ChunkImpl::ChunkImpl(VoxelsImpl &v, Context *context, Scene *scene, ivec2 chunkCoordinate): v(v), context(context), scene(scene) {
     this->chunkCoordinate = chunkCoordinate;
     this->cornerCoordinate = glm::ivec2(SIZE_XY, SIZE_XY) * chunkCoordinate;
-    this->globalModelMatrix = globalModelMatrix;
 }
 
 void ChunkImpl::onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot) {
@@ -69,7 +69,7 @@ void ChunkImpl::onUpdate() {
         }
         case CHUNK_INTERNAL_MESH_READY: {
             // Upload mesh to GPU and fall through to LOADED state
-            this->gpu = std::make_unique<GPU_CHUNK>(c, s, mesh, cornerCoordinate, globalModelMatrix);
+            this->gpu = std::make_unique<GPU_CHUNK>(*this);
             this->state.store(CHUNK_INTERNAL_LOADED);
         }
         case CHUNK_INTERNAL_LOADED: {
@@ -115,8 +115,9 @@ void ChunkImpl::buildMeshAsync()
         this->mesh = buildMeshGridSearch(this->voxels, neighbourData);
         this->state.store(CHUNK_INTERNAL_MESH_READY);
     };
-    auto thread = std::thread(func);
-    thread.detach();
+    meshQueueBuilder->queue(func);
+    //auto thread = std::thread(func);
+    //thread.detach();
 }
 
 void ChunkImpl::setVisibility(const char state) {
@@ -156,10 +157,9 @@ void ChunkImpl::shouldRefreshMesh() {
 
 ChunkImpl::~ChunkImpl() = default;
 
-tinyrender::Chunk::Chunk(Context *c, Scene *s, VoxelsImpl &v, ivec2 chunkCoordinate, std::shared_ptr<ModelMatrixUniform> globalModelMatrix):
-chunk{std::make_unique<ChunkImpl>(c, s, v, chunkCoordinate, globalModelMatrix)}
-{
-}
+tinyrender::Chunk::Chunk(VoxelsImpl &v, Context *c, Scene *s, ivec2 chunkCoordinate):
+chunk{std::make_unique<ChunkImpl>(v, c, s, chunkCoordinate)}
+{}
 
 tinyrender::Chunk::~Chunk() = default;
 

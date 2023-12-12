@@ -6,9 +6,9 @@
 
 class ChunkImpl;
 class VoxelsImpl;
-class ModelMatrixUniform;
 struct Context;
 struct Scene;
+
 
 namespace tinyrender {
 
@@ -22,7 +22,7 @@ namespace tinyrender {
         friend ChunkImpl;
         friend VoxelsImpl;
     public:
-        Chunk(Context *c, Scene *s, VoxelsImpl &v, ivec2 chunkCoordinate, std::shared_ptr<ModelMatrixUniform> globalModelMatrix);
+        Chunk(VoxelsImpl &v, Context *c, Scene *s, ivec2 chunkCoordinate);
         ~Chunk();
 
         std::array<char, N_VOXELS>& voxelData();

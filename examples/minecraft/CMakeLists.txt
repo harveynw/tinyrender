@@ -24,7 +24,7 @@ if (EMSCRIPTEN)
         -O3
         -pthread
         -USE_PTHREADS
-        -sPTHREAD_POOL_SIZE=64
+        -sPTHREAD_POOL_SIZE=8
         -sSTACK_SIZE=100MB
         -sUSE_GLFW=3 # Use Emscripten-provided GLFW
         -sUSE_WEBGPU # Handle WebGPU symbols

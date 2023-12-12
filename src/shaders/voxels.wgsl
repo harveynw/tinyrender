@@ -6,7 +6,7 @@ struct VertexInput {
 };
 struct VertexOutput {
     @builtin(position) position: vec4f,
-    @location(0) color: vec3f,
+    @location(0) voxelValue: f32,
     @location(1) ambientOcclusion: f32,
 };
 
@@ -27,6 +27,8 @@ struct LightingUniforms {
 
 @group(1) @binding(0) var<uniform> globalModelMatrix: mat4x4f;
 @group(1) @binding(1) var<uniform> chunkModelMatrix: mat4x4f;
+@group(1) @binding(2) var colors: texture_2d<f32>;
+@group(1) @binding(3) var textureSampler: sampler;
 
 fn unifToColor(u: f32) -> vec3f {
     let t: f32 = u * 3.14 * 10.0f;
@@ -48,8 +50,8 @@ fn vs_main(in: VertexInput) -> VertexOutput {
     
     let data: vec4<f32> = unpack4x8unorm(bitcast<u32>(in.data));
 
-    // Decide color of voxel
-    out.color = unifToColor(data.x); //vec3f(0.0f, 0.0f, data.x);
+    // Pass voxel value
+    out.voxelValue = data.x;
 
     // Ambient occlusion value [0, 1]
     out.ambientOcclusion = 1.0f - data.y * 256.0f/3.0f;
@@ -59,8 +61,8 @@ fn vs_main(in: VertexInput) -> VertexOutput {
 
 @fragment
 fn fs_main(in: VertexOutput) -> @location(0) vec4f {
-    let baseColor = in.color - in.ambientOcclusion;
-    //let baseColor = vec3f(in.ambientOcclusion);
-    return vec4f(baseColor, 1.0);
+    let uCoord = in.voxelValue * (254.0f/255.0f) + (0.5f/255.0f);
+    let baseColor = textureSample(colors, textureSampler, vec2f(uCoord, 0.5)).rgb;
+    return vec4f(baseColor - in.ambientOcclusion, 1.0);
 }
 )""

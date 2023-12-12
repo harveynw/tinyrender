@@ -126,7 +126,7 @@ wavesUniformLayout(Context *context) {
 
 wgpu::BindGroupLayout
 voxelUniformLayout(Context *context) {
-    std::vector<wgpu::BindGroupLayoutEntry> entries(2, wgpu::Default);
+    std::vector<wgpu::BindGroupLayoutEntry> entries(4, wgpu::Default);
     wgpu::BindGroupLayoutDescriptor bindGroupLayoutDesc{};
 
     /*
@@ -143,6 +143,18 @@ voxelUniformLayout(Context *context) {
     chunkModelBindingLayout.visibility = wgpu::ShaderStage::Vertex;
     chunkModelBindingLayout.buffer.type = wgpu::BufferBindingType::Uniform;
     chunkModelBindingLayout.buffer.minBindingSize = sizeof(ModelUniform);
+    
+    wgpu::BindGroupLayoutEntry& textureBindingLayout = entries[2];
+    textureBindingLayout.binding = 2;
+    textureBindingLayout.visibility = wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment;
+    textureBindingLayout.texture.sampleType = wgpu::TextureSampleType::Float; // Because using normalised format
+    textureBindingLayout.texture.viewDimension = wgpu::TextureViewDimension::_2D;
+
+    wgpu::BindGroupLayoutEntry& samplerBindingLayout = entries[3];
+    samplerBindingLayout.binding = 3;
+    samplerBindingLayout.visibility = wgpu::ShaderStage::Vertex | wgpu::ShaderStage::Fragment;
+    samplerBindingLayout.sampler.type = wgpu::SamplerBindingType::Filtering;
+
 
     bindGroupLayoutDesc.entryCount = (uint32_t) entries.size();
     bindGroupLayoutDesc.entries = entries.data();
