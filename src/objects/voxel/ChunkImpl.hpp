@@ -5,6 +5,7 @@
 
 #include "BuildMesh.hpp"
 #include "VoxelData.hpp"
+#include "BuildMeshQueue.hpp"
 #include "../ObjectResources.hpp"
 #include "../VoxelsImpl.hpp"
 #include "../loaders/Polygons.hpp"

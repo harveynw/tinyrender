@@ -10,6 +10,10 @@ class ModelMatrixUniform;
 struct Context;
 struct Scene;
 
+// Voxel API todo
+// 
+// 1d color texture 256 wide in shaders, configurable colors
+
 namespace tinyrender {
 
     const char CHUNK_VISIBLE = 0x00;

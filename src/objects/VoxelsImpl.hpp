@@ -9,6 +9,7 @@
 #include "State.hpp"
 #include "loaders/Shapes.hpp"
 #include "ObjectResources.hpp"
+#include "voxel/BuildMeshQueue.hpp"
 
 
 class VoxelsImpl : public ObjectImpl {

@@ -115,8 +115,9 @@ void ChunkImpl::buildMeshAsync()
         this->mesh = buildMeshGridSearch(this->voxels, neighbourData);
         this->state.store(CHUNK_INTERNAL_MESH_READY);
     };
-    auto thread = std::thread(func);
-    thread.detach();
+    meshQueueBuilder->queue(func);
+    //auto thread = std::thread(func);
+    //thread.detach();
 }
 
 void ChunkImpl::setVisibility(const char state) {

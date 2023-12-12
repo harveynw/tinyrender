@@ -60,7 +60,7 @@ chebyshevDistance(ivec2 chunkA, ivec2 chunkB) {
 * Our event loop, concerned with keeping chunks around the camera visible and generated.
 */
 void onFrame() {
-    int RENDER_DISTANCE = 3;
+    int RENDER_DISTANCE = 8;
 
     // Chunk underneath camera
     glm::vec3 pos = camera->getPosition();

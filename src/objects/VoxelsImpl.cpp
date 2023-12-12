@@ -15,9 +15,14 @@ void VoxelsImpl::onInit(Context *c, Scene *s)
 void 
 VoxelsImpl::onUpdate(State &state, float dt) {
     (void) dt;
+
+    // Keep mesh queue builder moving
+    meshQueueBuilder->update();
+
     if(state.frame % TICKS_PER_UPDATE != 0)
         return;
 
+    // Update each chunk
     for(auto &loaded : map) {
         auto chunk = loaded.second->chunk.get();
         chunk->onUpdate();
