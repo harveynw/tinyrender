@@ -1,4 +1,8 @@
-#include "ChunkGeometry.hpp"
+#include "objects/voxel/ChunkGeometry.hpp"
+
+#include <glm/glm.hpp>
+#include <sstream>
+#include <cstdlib>
 
 
 int idx(ivec3 c)
@@ -70,22 +74,4 @@ serializeChunkCoord(ivec2 coord) {
     std::ostringstream ss;
     ss << coord.x << "," << coord.y;
     return ss.str();
-}
-
-bool 
-visible(ivec2 chunkA, ivec2 chunkB) {
-    int dx = abs(chunkA.x - chunkB.x);
-    int dy = abs(chunkA.y - chunkB.y);
-    return dx <= VISIBILITY_DISTANCE && dy <= VISIBILITY_DISTANCE;
-}
-
-vector<ivec2> 
-visibleFrom(ivec2 chunk)
-{
-    vector<ivec2> visible;
-    for(int i = -VISIBILITY_DISTANCE; i <= VISIBILITY_DISTANCE; i++) {
-        for(int j = -VISIBILITY_DISTANCE; j <= VISIBILITY_DISTANCE; j++)
-            visible.emplace_back(i+chunk.x, j+chunk.y);
-    }
-    return visible;
 }

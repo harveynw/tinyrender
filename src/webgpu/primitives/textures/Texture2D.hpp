@@ -20,8 +20,7 @@
  * resources such as depth textures.
  */
 
-
-namespace tinyrender::Texture2D {
+namespace Texture2D {
 
     class Texture {
     protected:
@@ -32,10 +31,10 @@ namespace tinyrender::Texture2D {
         unsigned int mips = 1;
 
         // Delegates for texture
-        tinyrender::Texture2D::DataDelegate *_data;
-        tinyrender::Texture2D::CreationDelegate *_create;
-        tinyrender::Texture2D::ViewDelegate *_view;
-        tinyrender::Texture2D::SamplerDelegate *_samp;
+        Texture2D::DataDelegate *_data;
+        Texture2D::CreationDelegate *_create;
+        Texture2D::ViewDelegate *_view;
+        Texture2D::SamplerDelegate *_samp;
 
     public:
         // Resources
@@ -43,8 +42,8 @@ namespace tinyrender::Texture2D {
         wgpu::TextureView textureView = nullptr;
         wgpu::Sampler sampler = nullptr;
 
-        Texture(Context *context, tinyrender::Texture2D::DataDelegate *data, tinyrender::Texture2D::CreationDelegate *create,
-                  tinyrender::Texture2D::ViewDelegate *view, tinyrender::Texture2D::SamplerDelegate *samp);
+        Texture(Context *context, Texture2D::DataDelegate *data, Texture2D::CreationDelegate *create,
+                  Texture2D::ViewDelegate *view, Texture2D::SamplerDelegate *samp);
         ~Texture();
 
         wgpu::TextureView getView() {

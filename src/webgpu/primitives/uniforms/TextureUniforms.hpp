@@ -4,36 +4,33 @@
 #include "../textures/Texture2D.hpp"
 
 
-namespace tinyrender {
 
-    class TextureUniform : public Uniform {
-    protected:
-        std::shared_ptr<Texture2D::Texture> texture;
-    public:
-        TextureUniform(std::shared_ptr<Texture2D::Texture> texture): texture(texture) {};
+class TextureUniform : public Uniform {
+protected:
+    std::shared_ptr<Texture2D::Texture> texture;
+public:
+    TextureUniform(std::shared_ptr<Texture2D::Texture> texture): texture(texture) {};
 
-        wgpu::BindGroupEntry generateUniformBindGroupEntry(int bindGroup) override {
-            wgpu::BindGroupEntry entry;
-            entry.binding = bindGroup;
-            entry.textureView = this->texture->getView();
+    wgpu::BindGroupEntry generateUniformBindGroupEntry(int bindGroup) override {
+        wgpu::BindGroupEntry entry;
+        entry.binding = bindGroup;
+        entry.textureView = this->texture->getView();
 
-            return entry;
-        };
+        return entry;
     };
+};
 
-    class TextureSamplerUniform : public Uniform {
-    protected:
-        std::shared_ptr<Texture2D::Texture> texture;
-    public:
-        TextureSamplerUniform(std::shared_ptr<Texture2D::Texture> texture): texture(texture) {};
+class TextureSamplerUniform : public Uniform {
+protected:
+    std::shared_ptr<Texture2D::Texture> texture;
+public:
+    TextureSamplerUniform(std::shared_ptr<Texture2D::Texture> texture): texture(texture) {};
 
-        wgpu::BindGroupEntry generateUniformBindGroupEntry(int bindGroup) override {
-            wgpu::BindGroupEntry entry;
-            entry.binding = bindGroup;
-            entry.sampler = this->texture->getSampler();
+    wgpu::BindGroupEntry generateUniformBindGroupEntry(int bindGroup) override {
+        wgpu::BindGroupEntry entry;
+        entry.binding = bindGroup;
+        entry.sampler = this->texture->getSampler();
 
-            return entry;
-        };
+        return entry;
     };
-
-}
+};

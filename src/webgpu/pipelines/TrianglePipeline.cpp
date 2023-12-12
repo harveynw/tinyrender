@@ -19,7 +19,7 @@ TrianglePipeline::TrianglePipeline(Context *context, Scene *scene):
 
 void
 TrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder,
-                          std::vector<std::shared_ptr<tinyrender::Object>> &objects) {
+                            std::vector<ObjectImpl*> &objects) {
     RenderPassDescriptor renderPassDesc;
 
     RenderPassColorAttachment renderPassColorAttachment;
@@ -66,7 +66,7 @@ TrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &
     auto &bg = scene->bindGroups.at(ColoredTriangle);
     renderPass.setBindGroup(0, bg, 0, nullptr);
 
-    for(auto & object : objects) {
+    for(auto object : objects) {
         if(object->currentTargetPipeline() == ColoredTriangle)
             object->onDraw(renderPass, 0, 1);
     }

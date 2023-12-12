@@ -1,6 +1,9 @@
 #pragma once
 
-#include "Chunks.hpp"
+#include "objects/voxel/ChunkGeometry.hpp"
+
+using glm::vec3;
+class VoxelsImpl;
 
 /*
 * This is the layout of each vertex attribute piped to the Shader on the GPU
@@ -32,7 +35,7 @@ struct NeighbourData {
 /*
 * Helper methods, NOT thread safe
 */
-NeighbourData extractBoundaries(Chunks &chunks, ivec2 chunkCoordinate);
+NeighbourData extractBoundaries(VoxelsImpl &v, ivec2 chunkCoordinate);
 
 /*
 * Thread safe mesh building functions

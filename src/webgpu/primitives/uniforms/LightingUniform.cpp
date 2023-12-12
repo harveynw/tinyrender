@@ -1,7 +1,7 @@
 #include "LightingUniform.hpp"
 
 
-tinyrender::LightingUniform::LightingUniform(Context *context) {
+LightingUniform::LightingUniform(Context *context) {
         this->uniforms.directions = {
                 glm::vec4(0.0, 0.0, 1.0, 1.0),
                 glm::vec4(4.0/5.74, 4.0/5.74, 1.0/5.74, 1.0),
@@ -14,7 +14,7 @@ tinyrender::LightingUniform::LightingUniform(Context *context) {
 
         // Buffer base class is initialised
         this->context = context;
-        this->type = tinyrender::UNIFORM;
+        this->type = UNIFORM;
         this->size = sizeof(LightingUniforms);
         this->mapped = false;
         this->initialise(&uniforms);

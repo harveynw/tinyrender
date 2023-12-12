@@ -22,33 +22,3 @@ fill(std::array<char, N_VOXELS> &voxels) {
     for(int i = 0; i < N_VOXELS; i++) 
         voxels[i] = 0x01;
 }
-
-void 
-minecraft(std::array<char, N_VOXELS> &voxels, glm::ivec2 cornerXY) {
-    FastNoiseLite noise;
-    noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
-
-    std::array<std::array<int, SIZE_XY>, SIZE_XY> elevation;
-
-    // Compute elevation
-    for(int x = 0; x < SIZE_XY; x++) {
-        for(int y = 0; y < SIZE_XY; y++) {
-            // World voxel position from chunk position 
-            int xx = x + cornerXY.x;
-            int yy = y + cornerXY.y;
-
-            elevation[x][y] = SIZE_Z * (1.0f + noise.GetNoise((float) xx, (float) yy))/2.0f;
-        }
-    }
-
-    // Populate voxel data
-    for(int i = 0; i < N_VOXELS; i++) {
-        auto c = coord(i);
-
-        if(c.z <= elevation[c.x][c.y])
-            //voxels[i] = 0xff;
-            voxels[i] = (char) c.z;
-        else
-            voxels[i] = 0x00;
-    }
-}

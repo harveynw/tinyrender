@@ -1,8 +1,8 @@
 #pragma once
 
-#include "webgpu/webgpu.hpp"
+#include <webgpu/webgpu.hpp>
 #include <GLFW/glfw3.h>
-#include "glfw3webgpu.h"
+#include <glfw3webgpu.h>
 
 #include "primitives/uniforms/UniformStructs.hpp"
 

@@ -1,9 +1,8 @@
-#include "camera/TurntableCamera.hpp"
+#include "camera/TurntableCameraImpl.hpp"
 
-#include "../webgpu/primitives/uniforms/ViewProjMatrixUniform.hpp"
 
 void
-TurntableCamera::updateInternalBuffer() {
+TurntableCameraImpl::updateInternalBuffer() {
     auto position = this->getPosition();
     this->viewProjectionMatrix->updateCameraPosition(position);
     this->viewProjectionMatrix->updateViewMatrix(glm::lookAt(position, vec3(0.0f),
@@ -11,7 +10,7 @@ TurntableCamera::updateInternalBuffer() {
 }
 
 void
-TurntableCamera::onMouseMove(double xpos, double ypos) {
+TurntableCameraImpl::onMouseMove(double xpos, double ypos) {
     if(!dragging)
         return;
 
@@ -28,7 +27,7 @@ TurntableCamera::onMouseMove(double xpos, double ypos) {
 }
 
 void
-TurntableCamera::onMouseButton(GLFWwindow *window, int button, int action, int mods) {
+TurntableCameraImpl::onMouseButton(GLFWwindow *window, int button, int action, int mods) {
     (void) mods;
 
     if (button != GLFW_MOUSE_BUTTON_LEFT)
@@ -50,7 +49,7 @@ TurntableCamera::onMouseButton(GLFWwindow *window, int button, int action, int m
 }
 
 void
-TurntableCamera::onScroll(double xoffset, double yoffset) {
+TurntableCameraImpl::onScroll(double xoffset, double yoffset) {
     (void) xoffset;
 
     r += scrollSensitivity * (float) yoffset;
@@ -60,7 +59,7 @@ TurntableCamera::onScroll(double xoffset, double yoffset) {
 }
 
 void
-TurntableCamera::onKeyEvent(int key, int scancode, int action, int mods) {
+TurntableCameraImpl::onKeyEvent(int key, int scancode, int action, int mods) {
     (void) key;
     (void) scancode;
     (void) action;
@@ -68,18 +67,21 @@ TurntableCamera::onKeyEvent(int key, int scancode, int action, int mods) {
 }
 
 void
-TurntableCamera::enableListen(GLFWwindow *window, std::shared_ptr<tinyrender::ViewProjMatrixUniform> vpMatrix) {
+TurntableCameraImpl::enableListen(GLFWwindow *window, std::shared_ptr<ViewProjMatrixUniform> vpMatrix) {
     (void) window;
     this->viewProjectionMatrix = vpMatrix;
 }
 
 vec3 
-TurntableCamera::getPosition() {
+TurntableCameraImpl::getPosition() {
     float rr = std::exp(r);
     return vec3(rr*sin(theta)*cos(phi), rr*sin(theta)*sin(phi), rr*cos(theta));
 }
 
-void TurntableCamera::onFrame(float dt)
+void TurntableCameraImpl::onFrame(float dt)
 {
     (void) dt;
 }
+
+tinyrender::TurntableCamera::TurntableCamera(): Camera(std::make_unique<TurntableCameraImpl>()) {}
+tinyrender::TurntableCamera::~TurntableCamera() = default;

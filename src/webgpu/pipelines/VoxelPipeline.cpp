@@ -17,8 +17,8 @@ context(context), scene(scene)  {
 }
 
 void
-VoxelPipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder,
-                                  std::vector<std::shared_ptr<tinyrender::Object>> &objects) {
+VoxelPipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder, 
+                        std::vector<ObjectImpl*> &objects) {
     RenderPassDescriptor renderPassDesc;
 
     RenderPassColorAttachment renderPassColorAttachment;
@@ -65,7 +65,7 @@ VoxelPipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &com
     auto &bg = scene->bindGroups.at(Voxels);
     renderPass.setBindGroup(0, bg, 0, nullptr);
 
-    for(auto & object : objects) {
+    for(auto object : objects) {
         if(object->currentTargetPipeline() == Voxels)
             object->onDraw(renderPass, 0, 1);
     } 

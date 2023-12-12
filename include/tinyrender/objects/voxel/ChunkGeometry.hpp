@@ -1,12 +1,8 @@
 #pragma once
 
 #include <vector>
-#include <stack>
 #include <map>
-#include <unordered_map>
 #include <glm/glm.hpp>
-#include <sstream>
-#include <cstdlib>
 
 using glm::ivec2;
 using glm::ivec3;
@@ -36,5 +32,3 @@ ivec3 wrapCoordinate(ivec3 &c);
 
 // Chunk utility methods
 string serializeChunkCoord(ivec2 coord);
-bool visible(ivec2 chunkA, ivec2 chunkB);
-vector<ivec2> visibleFrom(ivec2 chunk);

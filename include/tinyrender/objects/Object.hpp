@@ -1,43 +1,32 @@
 #pragma once
 
-#include <utility>
 #include <memory>
 #include <glm/glm.hpp>
 
-#include "../Fwd.hpp"
-#include "../Transform.hpp"
+class ObjectImpl;
+class EngineImpl;
 
 namespace tinyrender {
 
+    const char OBJECT_HIDDEN = 0x00;
+    const char OBJECT_VISIBLE = 0x01;
+
     class Object {
     protected:
-        Context *context;
-        Scene *scene;
+        std::unique_ptr<ObjectImpl> obj;
 
-        bool isInitialised = false;
+        friend EngineImpl;
     public:
-        virtual void onInit(Context *c, Scene *s);
-        virtual void onUpdate(State &state, float dt);
-        virtual void onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot);
-        virtual void onRemove() ;
+        Object();
+        virtual ~Object();
 
         virtual void setColor(glm::vec3 c);
         virtual void setTexture(std::string path);
-
-        void setScale(float s); 
-        void setTranslation(glm::vec3 t);
-        void setRotationX(float r); 
-        void setRotationY(float r); 
-        void setRotationZ(float r);
-
-        virtual ~Object() = default;
-
-        virtual ObjectPipeline currentTargetPipeline();
-
-        bool HIDDEN = false;
-
-        virtual std::shared_ptr<tinyrender::ModelMatrixUniform> modelMatrix() const;
-        std::shared_ptr<ObjectResources> resources = nullptr;
+        virtual void setScale(float s); 
+        virtual void setTranslation(glm::vec3 t);
+        virtual void setRotationX(float r); 
+        virtual void setRotationY(float r); 
+        virtual void setRotationZ(float r);
+        void setVisibility(char);
     };
-
 }

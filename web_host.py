@@ -4,7 +4,7 @@ import sys
 
 class CORSRequestHandler (SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        kwargs['directory'] = 'build-web/examples/TestScene'
+        kwargs['directory'] = 'build-web/examples'
         super().__init__(*args, **kwargs)
 
     def end_headers(self):

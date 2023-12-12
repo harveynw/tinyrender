@@ -1,27 +1,13 @@
-#include <GLFW/glfw3.h>
-#include <webgpu/webgpu.hpp>
-
-#include "Engine.hpp"
-#include "State.hpp"
-#include "webgpu/Context.hpp"
-#include "webgpu/pipelines/Pipeline.hpp"
-#include "webgpu/Scene.hpp"
-#include "webgpu/pipelines/TrianglePipeline.hpp"
-#include "webgpu/pipelines/TexturedTrianglePipeline.hpp"
-#include "webgpu/pipelines/WavesPipeline.hpp"
-#include "webgpu/pipelines/VoxelPipeline.hpp"
-#include "webgpu/primitives/textures/Texture2D.hpp"
-#include "camera/Camera.hpp"
-#include "objects/Object.hpp"
+#include "EngineImpl.hpp"
 
 
-Engine::Engine() {
+EngineImpl::EngineImpl() {
     if (!glfwInit())
         throw std::runtime_error("Couldn't initialise GLFW");
 }
 
 void
-Engine::launch(int width, int height) {
+EngineImpl::launch(int width, int height) {
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
@@ -66,7 +52,7 @@ Engine::launch(int width, int height) {
     #endif
 }
 
-void Engine::onFrame() {
+void EngineImpl::onFrame() {
     glfwPollEvents();
 
     float dt = 0.01;
@@ -74,7 +60,14 @@ void Engine::onFrame() {
     this->state->frame++;
     this->state->cameraPosition = camera->getPosition();
 
-    for(const auto& obj : objects) {
+    /*
+    * Access objects
+    */
+    std::vector<ObjectImpl*> objectImpls;
+    for(const auto& object : objects)
+        objectImpls.push_back(object->obj.get());
+
+    for(const auto& obj : objectImpls) {
         obj->onUpdate(*state.get(), dt);
     }
 
@@ -89,7 +82,6 @@ void Engine::onFrame() {
     wgpu::TextureView nextTexture = context->swapChain.getCurrentTextureView();
     if (!nextTexture) {
         std::cerr << "Cannot acquire next swap chain texture" << std::endl;
-        //return 1;
         return;
     }
 
@@ -102,7 +94,7 @@ void Engine::onFrame() {
      */
     for(auto &entry : pipelines) {
         auto pipeline = entry.second.get();
-        pipeline->onFrame(nextTexture, encoder, objects);
+        pipeline->onFrame(nextTexture, encoder, objectImpls);
     }
     /*
      * Finish up
@@ -126,15 +118,15 @@ void Engine::onFrame() {
 }
 
 void 
-Engine::addObject(std::shared_ptr<tinyrender::Object> obj) {
-    obj->onInit(context.get(), scene.get());
-    objects.push_back(obj);
+EngineImpl::addObject(std::shared_ptr<tinyrender::Object> object) {
+    object->obj->onInit(context.get(), scene.get());
+    objects.push_back(object);
 }
 
-Engine::~Engine() {
+EngineImpl::~EngineImpl() {
     objects.clear();
-    camera.reset();
     scene.reset();
+    // camera.reset();
     // TODO deleted pipeline destructor, is this okay?
     context.reset(); // Calls the context destructor which will free all the core WebGPU resources.
     glfwDestroyWindow(window);
@@ -142,13 +134,13 @@ Engine::~Engine() {
 }
 
 void
-Engine::setCamera(std::shared_ptr<tinyrender::Camera> c) {
-    camera = c;
-    camera->enableListen(window, this->scene->viewProjUniform);
+EngineImpl::setCamera(std::shared_ptr<tinyrender::Camera> c) {
+    camera = c->camera.get();
+    camera->enableListen(window, scene->viewProjUniform);
     camera->onFrame(0);
 }
 
-void Engine::onResize(int width, int height) {
+void EngineImpl::onResize(int width, int height) {
     printf("tinyrender::onResize to (%i, %i) %p\n", width, height, (void*) this);
 
     // Terminate depth texture
@@ -164,37 +156,37 @@ void Engine::onResize(int width, int height) {
         camera->viewProjectionMatrix->refreshProjectionMatrix(context.get());
 }
 
-bool Engine::isRunning() {
+bool EngineImpl::isRunning() {
     return !glfwWindowShouldClose(getWindow());
 }
 
 void
 onWindowResize(GLFWwindow* window, int width, int height) {
-    auto engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
+    auto engine = reinterpret_cast<EngineImpl*>(glfwGetWindowUserPointer(window));
     if (engine != nullptr) engine->onResize(width, height);
 }
 
 void
 onWindowMouseMove(GLFWwindow* window, double xpos, double ypos) {
-    auto engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
+    auto engine = reinterpret_cast<EngineImpl*>(glfwGetWindowUserPointer(window));
     if (engine != nullptr && engine->camera != nullptr) engine->camera->onMouseMove(xpos, ypos);
 }
 
 void
 onWindowMouseButton(GLFWwindow* window, int button, int action, int mods) {
-    auto engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
+    auto engine = reinterpret_cast<EngineImpl*>(glfwGetWindowUserPointer(window));
     if (engine != nullptr && engine->camera != nullptr) engine->camera->onMouseButton(window, button, action, mods);
 }
 
 void
 onWindowScroll(GLFWwindow* window, double xoffset, double yoffset) {
-    auto engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
+    auto engine = reinterpret_cast<EngineImpl*>(glfwGetWindowUserPointer(window));
     if (engine != nullptr && engine->camera != nullptr) engine->camera->onScroll(xoffset, yoffset);
 }
 
 void
 onKeyAction(GLFWwindow* window, int key, int scancode, int action, int mods) {
-    auto engine = reinterpret_cast<Engine*>(glfwGetWindowUserPointer(window));
+    auto engine = reinterpret_cast<EngineImpl*>(glfwGetWindowUserPointer(window));
     if (engine != nullptr && engine->camera != nullptr) engine->camera->onKeyEvent(key, scancode, action, mods);
 }
 
@@ -207,9 +199,37 @@ EM_BOOL EmscriptenWindowResizedCallback(int eventType, const void *event, void *
 	emscripten_get_element_css_size("canvas", &width, &height);
     printf("Emscripten Callback : resize (%f, %f) Engine:%p\n", width, height, userData);
 
-	Engine* engine = (Engine*) userData;
+	auto engine = (EngineImpl*) userData;
     engine->onResize((int) width, (int) height);
 
     return true;
 }
 #endif
+
+tinyrender::Engine::Engine(): engine{std::make_unique<EngineImpl>()} {}
+tinyrender::Engine::~Engine() = default;
+
+void 
+tinyrender::Engine::launch(int width, int height) {
+    engine->launch(width, height);
+}
+
+bool 
+tinyrender::Engine::isRunning() {
+    return engine->isRunning();
+}
+
+void 
+tinyrender::Engine::onFrame() {
+    engine->onFrame();
+}
+
+void 
+tinyrender::Engine::addObject(std::shared_ptr<tinyrender::Object> obj) {
+    engine->addObject(obj);
+}
+
+void 
+tinyrender::Engine::setCamera(std::shared_ptr<tinyrender::Camera> camera) {
+    engine->setCamera(camera);
+}

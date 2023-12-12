@@ -1,16 +1,14 @@
-#include "camera/FreeviewCamera.hpp"
-
-#include "../webgpu/primitives/uniforms/ViewProjMatrixUniform.hpp"
+#include "FreeviewCameraImpl.hpp"
 
 void
-FreeviewCamera::updateInternalBuffer() {
+FreeviewCameraImpl::updateInternalBuffer() {
     this->viewProjectionMatrix->updateCameraPosition(position);
     this->viewProjectionMatrix->updateViewMatrix(glm::lookAt(position, position + direction,
                                                  vec3(0, 0, 1)));
 }
 
 void
-FreeviewCamera::onMouseMove(double xpos, double ypos) {
+FreeviewCameraImpl::onMouseMove(double xpos, double ypos) {
     if(!captureMouse)
         return;
 
@@ -29,7 +27,7 @@ FreeviewCamera::onMouseMove(double xpos, double ypos) {
 }
 
 void
-FreeviewCamera::onKeyEvent(int key, int scancode, int action, int mods) {
+FreeviewCameraImpl::onKeyEvent(int key, int scancode, int action, int mods) {
     (void) scancode; (void) mods;
     if(key == GLFW_KEY_W)
         longitudinal = action == GLFW_PRESS ? 1 : (action == GLFW_RELEASE ? 0 : longitudinal);
@@ -52,11 +50,11 @@ FreeviewCamera::onKeyEvent(int key, int scancode, int action, int mods) {
 }
 
 glm::vec3 
-FreeviewCamera::getPosition() {
+FreeviewCameraImpl::getPosition() {
     return this->position;
 }
 
-void FreeviewCamera::onFrame(float dt)
+void FreeviewCameraImpl::onFrame(float dt)
 {
     float speed = fast ? fastSpeed : moveSpeed;
 
@@ -82,7 +80,7 @@ void FreeviewCamera::onFrame(float dt)
 }
 
 void
-FreeviewCamera::onMouseButton(GLFWwindow *window, int button, int action, int mods) {
+FreeviewCameraImpl::onMouseButton(GLFWwindow *window, int button, int action, int mods) {
     (void) window;
     (void) mods;
 
@@ -98,19 +96,22 @@ FreeviewCamera::onMouseButton(GLFWwindow *window, int button, int action, int mo
 }
 
 void
-FreeviewCamera::onScroll(double xoffset, double yoffset) {
+FreeviewCameraImpl::onScroll(double xoffset, double yoffset) {
     (void) xoffset;
     (void) yoffset;
 }
 
-void FreeviewCamera::updateMouseState() {
+void FreeviewCameraImpl::updateMouseState() {
     glfwSetInputMode(glfw_window, GLFW_CURSOR, captureMouse ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
 }
 
-void FreeviewCamera::enableListen(GLFWwindow *window, std::shared_ptr<tinyrender::ViewProjMatrixUniform> vpMatrix) {
+void FreeviewCameraImpl::enableListen(GLFWwindow *window, std::shared_ptr<ViewProjMatrixUniform> vpMatrix) {
     this->viewProjectionMatrix = vpMatrix;
     printf("Freeview Camera enabled - WASD, Space - Up, Z - Down, E - Speed, Esc - Uncapture\n");
     glfw_window = window;
     updateInternalBuffer();
     updateMouseState();
 }
+
+tinyrender::FreeviewCamera::FreeviewCamera(): Camera(std::make_unique<FreeviewCameraImpl>()){}
+tinyrender::FreeviewCamera::~FreeviewCamera() = default;

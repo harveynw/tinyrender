@@ -23,8 +23,8 @@ endif()
 # Includes tinyrender as a target
 add_subdirectory(src)
 
-# Test scenes
-add_subdirectory(examples/TestScene)
+# Example executables
+add_subdirectory(examples)
 
 #
 # TESTING

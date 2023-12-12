@@ -2,26 +2,23 @@
 
 #include "Shader.hpp"
 
-namespace tinyrender {
 
-    class TexturedShader : public Shader {
-    protected:
-        Context *context;
+class TexturedShader : public Shader {
+protected:
+    Context *context;
 
-        wgpu::FragmentState fragmentState;
-        wgpu::BlendState blendState;
-        wgpu::ColorTargetState colorTarget;
+    wgpu::FragmentState fragmentState;
+    wgpu::BlendState blendState;
+    wgpu::ColorTargetState colorTarget;
 
-        std::vector<VertexAttribute> vertexAttribs;
-        VertexBufferLayout vertexBufferLayout;
-    public:
-        explicit TexturedShader(Context *context);
-        ~TexturedShader() = default;
+    std::vector<VertexAttribute> vertexAttribs;
+    VertexBufferLayout vertexBufferLayout;
+public:
+    explicit TexturedShader(Context *context);
+    ~TexturedShader() = default;
 
-        wgpu::BindGroupLayout viewProjBindGroupLayout() override;
-        wgpu::BindGroupLayout objectBindGroupLayout() override;
+    wgpu::BindGroupLayout viewProjBindGroupLayout() override;
+    wgpu::BindGroupLayout objectBindGroupLayout() override;
 
-        void setAsTarget(RenderPipelineDescriptor &desc) override;
-    };
-
-}
+    void setAsTarget(RenderPipelineDescriptor &desc) override;
+};

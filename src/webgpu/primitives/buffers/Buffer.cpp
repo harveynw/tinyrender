@@ -5,12 +5,12 @@
 #include "Buffer.hpp"
 
 
-tinyrender::Buffer::Buffer(Context *context, tinyrender::BufferType type, uint64_t size, bool mapped, void *data): context(context),
+tr::Buffer::Buffer(Context *context, BufferType type, uint64_t size, bool mapped, void *data): context(context),
 type(type), size(size), mapped(mapped) {
     initialise(data);
 }
 
-tinyrender::Buffer::~Buffer() {
+tr::Buffer::~Buffer() {
     if(underlying != nullptr) {
         underlying.destroy();
         underlying.release();
@@ -18,7 +18,7 @@ tinyrender::Buffer::~Buffer() {
 }
 
 void
-tinyrender::Buffer::initialise(void *data) {
+tr::Buffer::initialise(void *data) {
     // Create the buffer
     wgpu::BufferDescriptor bufferDesc;
     bufferDesc.size = size;

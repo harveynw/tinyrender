@@ -1,7 +1,3 @@
-//
-// Created by Harvey Williams on 08/08/2023.
-//
-
 #include "TexturedTrianglePipeline.hpp"
 
 /*
@@ -25,7 +21,7 @@ context(context), scene(scene)  {
 
 void
 TexturedTrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder,
-                                  std::vector<std::shared_ptr<tinyrender::Object>> &objects) {
+                                    std::vector<ObjectImpl*> &objects) {
     RenderPassDescriptor renderPassDesc;
 
     RenderPassColorAttachment renderPassColorAttachment;
@@ -72,7 +68,7 @@ TexturedTrianglePipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandE
     auto &bg = scene->bindGroups.at(TexturedTriangle);
     renderPass.setBindGroup(0, bg, 0, nullptr);
 
-    for(auto & object : objects) {
+    for(auto object : objects) {
         if(object->currentTargetPipeline() == TexturedTriangle)
             object->onDraw(renderPass, 0, 1);
     }

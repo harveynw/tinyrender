@@ -1,5 +1,4 @@
-#ifndef TINYGAME_BUFFER_H
-#define TINYGAME_BUFFER_H
+#pragma once
 
 #include "webgpu/webgpu.hpp"
 #include "../../Context.hpp"
@@ -12,15 +11,14 @@
  * and more with specialised methods for updating them.
  */
 
-using namespace wgpu;
 
-namespace tinyrender {
+enum BufferType {
+    VERTEX = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Vertex,
+    UNIFORM = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform,
+    INDEX = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Index
+};
 
-    enum BufferType {
-        VERTEX = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Vertex,
-        UNIFORM = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Uniform,
-        INDEX = wgpu::BufferUsage::CopyDst | wgpu::BufferUsage::Index
-    };
+namespace tr {
 
     class Buffer {
     protected:
@@ -42,5 +40,3 @@ namespace tinyrender {
 
 }
 
-
-#endif //TINYGAME_BUFFER_H
