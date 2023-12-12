@@ -11,6 +11,7 @@
 #include "../webgpu/primitives/uniforms/ScalarUniform.hpp"
 #include "../webgpu/primitives/uniforms/TextureUniforms.hpp"
 #include "../webgpu/primitives/textures/Texture2D.hpp"
+#include "../webgpu/primitives/textures/CharColorTexture.hpp"
 #include "../webgpu/Scene.hpp"
 #include "../webgpu/pipelines/ObjectPipeline.hpp"
 
@@ -35,6 +36,7 @@ struct ObjectResources {
 
     // Voxel specific
     std::shared_ptr<ModelMatrixUniform> globalModelMatrix = nullptr;
+    std::shared_ptr<Texture2D::CharColorTexture> voxelColors = nullptr;
 
     ObjectResources(Context *context, Scene *scene, std::shared_ptr<AttributeBuffer> attrs, ObjectPipeline target);
     ~ObjectResources();

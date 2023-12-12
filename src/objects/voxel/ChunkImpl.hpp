@@ -19,9 +19,9 @@ struct GPU_CHUNK;
 
 class ChunkImpl {
 protected:
-    Context *c;
-    Scene *s;
     VoxelsImpl &v;
+    Context *context;
+    Scene *scene;
     
     // Internal state machine (+ signals)
     bool should_build_mesh = false; // Used as a signal to go from UNLOADED->LOADED as well as refreshing the mesh in LOADED state
@@ -29,16 +29,17 @@ protected:
     std::atomic<char> state = 0x00; // Start unloaded
 
     std::shared_ptr<VoxelMesh> mesh = nullptr;
-    std::shared_ptr<ModelMatrixUniform> globalModelMatrix = nullptr;
     std::unique_ptr<GPU_CHUNK> gpu;
 
     void refreshNeighbours();
     void buildMeshAsync();
+
+    friend GPU_CHUNK;
 public:
     ivec2 chunkCoordinate; // {i, j} in chunk space
     ivec2 cornerCoordinate; // {x, y} in world space of corner
 
-    ChunkImpl(Context *c, Scene *s, VoxelsImpl &v, ivec2 chunkCoordinate, std::shared_ptr<ModelMatrixUniform> globalModelMatrix);
+    ChunkImpl(VoxelsImpl &v, Context *context, Scene *scene, ivec2 chunkCoordinate);
     
     void onUpdate();
     void onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot);

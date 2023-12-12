@@ -10,6 +10,11 @@ void VoxelsImpl::onInit(Context *c, Scene *s)
     ObjectImpl::onInit(c, s);
 
     globalModelMatrix = std::make_shared<ModelMatrixUniform>(c);
+    voxelColors = std::make_shared<Texture2D::CharColorTexture>(c);
+
+    std::array<uint8_t, 4*256> colors;
+    colors.fill(255);
+    voxelColors->update(colors);
 }
 
 void 
@@ -55,13 +60,18 @@ std::shared_ptr<ModelMatrixUniform> VoxelsImpl::modelMatrix() const
     return globalModelMatrix;
 }
 
+std::shared_ptr<Texture2D::CharColorTexture> VoxelsImpl::colorTexture() 
+{
+    return voxelColors;
+}
+
 std::shared_ptr<tinyrender::Chunk> VoxelsImpl::getChunk(ivec2 chunkCoordinate)
 {
     auto key = serializeChunkCoord(chunkCoordinate);
     if(map.count(key) > 0)
         return map.at(key);
     
-    auto chunk = std::make_shared<tinyrender::Chunk>(context, scene, *this, chunkCoordinate, globalModelMatrix);
+    auto chunk = std::make_shared<tinyrender::Chunk>(*this, context, scene, chunkCoordinate);
     map[key] = chunk;
     return chunk;
 }

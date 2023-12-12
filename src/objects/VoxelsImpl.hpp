@@ -18,6 +18,8 @@ class VoxelsImpl : public ObjectImpl {
     using ObjectImpl::setTexture;
 
     std::shared_ptr<ModelMatrixUniform> globalModelMatrix;
+    std::shared_ptr<Texture2D::CharColorTexture> voxelColors;
+
     std::map<std::string, std::shared_ptr<tinyrender::Chunk>> map;
 
     static ChunkImpl* impl(std::shared_ptr<tinyrender::Chunk> &chunk);
@@ -32,6 +34,7 @@ public:
     ObjectPipeline currentTargetPipeline() override;
 
     std::shared_ptr<ModelMatrixUniform> modelMatrix() const override;
+    std::shared_ptr<Texture2D::CharColorTexture> colorTexture();
 
     // Chunk API
     std::shared_ptr<tinyrender::Chunk> getChunk(ivec2 chunkCoordinate);
