@@ -1,17 +1,12 @@
-//
-// Created by Harvey Williams on 08/08/2023.
-//
-
-#ifndef TINYGAME_PIPELINE_H
-#define TINYGAME_PIPELINE_H
+#pragma once
 
 #include "tiny_obj_loader.h"
 #include <webgpu/webgpu.hpp>
 
-#include "objects/Object.hpp"
-#include "Scene.hpp"
-#include "Context.hpp"
-
+#include "../../objects/ObjectImpl.hpp"
+#include "../Scene.hpp"
+#include "../Context.hpp"
+#include "ObjectPipeline.hpp"
 
 class Pipeline {
 protected:
@@ -23,7 +18,7 @@ public:
     Pipeline() = default;
     virtual ~Pipeline() = default;
     virtual void onFrame(wgpu::TextureView&, wgpu::CommandEncoder&,
-                         std::vector<std::shared_ptr<tinyrender::Object>>&) = 0;
+                         std::vector<ObjectImpl*>&) = 0;
 
     void enableClear(wgpu::Color color) {
         shouldClear = true;
@@ -31,5 +26,3 @@ public:
     }
 };
 
-
-#endif //TINYGAME_PIPELINE_H

@@ -1,7 +1,3 @@
-//
-// Created by Harvey Williams on 08/08/2023.
-//
-
 #include "WavesPipeline.hpp"
 
 
@@ -22,7 +18,7 @@ context(context), scene(scene)  {
 
 void
 WavesPipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &commandEncoder,
-                                  std::vector<std::shared_ptr<tinyrender::Object>> &objects) {
+                                  std::vector<ObjectImpl*> &objects) {
     RenderPassDescriptor renderPassDesc;
 
     RenderPassColorAttachment renderPassColorAttachment;
@@ -69,7 +65,7 @@ WavesPipeline::onFrame(wgpu::TextureView &textureView, wgpu::CommandEncoder &com
     auto &bg = scene->bindGroups.at(Waves);
     renderPass.setBindGroup(0, bg, 0, nullptr);
 
-    for(auto & object : objects) {
+    for(auto object : objects) {
         if(object->currentTargetPipeline() == Waves)
             object->onDraw(renderPass, 0, 1);
     } 

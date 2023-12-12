@@ -4,6 +4,7 @@
 #include <stack>
 
 #include "objects/voxel/Chunk.hpp"
+#include "ChunkImpl.hpp"
 
 
 namespace {
@@ -230,7 +231,7 @@ namespace {
     }
 }
 
-NeighbourData extractBoundaries(Chunks &chunks, ivec2 chunkCoordinate)
+NeighbourData extractBoundaries(VoxelsImpl &v, ivec2 chunkCoordinate)
 {
     // Populates NeighbourData for chunk at _chunkCoordinate_ at the instant the function is called
     NeighbourData data{};
@@ -250,14 +251,14 @@ NeighbourData extractBoundaries(Chunks &chunks, ivec2 chunkCoordinate)
     auto e = chunkCoordinate + ivec2(1, 0);
     auto w = chunkCoordinate + ivec2(-1, 0);
 
-    if(chunks.chunkDisplayed(n) )
-        takePlane(data.north, chunks.getChunk(n)->voxels, true, 0);
-    if(chunks.chunkDisplayed(s))
-        takePlane(data.south, chunks.getChunk(s)->voxels, true, SIZE_XY-1);
-    if(chunks.chunkDisplayed(e) )
-        takePlane(data.east, chunks.getChunk(e)->voxels, false, 0);
-    if(chunks.chunkDisplayed(w))
-        takePlane(data.west, chunks.getChunk(w)->voxels, false, SIZE_XY-1);
+    if(v.chunkDisplayed(n) )
+        takePlane(data.north, v.getChunk(n)->voxelData(), true, 0);
+    if(v.chunkDisplayed(s))
+        takePlane(data.south, v.getChunk(s)->voxelData(), true, SIZE_XY-1);
+    if(v.chunkDisplayed(e) )
+        takePlane(data.east, v.getChunk(e)->voxelData(), false, 0);
+    if(v.chunkDisplayed(w))
+        takePlane(data.west, v.getChunk(w)->voxelData(), false, SIZE_XY-1);
 
     auto takeCorner = [](array<char, SIZE_Z> &corner, array<char, N_VOXELS> &neighbourChunk, ivec2 xy) {
         // Populates _corner_ with column of voxels at _xy_ from _neighbourChunk_
@@ -270,14 +271,14 @@ NeighbourData extractBoundaries(Chunks &chunks, ivec2 chunkCoordinate)
     auto ne = chunkCoordinate + ivec2(1, 1);
     auto se = chunkCoordinate + ivec2(1, -1);
 
-    if(chunks.chunkDisplayed(sw) )
-        takeCorner(data.cornerSW, chunks.getChunk(sw)->voxels, ivec2(SIZE_XY-1, SIZE_XY-1));
-    if(chunks.chunkDisplayed(nw) )
-        takeCorner(data.cornerNW, chunks.getChunk(nw)->voxels, ivec2(SIZE_XY-1, 0));
-    if(chunks.chunkDisplayed(ne) )
-        takeCorner(data.cornerNE, chunks.getChunk(ne)->voxels, ivec2(0, 0));
-    if(chunks.chunkDisplayed(se) )
-        takeCorner(data.cornerSE, chunks.getChunk(se)->voxels, ivec2(0, SIZE_XY-1));
+    if(v.chunkDisplayed(sw) )
+        takeCorner(data.cornerSW, v.getChunk(sw)->voxelData(), ivec2(SIZE_XY-1, SIZE_XY-1));
+    if(v.chunkDisplayed(nw) )
+        takeCorner(data.cornerNW, v.getChunk(nw)->voxelData(), ivec2(SIZE_XY-1, 0));
+    if(v.chunkDisplayed(ne) )
+        takeCorner(data.cornerNE, v.getChunk(ne)->voxelData(), ivec2(0, 0));
+    if(v.chunkDisplayed(se) )
+        takeCorner(data.cornerSE, v.getChunk(se)->voxelData(), ivec2(0, SIZE_XY-1));
 
     return data;
 }

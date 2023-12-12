@@ -1,7 +1,7 @@
 #include "VoxelShader.hpp"
 
 
-tinyrender::VoxelShader::VoxelShader(Context *context): context(context) {
+VoxelShader::VoxelShader(Context *context): context(context) {
     // Create shader module
     shaderModule = loadShaderModule("voxels", context->device);
     std::cout << "Shader module: " << shaderModule << std::endl;
@@ -33,17 +33,17 @@ tinyrender::VoxelShader::VoxelShader(Context *context): context(context) {
 }
 
 wgpu::BindGroupLayout
-tinyrender::VoxelShader::objectBindGroupLayout() {
+VoxelShader::objectBindGroupLayout() {
     return bindGroupLayouts[1];
 }
 
 wgpu::BindGroupLayout
-tinyrender::VoxelShader::viewProjBindGroupLayout() {
+VoxelShader::viewProjBindGroupLayout() {
     return bindGroupLayouts[0];
 }
 
 void
-tinyrender::VoxelShader::setAsTarget(RenderPipelineDescriptor &desc) {
+VoxelShader::setAsTarget(RenderPipelineDescriptor &desc) {
     // Attributes
     // Specify that we have one buffer and this is the layout
     desc.vertex.bufferCount = 1;

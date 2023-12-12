@@ -1,50 +1,36 @@
 #pragma once
 
-#include "../../Fwd.hpp"
+#include <memory>
+
 #include "ChunkGeometry.hpp"
 
-const char CHUNK_VISIBLE = 0x00;
-const char CHUNK_HIDDEN = 0x01;
+class ChunkImpl;
+class VoxelsImpl;
+class ModelMatrixUniform;
+struct Context;
+struct Scene;
 
-// Forward declare
-struct GPU_CHUNK;
-struct VoxelVertexAttribute;
-typedef vector<VoxelVertexAttribute> VoxelMesh;
+namespace tinyrender {
 
+    const char CHUNK_VISIBLE = 0x00;
+    const char CHUNK_HIDDEN = 0x01;
 
-class Chunk {
-protected:
-    Context *c;
-    Scene *s;
-    Chunks &chunks;
-    
-    // Internal state machine (+ signals)
-    bool should_build_mesh = false; // Used as a signal to go from UNLOADED->LOADED as well as refreshing the mesh in LOADED state
-    bool should_unload = false; // When LOADED state -> UNLOADED state
-    std::atomic<char> state = 0x00; // Start unloaded
+    class Chunk {
+    protected:
+        std::unique_ptr<ChunkImpl> chunk;
 
-    std::shared_ptr<VoxelMesh> mesh = nullptr;
-    std::shared_ptr<tinyrender::ModelMatrixUniform> globalModelMatrix = nullptr;
-    std::unique_ptr<GPU_CHUNK> gpu;
+        friend ChunkImpl;
+        friend VoxelsImpl;
+    public:
+        Chunk(Context *c, Scene *s, VoxelsImpl &v, ivec2 chunkCoordinate, std::shared_ptr<ModelMatrixUniform> globalModelMatrix);
+        ~Chunk();
 
-    void refreshNeighbours();
-    void buildMeshAsync();
-public:
-    ivec2 chunkCoordinate; // {i, j} in chunk space
-    ivec2 cornerCoordinate; // {x, y} in world space of corner
-
-    Chunk(Context *c, Scene *s, Chunks &chunks, ivec2 chunkCoordinate, std::shared_ptr<tinyrender::ModelMatrixUniform> globalModelMatrix);
-    
-    void onUpdate();
-    void onDraw(wgpu::RenderPassEncoder &renderPass, int vertexBufferSlot, int bindGroupSlot);
-    
-    array<char, N_VOXELS> voxels;
-
-    void setVisibility(const char state);
-    bool isVisible();
-
-    void set(ivec3 voxel, char value);
-    void shouldRefreshMesh();
-
-    ~Chunk();
-};
+        std::array<char, N_VOXELS>& voxelData();
+        void set(ivec3, char);
+        ivec2& cornerCoordinate();
+        ivec2& chunkCoordinate();
+        void setVisibility(char);
+        bool isVisible();
+        void shouldRefreshMesh();
+    };
+}

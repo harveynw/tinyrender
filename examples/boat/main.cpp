@@ -1,7 +1,7 @@
-
 #ifdef __EMSCRIPTEN__
 #include <emscripten/html5.h>
 #endif
+#include <string>
 
 #include "tinyrender/Engine.hpp"
 #include "tinyrender/camera/TurntableCamera.hpp"
@@ -15,23 +15,22 @@ int main (int, char**) {
     /*
      * Init engine
      */
-
-    auto engine = std::make_unique<Engine>();
+    auto engine = std::make_unique<tinyrender::Engine>();
     engine->launch(640, 480);
 
     /*
      * Set helper class for moving camera about
      */
 
-    auto camera = std::make_shared<TurntableCamera>();
-    //auto camera = std::make_shared<FreeviewCamera>();
+    auto camera = std::make_shared<tinyrender::TurntableCamera>();
+    //auto camera = std::make_shared<tinyrender::FreeviewCamera>();
     engine->setCamera(camera);
 
     /*
      * Create the objects
      */
     {
-        std::shared_ptr<tinyrender::Object> object = std::make_shared<tinyrender::Mesh>("resources/fourareen.obj");
+        auto object = std::make_shared<tinyrender::Mesh>("resources/fourareen.obj");
         engine->addObject(object);
         object->setTexture("resources/fourareen2K_albedo.jpg");
     }
@@ -42,16 +41,15 @@ int main (int, char**) {
         object->setScale(0.2f);
         object->setTranslation(vec3(0,0,0.5));
         object->setColor(vec3(0.9, 0.9, 1.0));
-        engine->objects.push_back(object);
     }
     {
         // Wave Sim
         auto object = std::make_shared<tinyrender::WaveSim>(50, 50);
         engine->addObject(object);
 
-        object->HIDDEN = false;
         object->setColor(vec3(0.0, 0.019, 0.301));
         object->setTranslation(vec3(0.0, 0.0, -0.5));
+        object->setVisibility(tinyrender::OBJECT_VISIBLE);
     }
 
     /*

@@ -1,34 +1,25 @@
-#include "objects/WaveSim.hpp"
+#include "WaveSimImpl.hpp"
 
-#include "loaders/Polygons.hpp"
-#include "loaders/Shapes.hpp"
-#include "../webgpu/primitives/textures/WavesDataTexture.hpp"
-#include "ObjectResources.hpp"
-#include "wavesim/naive.hpp"
-#include "wavesim/FFTfftw.hpp"
-#include "objects/WaveSim.hpp"
-
-
-tinyrender::WaveSim::WaveSim(float width, float length): WIDTH(width), LENGTH(length) {
+WaveSimImpl::WaveSimImpl(float width, float length): WIDTH(width), LENGTH(length) {
     assert(MESH_RES_WIDTH % 2 == 0);
     assert(MESH_RES_LENGTH % 2 == 0);
 }
 
 void 
-tinyrender::WaveSim::onInit(Context *c, Scene *s) {
-    Object::onInit(c, s);
+WaveSimImpl::onInit(Context *c, Scene *s) {
+    ObjectImpl::onInit(c, s);
 
     this->displacementData = std::vector<uint8_t>(4 * DISP_MAP_RES * DISP_MAP_RES);
 
     Polygons p;
     loadPlaneMesh(p, WIDTH, LENGTH, MESH_RES_WIDTH, MESH_RES_LENGTH);
-    this->mesh = std::make_shared<tinyrender::AttributeBuffer>(this->context, p.data, p.vertices);
+    this->mesh = std::make_shared<AttributeBuffer>(this->context, p.data, p.vertices);
     this->resources = std::make_shared<ObjectResources>(this->context, this->scene, this->mesh, ColoredTriangle);
 
     // Init Waves Data and reset Bind Group to point to it
-    this->texture = std::make_shared<tinyrender::Texture2D::WavesDataTexture>(c, DISP_MAP_RES, DISP_MAP_RES);
+    this->texture = std::make_shared<Texture2D::WavesDataTexture>(c, DISP_MAP_RES, DISP_MAP_RES);
     this->resources->texture = this->texture;
-    this->resources->maxDisplacement = std::make_shared<tinyrender::ScalarUniform>(c);
+    this->resources->maxDisplacement = std::make_shared<ScalarUniform>(c);
     this->resources->maxDisplacement->set(0.5);
     this->resources->resetBindGroup(Waves);
 
@@ -37,7 +28,7 @@ tinyrender::WaveSim::onInit(Context *c, Scene *s) {
 }
 
 void 
-tinyrender::WaveSim::onUpdate(State &state, float dt) {
+WaveSimImpl::onUpdate(State &state, float dt) {
     (void) state;
     //naive->update(dt, displacementData);
     fftw->update(dt, displacementData);
@@ -45,8 +36,8 @@ tinyrender::WaveSim::onUpdate(State &state, float dt) {
 }
 
 void 
-tinyrender::WaveSim::onRemove() {
-    Object::onRemove();
+WaveSimImpl::onRemove() {
+    ObjectImpl::onRemove();
 
     this->displacementData.clear();
     this->texture.reset();
@@ -56,10 +47,16 @@ tinyrender::WaveSim::onRemove() {
 }
 
 void
-tinyrender::WaveSim::setColor(glm::vec3 c) {
+WaveSimImpl::setColor(glm::vec3 c) {
     this->resources->color->set(c);
 }
 
-tinyrender::WaveSim::~WaveSim()
+WaveSimImpl::~WaveSimImpl()
 {
 }
+
+tinyrender::WaveSim::WaveSim(float width, float length) {
+    obj = std::make_unique<WaveSimImpl>(width, length);
+}
+
+tinyrender::WaveSim::~WaveSim() = default;

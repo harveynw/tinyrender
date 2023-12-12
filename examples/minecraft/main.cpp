@@ -11,9 +11,9 @@
 /*
 * tinyrender engine + Voxel system
 */
-std::unique_ptr<Engine> engine;
+std::unique_ptr<tinyrender::Engine> engine;
 std::shared_ptr<tinyrender::Voxels> voxel;
-std::shared_ptr<FreeviewCamera> camera;
+std::shared_ptr<tinyrender::FreeviewCamera> camera;
 
 
 /*
@@ -63,13 +63,13 @@ void onFrame() {
     int RENDER_DISTANCE = 3;
 
     // Chunk underneath camera
-    vec3 pos = camera->getPosition();
+    glm::vec3 pos = camera->getPosition();
     ivec2 cameraChunk = ivec2(int(pos.x) / SIZE_XY, int(pos.y) / SIZE_XY);
  
     // Hide chunks beyond render distance
     for(auto &visibleChunk: voxel->visibleChunks()) {
-        if(chebyshevDistance(cameraChunk, visibleChunk->chunkCoordinate) > RENDER_DISTANCE)
-            visibleChunk->setVisibility(CHUNK_HIDDEN);
+        if(chebyshevDistance(cameraChunk, visibleChunk->chunkCoordinate()) > RENDER_DISTANCE)
+            visibleChunk->setVisibility(tinyrender::CHUNK_HIDDEN);
     }
 
     // Ensure chunks are loaded surrounding camera
@@ -80,11 +80,11 @@ void onFrame() {
             // Ensure initialised
             if(!voxel->chunkTracked(selectedChunk)) {
                 auto v = voxel->getChunk(selectedChunk); 
-                terrain(v->voxels, v->cornerCoordinate); 
+                terrain(v->voxelData(), v->cornerCoordinate()); 
             }
 
             // Mark visible
-            voxel->getChunk(selectedChunk)->setVisibility(CHUNK_VISIBLE);
+            voxel->getChunk(selectedChunk)->setVisibility(tinyrender::CHUNK_VISIBLE);
         }
     }
     
@@ -98,13 +98,13 @@ int main (int, char**) {
     /*
      * Init engine
      */
-    engine = std::make_unique<Engine>();
+    engine = std::make_unique<tinyrender::Engine>();
     engine->launch(640, 480);
 
     /*
      * Set helper class for moving camera about
      */
-    camera = std::make_shared<FreeviewCamera>();
+    camera = std::make_shared<tinyrender::FreeviewCamera>();
     engine->setCamera(camera);
 
     /*

@@ -11,13 +11,11 @@ using glm::vec4;
 using glm::vec3;
 
 
-namespace tinyrender {
 
-    class LightingUniform : public BufferUniform {
-    protected:
-        LightingUniforms uniforms{};
-    public:
-        explicit LightingUniform(Context *context);
-    };
+class LightingUniform : public BufferUniform {
+protected:
+    LightingUniforms uniforms{};
+public:
+    explicit LightingUniform(Context *context);
+};
 
-}

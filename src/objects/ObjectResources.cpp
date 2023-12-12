@@ -1,9 +1,9 @@
 #include "ObjectResources.hpp"
 
 
-ObjectResources::ObjectResources(Context *context, Scene *scene, std::shared_ptr<tinyrender::AttributeBuffer> attrs, ObjectPipeline target): context(context), scene(scene), attributeBuffer(attrs) {
-    this->modelMatrix = std::make_shared<tinyrender::ModelMatrixUniform>(context);
-    this->color = std::make_shared<tinyrender::ColorUniform>(context);
+ObjectResources::ObjectResources(Context *context, Scene *scene, std::shared_ptr<AttributeBuffer> attrs, ObjectPipeline target): context(context), scene(scene), attributeBuffer(attrs) {
+    this->modelMatrix = std::make_shared<ModelMatrixUniform>(context);
+    this->color = std::make_shared<ColorUniform>(context);
 
     this->resetBindGroup(target);
 }
@@ -25,7 +25,7 @@ void ObjectResources::resetBindGroup(ObjectPipeline target) {
         bindGroup.release();
     }
 
-    std::vector<std::shared_ptr<tinyrender::Uniform>> uniforms;
+    std::vector<std::shared_ptr<Uniform>> uniforms;
     switch(target) {
         case TexturedTriangle:
             uniforms = { 

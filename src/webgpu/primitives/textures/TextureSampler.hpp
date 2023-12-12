@@ -1,6 +1,6 @@
 #pragma once
 
-namespace tinyrender::Texture2D {
+namespace Texture2D {
     class SamplerDelegate {
     public:
         virtual wgpu::Sampler createSampler(Context *context, unsigned int mips) = 0;

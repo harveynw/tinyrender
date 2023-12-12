@@ -1,7 +1,6 @@
 #pragma once
 
 #include "webgpu/webgpu.hpp"
-#include "tinyrender/Fwd.hpp"
 #include "primitives/textures/Texture2D.hpp"
 #include "primitives/uniforms/LightingUniform.hpp"
 #include "primitives/shaders/TexturedShader.hpp"
@@ -9,6 +8,7 @@
 #include "primitives/shaders/WavesShader.hpp"
 #include "primitives/shaders/VoxelShader.hpp"
 #include "primitives/uniforms/ViewProjMatrixUniform.hpp"
+#include "pipelines/ObjectPipeline.hpp"
 
 /*
  * Scene
@@ -17,10 +17,10 @@
 
 struct Scene {
     // Depth Buffer, pipelines will require read/write to this.
-    std::shared_ptr<tinyrender::Texture2D::Texture> depthTexture;
+    std::shared_ptr<Texture2D::Texture> depthTexture;
 
     // Shaders
-    std::map<ObjectPipeline, std::shared_ptr<tinyrender::Shader>> shaders = {
+    std::map<ObjectPipeline, std::shared_ptr<Shader>> shaders = {
         { TexturedTriangle, nullptr },
         { ColoredTriangle , nullptr },
         { Waves, nullptr },
@@ -28,8 +28,8 @@ struct Scene {
     };
 
     // ViewProjection + Lighting data
-    std::shared_ptr<tinyrender::LightingUniform> lightingUniform;
-    std::shared_ptr<tinyrender::ViewProjMatrixUniform> viewProjUniform;
+    std::shared_ptr<LightingUniform> lightingUniform;
+    std::shared_ptr<ViewProjMatrixUniform> viewProjUniform;
     std::vector<wgpu::BindGroupEntry> viewProjUniformBindGroupData;
     std::map<ObjectPipeline, wgpu::BindGroup> bindGroups = {
         { TexturedTriangle, nullptr },

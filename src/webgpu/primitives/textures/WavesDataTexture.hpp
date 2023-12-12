@@ -4,7 +4,7 @@
 
 // TODO this should really be a one-channel image
 
-namespace tinyrender::Texture2D {
+namespace Texture2D {
 
     class WavesDataTexture : public Texture {
     protected:

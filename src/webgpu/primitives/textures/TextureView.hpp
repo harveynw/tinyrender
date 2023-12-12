@@ -1,7 +1,7 @@
 #pragma once
 
 
-namespace tinyrender::Texture2D {
+namespace Texture2D {
     class ViewDelegate {
     public:
         virtual wgpu::TextureView createView(wgpu::Texture texture, unsigned int mips) = 0;
