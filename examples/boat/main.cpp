@@ -3,11 +3,11 @@
 #endif
 #include <string>
 
-#include "tinyrender/Engine.hpp"
-#include "tinyrender/camera/TurntableCamera.hpp"
-#include "tinyrender/objects/Mesh.hpp"
-#include "tinyrender/objects/Cube.hpp"
-#include "tinyrender/objects/WaveSim.hpp"
+#include <tinyrender/Engine.hpp>
+#include <tinyrender/camera/TurntableCamera.hpp>
+#include <tinyrender/objects/Mesh.hpp>
+#include <tinyrender/objects/Cube.hpp>
+#include <tinyrender/objects/WaveSim.hpp>
 
 using glm::vec3;
 

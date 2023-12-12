@@ -3,13 +3,13 @@
 #endif
 #include <FastNoiseLite.h>
 
-#include "tinyrender/Engine.hpp"
-#include "tinyrender/camera/FreeviewCamera.hpp"
-#include "tinyrender/objects/Voxels.hpp"
-#include "tinyrender/objects/voxel/ChunkGeometry.hpp"
+#include <tinyrender/Engine.hpp>
+#include <tinyrender/camera/FreeviewCamera.hpp>
+#include <tinyrender/objects/Voxels.hpp>
+#include <tinyrender/objects/voxel/ChunkGeometry.hpp>
 
 /*
-* tinyrender engine + Voxel system
+* tinyrender engine + voxel system
 */
 std::unique_ptr<tinyrender::Engine> engine;
 std::shared_ptr<tinyrender::Voxels> voxel;
@@ -60,7 +60,7 @@ chebyshevDistance(ivec2 chunkA, ivec2 chunkB) {
 * Our event loop, concerned with keeping chunks around the camera visible and generated.
 */
 void onFrame() {
-    int RENDER_DISTANCE = 1;
+    int RENDER_DISTANCE = 3;
 
     // Chunk underneath camera
     glm::vec3 pos = camera->getPosition();
@@ -87,7 +87,7 @@ void onFrame() {
             voxel->getChunk(selectedChunk)->setVisibility(tinyrender::CHUNK_VISIBLE);
         }
     }
-    
+
     engine->onFrame();
 }
 
