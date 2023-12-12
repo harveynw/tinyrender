@@ -199,7 +199,7 @@ EM_BOOL EmscriptenWindowResizedCallback(int eventType, const void *event, void *
 	emscripten_get_element_css_size("canvas", &width, &height);
     printf("Emscripten Callback : resize (%f, %f) Engine:%p\n", width, height, userData);
 
-	EngineImpl* engine = (Engine*) userData;
+	auto engine = (EngineImpl*) userData;
     engine->onResize((int) width, (int) height);
 
     return true;

@@ -60,7 +60,7 @@ chebyshevDistance(ivec2 chunkA, ivec2 chunkB) {
 * Our event loop, concerned with keeping chunks around the camera visible and generated.
 */
 void onFrame() {
-    int RENDER_DISTANCE = 3;
+    int RENDER_DISTANCE = 1;
 
     // Chunk underneath camera
     glm::vec3 pos = camera->getPosition();
@@ -117,7 +117,7 @@ int main (int, char**) {
      * Render loop
      */
     #ifdef __EMSCRIPTEN__
-    emscripten_set_main_loop_arg(onFrame, 0, true);
+    emscripten_set_main_loop(onFrame, 0, true);
     #else
     while (engine->isRunning())
         onFrame();
