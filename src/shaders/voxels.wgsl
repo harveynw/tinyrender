@@ -30,15 +30,6 @@ struct LightingUniforms {
 @group(1) @binding(2) var colors: texture_2d<f32>;
 @group(1) @binding(3) var textureSampler: sampler;
 
-fn unifToColor(u: f32) -> vec3f {
-    let t: f32 = u * 3.14 * 10.0f;
-
-    let r: f32 = (sin(t) + 1.0f)/2.0f;
-    let g: f32 = (cos(t) + 1.0f)/2.0f;
-    let b: f32 = (sin(t) + 1.0f)/2.0f;
-
-    return vec3f(r, g, b);
-}
 
 @vertex
 fn vs_main(in: VertexInput) -> VertexOutput {
