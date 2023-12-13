@@ -22,10 +22,12 @@ std::shared_ptr<tinyrender::FreeviewCamera> camera;
 */
 void 
 terrain(std::array<char, N_VOXELS> &voxels, glm::ivec2 cornerXY) {
-    // Populates a chunk with corner at _cornerXY_
-
+    // Populates a chunk indexed by corner at _cornerXY_
     FastNoiseLite noise;
     noise.SetNoiseType(FastNoiseLite::NoiseType_OpenSimplex2);
+    auto noise_func = [&noise](int x, int y) {
+        return (1.0 + noise.GetNoise((float) x, (float) y))/2.0;
+    };
 
     std::array<std::array<int, SIZE_XY>, SIZE_XY> elevation;
 
@@ -36,7 +38,12 @@ terrain(std::array<char, N_VOXELS> &voxels, glm::ivec2 cornerXY) {
             int xx = x + cornerXY.x;
             int yy = y + cornerXY.y;
 
-            elevation[x][y] = SIZE_Z * (1.0f + noise.GetNoise((float) xx, (float) yy))/2.0f;
+            float e = 0.0;
+            e += 1.0 * noise_func(xx, yy);
+            e += 0.5 * noise_func(2*xx, 2*yy); 
+            e += 0.25 * noise_func(4*xx, 4*yy); 
+            float e_norm = e/(1.0 + 0.5 + 0.25);
+            elevation[x][y] = SIZE_Z * std::pow(e_norm, 2.718); 
         }
     }
 
