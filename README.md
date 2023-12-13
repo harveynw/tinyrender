@@ -13,13 +13,14 @@ tinyrender is for when you just want to draw 3D scenes, but don't want to touch 
 
 ### Current State
 
-(Development screenshot) Phong lighting, OBJ files, fourier wave simulation:
-
-![Screenshot](img/screenshot.png)
+(Development screenshots) Phong lighting, OBJ files, fourier wave simulation, voxel rendering:
 
 Currently testing on and building for:
 - ARM macOS 
 - x86_64 Ubuntu Linux
+
+![Screenshot](img/screenshot_1.png)
+![Screenshot](img/screenshot_2.png)
 
 ### Building and running locally
 
