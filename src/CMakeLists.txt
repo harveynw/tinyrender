@@ -65,7 +65,7 @@ set(WEBGPU_BACKEND "WGPU" CACHE STRING "" FORCE)
 FetchContent_Declare(
         webgpu
         GIT_REPOSITORY https://github.com/eliemichel/WebGPU-distribution
-        GIT_TAG        main
+        GIT_TAG        wgpu-5433868
 )
 FetchContent_MakeAvailable(webgpu)
 target_link_libraries(tinyrender PUBLIC webgpu)
@@ -74,7 +74,7 @@ target_link_libraries(tinyrender PUBLIC webgpu)
 FetchContent_Declare(
         glfw3webgpu
         GIT_REPOSITORY https://github.com/eliemichel/glfw3webgpu
-        GIT_TAG        main
+        GIT_TAG        v1.1.0
 )
 FetchContent_MakeAvailable(glfw3webgpu)
 target_link_libraries(tinyrender PRIVATE glfw3webgpu)

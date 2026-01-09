@@ -71,6 +71,7 @@ void ChunkImpl::onUpdate() {
             // Upload mesh to GPU and fall through to LOADED state
             this->gpu = std::make_unique<GPU_CHUNK>(*this);
             this->state.store(CHUNK_INTERNAL_LOADED);
+            [[fallthrough]];
         }
         case CHUNK_INTERNAL_LOADED: {
             if(should_unload) {

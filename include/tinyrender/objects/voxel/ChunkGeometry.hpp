@@ -2,6 +2,8 @@
 
 #include <vector>
 #include <map>
+#include <string>
+#include <array>
 #include <glm/glm.hpp>
 
 using glm::ivec2;
