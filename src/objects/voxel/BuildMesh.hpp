@@ -1,8 +1,11 @@
 #pragma once
 
 #include "objects/voxel/ChunkGeometry.hpp"
+#include <memory>
+#include <array>
 
 using glm::vec3;
+using std::array;
 class VoxelsImpl;
 
 /*

@@ -4,6 +4,7 @@
 #include <atomic>
 #include <list>
 #include <thread>
+#include <functional>
 
 class BuildMeshQueue {
 private:
